@@ -13,16 +13,16 @@ const stepIcons: IconType[] = [FaUser, FaRuler, FaDumbbell, FaHeartbeat];
 const StepForm: React.FC<StepFormProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [profile, setProfile] = useState<UserProfile>({
-    age: 0,
+    age: 25,
     gender: 'male',
-    weight: 0,
-    height: 0,
+    weight: 70,
+    height: 175,
     sport: '',
     trainingFrequency: 'medium',
-    goals: '',
+    goals: [],
     experience: 'beginner',
-    dietaryRestrictions: '',
-    medicalConditions: ''
+    dietaryRestrictions: [],
+    medicalConditions: [],
   });
 
   const steps = [
@@ -137,17 +137,22 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete }) => {
     setProfile(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const processedProfile = {
+      ...profile,
+      goals: profile.goals,
+      dietaryRestrictions: profile.dietaryRestrictions,
+      medicalConditions: profile.medicalConditions,
+    };
+    onComplete(processedProfile);
+  };
+
   const handleNext = () => {
     if (currentStep < steps.length) {
       setCurrentStep(prev => prev + 1);
     } else {
-      const processedProfile = {
-        ...profile,
-        goals: typeof profile.goals === 'string' ? profile.goals.split(',').map(v => v.trim()).filter(Boolean) : [],
-        dietaryRestrictions: typeof profile.dietaryRestrictions === 'string' ? profile.dietaryRestrictions.split(',').map(v => v.trim()).filter(Boolean) : [],
-        medicalConditions: typeof profile.medicalConditions === 'string' ? profile.medicalConditions.split(',').map(v => v.trim()).filter(Boolean) : [],
-      };
-      onComplete(processedProfile);
+      onComplete(profile);
     }
   };
 

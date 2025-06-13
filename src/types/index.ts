@@ -4,12 +4,18 @@ export interface UserProfile {
   weight: number;
   height: number;
   sport: string;
-  trainingFrequency: 'low' | 'medium' | 'high';
-  goals: string[] | string;
-  dietaryRestrictions?: string[] | string;
   experience: 'beginner' | 'intermediate' | 'advanced';
-  bodyFat?: number;
-  medicalConditions?: string[] | string;
+  trainingFrequency: 'low' | 'medium' | 'high';
+  goals: string[];
+  dietaryRestrictions: string[];
+  medicalConditions: string[];
+}
+
+export interface UserAccount {
+  firstName: string;
+  lastName: string;
+  email: string;
+  photo?: string;
 }
 
 export interface Supplement {
