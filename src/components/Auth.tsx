@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 interface AuthProps {
   onAuthSuccess: () => void;
 }
-
+//
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
