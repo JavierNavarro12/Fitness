@@ -1,4 +1,4 @@
-import React, { useState, ComponentType } from 'react';
+import React, { useState } from 'react';
 import { UserProfile } from '../types';
 import { sportProfiles } from '../data/supplements';
 import { FaUser, FaRuler, FaDumbbell, FaHeartbeat } from 'react-icons/fa';
@@ -135,17 +135,6 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete }) => {
 
   const handleInputChange = (key: keyof UserProfile, value: any) => {
     setProfile(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const processedProfile = {
-      ...profile,
-      goals: profile.goals,
-      dietaryRestrictions: profile.dietaryRestrictions,
-      medicalConditions: profile.medicalConditions,
-    };
-    onComplete(processedProfile);
   };
 
   const handleNext = () => {
