@@ -3,12 +3,13 @@ export interface UserProfile {
   gender: 'male' | 'female' | 'other';
   weight: number;
   height: number;
-  sport: string;
+  objective: string;
   experience: 'beginner' | 'intermediate' | 'advanced';
-  trainingFrequency: 'low' | 'medium' | 'high';
-  goals: string[];
-  dietaryRestrictions: string[];
+  frequency: 'low' | 'medium' | 'high';
+  sport: string;
   medicalConditions: string[];
+  allergies: string[];
+  currentSupplements: string[];
 }
 
 export interface UserAccount {
@@ -43,4 +44,10 @@ export interface SportProfile {
     experience: ('beginner' | 'intermediate' | 'advanced')[];
     gender: ('male' | 'female' | 'other')[];
   };
+}
+
+export interface Report {
+  content: string;
+  createdAt: string;
+  userId: string;
 } 
