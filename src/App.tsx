@@ -16,7 +16,7 @@ const NAVS = [
   { key: 'custom', label: 'Personalización' },
   { key: 'reports', label: 'Mis informes' },
 ];
-
+//
 function App() {
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
