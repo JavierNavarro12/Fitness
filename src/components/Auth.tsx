@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useTranslation } from 'react-i18next';
 
 interface AuthProps {
   onAuthSuccess: () => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -66,7 +68,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+            {isLogin ? t('Iniciar Sesión') : t('Crear Cuenta')}
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -74,7 +76,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             <>
               <div>
                 <label htmlFor="firstName" className="sr-only">
-                  Nombre
+                  {t('Nombre')}
                 </label>
                 <input
                   id="firstName"
@@ -82,14 +84,14 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                   type="text"
                   required
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
-                  placeholder="Nombre"
+                  placeholder={t('Nombre')}
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
               <div>
                 <label htmlFor="lastName" className="sr-only">
-                  Apellido
+                  {t('Apellido')}
                 </label>
                 <input
                   id="lastName"
@@ -97,7 +99,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                   type="text"
                   required
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
-                  placeholder="Apellido"
+                  placeholder={t('Apellido')}
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                 />
@@ -106,7 +108,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
           )}
           <div>
             <label htmlFor="email" className="sr-only">
-              Correo electrónico
+              {t('Correo electrónico')}
             </label>
             <input
               id="email"
@@ -115,14 +117,14 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               autoComplete="email"
               required
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
-              placeholder="Correo electrónico"
+              placeholder={t('Correo electrónico')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
             <label htmlFor="password" className="sr-only">
-              Contraseña
+              {t('Contraseña')}
             </label>
             <input
               id="password"
@@ -131,7 +133,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               autoComplete="current-password"
               required
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm"
-              placeholder="Contraseña"
+              placeholder={t('Contraseña')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -146,7 +148,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
-              {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+              {isLogin ? t('Iniciar Sesión') : t('Crear Cuenta')}
             </button>
           </div>
         </form>
@@ -157,7 +159,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">O continuar con</span>
+              <span className="px-2 bg-white text-gray-500">{t('O continuar con')}</span>
             </div>
           </div>
 
@@ -182,8 +184,8 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             className="text-sm text-red-600 hover:text-red-500"
           >
             {isLogin
-              ? '¿No tienes cuenta? Regístrate'
-              : '¿Ya tienes cuenta? Inicia sesión'}
+              ? t('¿No tienes cuenta? Regístrate')
+              : t('¿Ya tienes cuenta? Inicia sesión')}
           </button>
         </div>
       </div>

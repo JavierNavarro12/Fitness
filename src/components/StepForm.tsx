@@ -3,6 +3,7 @@ import { UserProfile } from '../types';
 import { FaUser, FaRuler, FaDumbbell, FaHeartbeat } from 'react-icons/fa';
 import { IconType } from 'react-icons';
 import { sportProfiles } from '../data/supplements';
+import { useTranslation } from 'react-i18next';
 
 interface StepFormProps {
   onComplete: (profile: UserProfile) => void;
@@ -18,6 +19,7 @@ const steps: { label: string; icon: IconType }[] = [
 ];
 
 const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditing = false }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [profile, setProfile] = useState<UserProfile>(() => initialProfile || {
     age: 0,
@@ -32,9 +34,11 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
     allergies: [],
     currentSupplements: []
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (field: keyof UserProfile, value: any) => {
     setProfile(prev => ({ ...prev, [field]: value }));
+    setError(null);
   };
 
   const nextStep = () => setStep(s => Math.min(s + 1, steps.length - 1));
@@ -42,11 +46,36 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Validación personalizada
+    if (!profile.age) {
+      setError(t('Por favor, introduce tu edad'));
+      return;
+    }
+    if (!profile.gender) {
+      setError(t('Por favor, selecciona tu género'));
+      return;
+    }
+    if (!profile.weight) {
+      setError(t('Por favor, introduce tu peso'));
+      return;
+    }
+    if (!profile.height) {
+      setError(t('Por favor, introduce tu altura'));
+      return;
+    }
+    if (!profile.sport) {
+      setError(t('Por favor, selecciona tu deporte principal'));
+      return;
+    }
+    if (!profile.objective) {
+      setError(t('Por favor, introduce tu objetivo'));
+      return;
+    }
     onComplete(profile);
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl p-8">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
       {/* Wizard Steps */}
       <div className="flex justify-between mb-8">
         {steps.map((s, i) => {
@@ -56,38 +85,39 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
               <div className={`rounded-full p-3 mb-2 ${i === step ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
                 {Icon ? <Icon size={28} /> : null}
               </div>
-              <span className={`text-xs font-semibold ${i === step ? 'text-red-600' : 'text-gray-500'}`}>{s.label}</span>
+              <span className={`text-xs font-semibold ${i === step ? 'text-red-600' : 'text-gray-500'}`}>{t(s.label)}</span>
             </div>
           );
         })}
       </div>
+      {error && (
+        <div className="text-red-600 text-sm text-center mb-4">{error}</div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         {step === 0 && (
           <>
-            <h2 className="text-xl font-bold text-red-700 mb-4">Información Personal</h2>
+            <h2 className="text-xl font-bold text-red-700 mb-4">{t('Información Personal')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">Edad</label>
+                <label className="block text-gray-600 mb-1">{t('Edad')}</label>
                 <input
                   type="number"
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
                   value={profile.age === 0 ? '' : profile.age}
                   placeholder="0"
                   onChange={e => handleInputChange('age', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                  required
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">Género</label>
+                <label className="block text-gray-600 mb-1">{t('Género')}</label>
                 <select
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                   value={profile.gender}
                   onChange={e => handleInputChange('gender', e.target.value)}
-                  required
                 >
-                  <option value="male">Masculino</option>
-                  <option value="female">Femenino</option>
-                  <option value="other">Otro</option>
+                  <option value="male">{t('Masculino')}</option>
+                  <option value="female">{t('Femenino')}</option>
+                  <option value="other">{t('Otro')}</option>
                 </select>
               </div>
             </div>
@@ -95,28 +125,26 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
         )}
         {step === 1 && (
           <>
-            <h2 className="text-xl font-bold text-red-700 mb-4">Medidas Corporales</h2>
+            <h2 className="text-xl font-bold text-red-700 mb-4">{t('Medidas Corporales')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">Peso (kg)</label>
+                <label className="block text-gray-600 mb-1">{t('Peso (kg)')}</label>
                 <input
                   type="number"
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
                   value={profile.weight === 0 ? '' : profile.weight}
                   placeholder="0"
                   onChange={e => handleInputChange('weight', e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                  required
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">Altura (cm)</label>
+                <label className="block text-gray-600 mb-1">{t('Altura (cm)')}</label>
                 <input
                   type="number"
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
                   value={profile.height === 0 ? '' : profile.height}
                   placeholder="0"
                   onChange={e => handleInputChange('height', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                  required
                 />
               </div>
             </div>
@@ -124,45 +152,42 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
         )}
         {step === 2 && (
           <>
-            <h2 className="text-xl font-bold text-red-700 mb-4">Experiencia Deportiva</h2>
+            <h2 className="text-xl font-bold text-red-700 mb-4">{t('Experiencia Deportiva')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">Nivel de experiencia</label>
+                <label className="block text-gray-600 mb-1">{t('Nivel de experiencia')}</label>
                 <select
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                   value={profile.experience}
                   onChange={e => handleInputChange('experience', e.target.value)}
-                  required
                 >
-                  <option value="beginner">Principiante</option>
-                  <option value="intermediate">Intermedio</option>
-                  <option value="advanced">Avanzado</option>
+                  <option value="beginner">{t('Principiante')}</option>
+                  <option value="intermediate">{t('Intermedio')}</option>
+                  <option value="advanced">{t('Avanzado')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">Frecuencia de entrenamiento</label>
+                <label className="block text-gray-600 mb-1">{t('Frecuencia de entrenamiento')}</label>
                 <select
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                   value={profile.frequency}
                   onChange={e => handleInputChange('frequency', e.target.value)}
-                  required
                 >
-                  <option value="low">Baja (1-2 veces/semana)</option>
-                  <option value="medium">Media (3-4 veces/semana)</option>
-                  <option value="high">Alta (5+ veces/semana)</option>
+                  <option value="low">{t('Baja (1-2 veces/semana)')}</option>
+                  <option value="medium">{t('Media (3-4 veces/semana)')}</option>
+                  <option value="high">{t('Alta (5+ veces/semana)')}</option>
                 </select>
               </div>
               <div className="md:col-span-2">
-                <label className="block text-gray-600 mb-1">Deporte principal</label>
+                <label className="block text-gray-600 mb-1">{t('Deporte principal')}</label>
                 <select
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                   value={profile.sport || ''}
                   onChange={e => handleInputChange('sport', e.target.value)}
-                  required
                 >
-                  <option value="">Selecciona un deporte</option>
+                  <option value="">{t('Selecciona un deporte')}</option>
                   {sportProfiles.map((sport) => (
-                    <option key={sport.name} value={sport.name}>{sport.name}</option>
+                    <option key={sport.name} value={sport.name}>{t(sport.name)}</option>
                   ))}
                 </select>
               </div>
@@ -171,46 +196,46 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
         )}
         {step === 3 && (
           <>
-            <h2 className="text-xl font-bold text-red-700 mb-4">Salud y Objetivos</h2>
+            <h2 className="text-xl font-bold text-red-700 mb-4">{t('Salud y Objetivos')}</h2>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">Objetivo</label>
+                <label className="block text-gray-600 mb-1">{t('Condiciones médicas')}</label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  value={profile.medicalConditions.join(', ')}
+                  placeholder={t('Ejemplo: Asma, Diabetes')}
+                  onChange={e => handleInputChange('medicalConditions', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-600 mb-1">{t('Alergias')}</label>
+                <input
+                  type="text"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  value={profile.allergies.join(', ')}
+                  placeholder={t('Ejemplo: Lactosa, Gluten')}
+                  onChange={e => handleInputChange('allergies', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-600 mb-1">{t('Objetivo')}</label>
+                <input
+                  type="text"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
                   value={profile.objective}
+                  placeholder={t('Ejemplo: Ganar masa muscular')}
                   onChange={e => handleInputChange('objective', e.target.value)}
-                  required
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">Condiciones médicas (opcional)</label>
+                <label className="block text-gray-600 mb-1">{t('Suplementos actuales')}</label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-2"
-                  value={profile.medicalConditions?.join(', ') || ''}
-                  onChange={e => handleInputChange('medicalConditions', e.target.value.split(',').map(s => s.trim()))}
-                  placeholder="Separadas por comas"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-600 mb-1">Alergias (opcional)</label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg p-2"
-                  value={profile.allergies?.join(', ') || ''}
-                  onChange={e => handleInputChange('allergies', e.target.value.split(',').map(s => s.trim()))}
-                  placeholder="Separadas por comas"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-600 mb-1">Suplementos actuales (opcional)</label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg p-2"
-                  value={profile.currentSupplements?.join(', ') || ''}
-                  onChange={e => handleInputChange('currentSupplements', e.target.value.split(',').map(s => s.trim()))}
-                  placeholder="Separados por comas"
+                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  value={profile.currentSupplements.join(', ')}
+                  placeholder={t('Ejemplo: Proteína, Creatina')}
+                  onChange={e => handleInputChange('currentSupplements', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                 />
               </div>
             </div>
@@ -223,7 +248,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
               className="bg-white border border-red-600 text-red-600 font-bold px-6 py-2 rounded-xl shadow hover:bg-red-50"
               onClick={prevStep}
             >
-              ← Anterior
+              ← {t('Anterior')}
             </button>
           )}
           {step < steps.length - 1 && (
@@ -232,7 +257,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
               className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2 rounded-xl shadow"
               onClick={nextStep}
             >
-              Siguiente →
+              {t('Siguiente')} →
             </button>
           )}
           {step === steps.length - 1 && (
@@ -240,7 +265,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
               type="submit"
               className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-2 rounded-xl shadow"
             >
-              {isEditing ? 'Actualizar perfil' : 'Finalizar'}
+              {isEditing ? t('Actualizar perfil') : t('Finalizar')}
             </button>
           )}
         </div>

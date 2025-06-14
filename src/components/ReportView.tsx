@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Report } from '../types';
 
 interface ReportViewProps {
@@ -69,6 +70,7 @@ function extractSupplementsWithLinks(content: string): Supplement[] {
 }
 
 const ReportView: React.FC<ReportViewProps> = ({ report }) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -106,23 +108,23 @@ const ReportView: React.FC<ReportViewProps> = ({ report }) => {
     .join('\n');
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
       <div className="flex justify-between items-start mb-4">
-        <span className="text-sm text-gray-500">{new Date(report.createdAt).toLocaleString()}</span>
+        <span className="text-sm text-gray-500 dark:text-gray-300">{new Date(report.createdAt).toLocaleString()}</span>
         <button
           onClick={handleCopy}
-          className="text-red-600 hover:text-red-700"
+          className="text-red-600 hover:text-red-700 dark:text-red-300 dark:hover:text-red-400"
         >
-          {copied ? '¡Copiado!' : 'Copiar'}
+          {copied ? t('¡Copiado!') : t('Copiar')}
         </button>
       </div>
-      <div className="prose max-w-none">
+      <div className="prose max-w-none text-gray-900 dark:text-gray-100">
         {filteredContent.split('\n').map((paragraph: string, i: number) => (
           <p key={i} className="mb-4">{paragraph}</p>
         ))}
         {supplements.length > 0 && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-bold text-red-700 mb-3">Enlaces a productos recomendados:</h4>
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+            <h4 className="font-bold text-red-700 dark:text-red-300 mb-3">{t('Enlaces a productos recomendados:')}</h4>
             <ul className="space-y-2">
               {supplements.map((supp, idx) => (
                 <li key={idx} className="flex items-center">
@@ -131,7 +133,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report }) => {
                     href={supp.link} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
                   >
                     {supp.name}
                   </a>

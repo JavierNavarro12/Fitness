@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Soporte para modo oscuro */
+html.dark {
+  background-color: #18181b;
+}
+body.dark {
+  background-color: #18181b;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

@@ -9,7 +9,10 @@ import StepForm from './components/StepForm';
 import ReportView from './components/ReportView';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faPencil, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
+import Switch from './components/Switch';
+import LanguageSwitch from './components/LanguageSwitch';
 
 const NAVS = [
   { key: 'home', label: 'Inicio' },
@@ -29,6 +32,10 @@ function App() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const { t, i18n } = useTranslation();
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('darkMode') === 'true';
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -106,9 +113,34 @@ function App() {
     if (!customProfile || !user) return;
     setGenerating(true);
 
-    // Construye el prompt con los datos del usuario
-    const prompt = `
-Eres un experto en suplementación deportiva. 
+    const lang = i18n.language;
+    const prompt = lang === 'en'
+      ? `
+You are an expert in sports supplementation.
+Generate a personalized and professional supplementation report for the following profile:
+
+- Goal: ${customProfile.objective}
+- Main sport: ${customProfile.sport}
+- Experience level: ${mapExperience(customProfile.experience)}
+- Training frequency: ${mapFrequency(customProfile.frequency)}
+- Weight: ${customProfile.weight} kg
+- Height: ${customProfile.height} cm
+- Age: ${customProfile.age}
+- Gender: ${mapGender(customProfile.gender)}
+- Medical conditions: ${customProfile.medicalConditions.join(', ') || 'None'}
+- Allergies: ${customProfile.allergies.join(', ') || 'None'}
+- Current supplements: ${customProfile.currentSupplements.join(', ') || 'None'}
+
+First, write the personalized report with explanations and advice.
+Then, add a section titled "Recommended products" with a list of direct links to real products of the recommended supplements in online stores (e.g., Amazon, Decathlon, etc.).
+The format of the list should be:
+- [Supplement name](Product URL)
+
+Do not repeat the profile summary, only the report and the product list.
+The report must be clear, professional, and easy to read.
+`
+      : `
+Eres un experto en suplementación deportiva.
 Genera un informe de suplementación personalizado y profesional para el siguiente perfil:
 
 - Objetivo: ${customProfile.objective}
@@ -124,7 +156,7 @@ Genera un informe de suplementación personalizado y profesional para el siguien
 - Suplementos actuales: ${customProfile.currentSupplements.join(', ') || 'Ninguno'}
 
 Primero, escribe el informe personalizado con explicaciones y consejos.
-Después, añade una sección titulada "Productos recomendados" con una lista de enlaces directos a productos reales de los suplementos recomendados en tiendas online (por ejemplo, Amazon España, Decathlon, etc.). 
+Después, añade una sección titulada "Productos recomendados" con una lista de enlaces directos a productos reales de los suplementos recomendados en tiendas online (por ejemplo, Amazon España, Decathlon, etc.).
 El formato de la lista debe ser:
 - [Nombre del suplemento](URL del producto)
 
@@ -194,21 +226,92 @@ El informe debe ser claro, profesional y fácil de leer.
     return f;
   };
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('darkMode', 'true');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('darkMode', 'false');
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
+    const lang = localStorage.getItem('lang');
+    if (lang) i18n.changeLanguage(lang);
+  }, [i18n]);
+
   if (!user) {
     return <Auth onAuthSuccess={() => window.location.reload()} />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* NAVBAR */}
-      <nav className="bg-white shadow-md py-4 px-2 sticky top-0 z-40">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
-          <h1 className="text-3xl font-bold text-red-700 mb-2 md:mb-0">NutriMind</h1>
-          <ul className="flex gap-2 md:gap-6 justify-center items-center">
-            {NAVS.map(tab => (
-              <li key={tab.key}>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+      {/* HEADER */}
+      <header className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40">
+        <div className="container mx-auto flex flex-row items-center justify-between py-2 px-2 relative">
+          {/* Título */}
+          <h1 className="text-3xl font-bold text-red-700 dark:text-red-300 mx-auto">NutriMind</h1>
+          {/* Avatar arriba derecha */}
+          <div className="absolute right-4 top-1 flex items-center" ref={userMenuRef}>
+            <button
+              className="flex items-center focus:outline-none"
+              onClick={() => setShowUserMenu((v) => !v)}
+              aria-label="Menú de usuario"
+            >
+              <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-red-200">
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-gray-400 text-xl">👤</span>
+                )}
+              </div>
+              <span className="ml-2 font-semibold text-gray-800 dark:text-gray-100 text-base hidden md:block">
+                {user?.displayName || user?.email?.split('@')[0]}
+              </span>
+              <FontAwesomeIcon icon={faChevronDown} className="ml-1 text-gray-500 hidden md:block" />
+            </button>
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border z-50 animate-fade-in">
                 <button
-                  className={`text-base md:text-lg font-semibold px-2 md:px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                  className="w-full text-center px-4 py-3 hover:bg-gray-100 text-gray-700 rounded-t-lg"
+                  onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
+                >
+                  {t('Ver perfil')}
+                </button>
+                <button
+                  className="w-full text-center px-4 py-3 hover:bg-gray-100 text-gray-700"
+                  onClick={handleLogout}
+                >
+                  {t('Cerrar sesión')}
+                </button>
+                <div className="border-t border-gray-200 my-1" />
+                <div className="flex flex-row gap-3 justify-center items-center px-4 py-2">
+                  <div style={{ transform: 'scale(0.8)' }}>
+                    <LanguageSwitch
+                      checked={i18n.language === 'en'}
+                      onChange={() => {
+                        const newLang = i18n.language === 'es' ? 'en' : 'es';
+                        i18n.changeLanguage(newLang);
+                        localStorage.setItem('lang', newLang);
+                      }}
+                    />
+                  </div>
+                  <div style={{ transform: 'scale(0.8)' }}>
+                    <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* NAVBAR centrado debajo del header */}
+        <nav className="w-full flex justify-center bg-white dark:bg-gray-900 shadow-sm border-t border-gray-100 dark:border-gray-800">
+          <ul className="flex w-full justify-between md:justify-center px-4 md:px-0 gap-2 md:gap-16 py-2 items-center">
+            {NAVS.map(tab => (
+              <li key={tab.key} className="flex-1 md:flex-none flex justify-center">
+                <button
+                  className={`whitespace-nowrap text-sm md:text-lg font-semibold px-1 md:px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
                   onClick={() => {
                     setNav(tab.key);
                     setShowSummary(false);
@@ -218,83 +321,49 @@ El informe debe ser claro, profesional y fácil de leer.
                     }
                   }}
                 >
-                  {tab.label}
+                  {t(tab.label)}
                 </button>
               </li>
             ))}
           </ul>
-          <div className="relative flex items-center gap-2" ref={userMenuRef}>
-            <button
-              className="flex items-center gap-2 focus:outline-none"
-              onClick={() => setShowUserMenu((v) => !v)}
-            >
-              <span className="text-gray-700 font-semibold">{user?.displayName || user?.email?.split('@')[0]}</span>
-              <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center">
-                {user?.photoURL ? (
-                  <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-gray-400 text-xl">👤</span>
-                )}
-              </div>
-              <svg className="w-4 h-4 text-gray-500 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border z-50 animate-fade-in">
-                <button
-                  className="w-full text-left px-4 py-3 hover:bg-gray-100 text-gray-700 rounded-t-lg"
-                  onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
-                >
-                  Ver perfil
-                </button>
-                <button
-                  className="w-full text-left px-4 py-3 hover:bg-gray-100 text-gray-700 rounded-b-lg"
-                  onClick={handleLogout}
-                >
-                  Cerrar sesión
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+        </nav>
+      </header>
 
       {/* MODAL PERFIL */}
       {showProfileModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full relative animate-fade-in">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-red-600 text-2xl font-bold"
               onClick={() => setShowProfileModal(false)}
             >
               ×
             </button>
-            <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">Mi Perfil</h2>
+            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('Mi Perfil')}</h2>
             <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center mb-2">
+              <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2">
                 {user?.photoURL ? (
                   <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-gray-400 text-4xl">👤</span>
                 )}
               </div>
-              <span className="font-semibold text-lg text-gray-800">{user?.displayName || user?.email?.split('@')[0]}</span>
-              <span className="text-gray-500 text-sm">{user?.email}</span>
+              <span className="font-semibold text-lg text-gray-800 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</span>
+              <span className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</span>
             </div>
             {userProfile && (
-              <ul className="space-y-2 text-gray-700">
-                <li><b>Edad:</b> {userProfile.age}</li>
-                <li><b>Género:</b> {userProfile.gender}</li>
-                <li><b>Peso:</b> {userProfile.weight} kg</li>
-                <li><b>Altura:</b> {userProfile.height} cm</li>
-                <li><b>Objetivo:</b> {userProfile.objective}</li>
-                <li><b>Experiencia:</b> {userProfile.experience}</li>
-                <li><b>Frecuencia de entrenamiento:</b> {userProfile.frequency}</li>
-                <li><b>Deporte principal:</b> {userProfile.sport}</li>
-                <li><b>Condiciones médicas:</b> {userProfile.medicalConditions.join(', ') || 'Ninguna'}</li>
-                <li><b>Alergias:</b> {userProfile.allergies.join(', ') || 'Ninguna'}</li>
-                <li><b>Suplementos actuales:</b> {userProfile.currentSupplements.join(', ') || 'Ninguno'}</li>
+              <ul className="space-y-2 text-gray-700 dark:text-gray-200">
+                <li><b>{t('Edad')}:</b> {userProfile.age}</li>
+                <li><b>{t('Género')}:</b> {mapGender(userProfile.gender)}</li>
+                <li><b>{t('Peso')}:</b> {userProfile.weight} kg</li>
+                <li><b>{t('Altura')}:</b> {userProfile.height} cm</li>
+                <li><b>{t('Objetivo')}:</b> {userProfile.objective}</li>
+                <li><b>{t('Experiencia')}:</b> {mapExperience(userProfile.experience)}</li>
+                <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(userProfile.frequency)}</li>
+                <li><b>{t('Deporte principal')}:</b> {userProfile.sport}</li>
+                <li><b>{t('Condiciones médicas')}:</b> {userProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
+                <li><b>{t('Alergias')}:</b> {userProfile.allergies.join(', ') || t('Ninguna')}</li>
+                <li><b>{t('Suplementos actuales')}:</b> {userProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
               </ul>
             )}
           </div>
@@ -302,7 +371,7 @@ El informe debe ser claro, profesional y fácil de leer.
       )}
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {nav === 'home' && (
           <Home onStart={() => setNav('custom')} />
         )}
@@ -310,34 +379,34 @@ El informe debe ser claro, profesional y fácil de leer.
           <StepForm onComplete={handleSaveProfile} />
         )}
         {nav === 'custom' && showSummary && customProfile && !isEditingProfile && (
-          <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl p-8 mt-8 relative">
+          <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 relative">
             <button
               className="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl"
-              title="Editar perfil"
+              title={t('Editar perfil')}
               onClick={() => setIsEditingProfile(true)}
             >
               <FontAwesomeIcon icon={faPencil} size="lg" />
             </button>
-            <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">Resumen de tu perfil</h2>
-            <ul className="mb-6 space-y-2">
-              <li><b>Edad:</b> {customProfile.age}</li>
-              <li><b>Género:</b> {mapGender(customProfile.gender)}</li>
-              <li><b>Peso:</b> {customProfile.weight} kg</li>
-              <li><b>Altura:</b> {customProfile.height} cm</li>
-              <li><b>Objetivo:</b> {customProfile.objective}</li>
-              <li><b>Experiencia:</b> {mapExperience(customProfile.experience)}</li>
-              <li><b>Frecuencia de entrenamiento:</b> {mapFrequency(customProfile.frequency)}</li>
-              <li><b>Deporte principal:</b> {customProfile.sport}</li>
-              <li><b>Condiciones médicas:</b> {customProfile.medicalConditions.join(', ') || 'Ninguna'}</li>
-              <li><b>Alergias:</b> {customProfile.allergies.join(', ') || 'Ninguna'}</li>
-              <li><b>Suplementos actuales:</b> {customProfile.currentSupplements.join(', ') || 'Ninguno'}</li>
+            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('Resumen de tu perfil')}</h2>
+            <ul className="mb-6 space-y-2 text-gray-900 dark:text-gray-100">
+              <li><b>{t('Edad')}:</b> {customProfile.age}</li>
+              <li><b>{t('Género')}:</b> {mapGender(customProfile.gender)}</li>
+              <li><b>{t('Peso')}:</b> {customProfile.weight} kg</li>
+              <li><b>{t('Altura')}:</b> {customProfile.height} cm</li>
+              <li><b>{t('Objetivo')}:</b> {customProfile.objective}</li>
+              <li><b>{t('Experiencia')}:</b> {mapExperience(customProfile.experience)}</li>
+              <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(customProfile.frequency)}</li>
+              <li><b>{t('Deporte principal')}:</b> {customProfile.sport}</li>
+              <li><b>{t('Condiciones médicas')}:</b> {customProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
+              <li><b>{t('Alergias')}:</b> {customProfile.allergies.join(', ') || t('Ninguna')}</li>
+              <li><b>{t('Suplementos actuales')}:</b> {customProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
             </ul>
             <button
               onClick={handleGenerateReport}
               className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg text-xl transition-all duration-200 w-full"
               disabled={generating}
             >
-              {generating ? 'Generando informe...' : 'Generar informe'}
+              {generating ? t('Generando informe...') : t('Generar informe')}
             </button>
           </div>
         )}
@@ -353,10 +422,10 @@ El informe debe ser claro, profesional y fácil de leer.
         )}
         {nav === 'reports' && (
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-red-700 mb-6">Mis Informes</h2>
+            <h2 className="text-2xl font-bold text-red-700 mb-6">{t('Mis Informes')}</h2>
             {userReports.length === 0 ? (
               <div className="text-center text-gray-500 py-12">
-                No tienes informes generados aún.
+                {t('No tienes informes generados aún.')}
               </div>
             ) : (
               <div className="space-y-6">
@@ -368,11 +437,11 @@ El informe debe ser claro, profesional y fácil de leer.
           </div>
         )}
       </main>
-      <footer className="bg-gray-800 text-white p-6 mt-12">
+      <footer className="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12">
         <div className="container mx-auto text-center">
-          <p>© 2024 Fitness Supplements Advisor. Todos los derechos reservados.</p>
-          <p className="text-sm text-gray-400 mt-2">
-            Las recomendaciones son sugerencias generales. Consulta con un profesional de la salud antes de comenzar cualquier suplementación.
+          <p>© 2024 Fitness Supplements Advisor. {t('Todos los derechos reservados.')}</p>
+          <p className="text-sm text-gray-400 dark:text-gray-300 mt-2">
+            {t('Las recomendaciones son sugerencias generales. Consulta con un profesional de la salud antes de comenzar cualquier suplementación.')}
           </p>
         </div>
       </footer>

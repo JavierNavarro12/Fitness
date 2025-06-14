@@ -18,40 +18,13 @@ export const supplements: { name: string; description: string }[] = [
 ];
 
 export const sportProfiles: { name: string; description: string }[] = [
-  {
-    name: "Fútbol",
-    description: "Deporte de equipo que se juega con un balón y dos porterías."
-  },
-  {
-    name: "Tenis",
-    description: "Deporte de raqueta que se juega en una pista dividida por una red."
-  },
-  {
-    name: "Baloncesto",
-    description: "Deporte de equipo que se juega con un balón y dos canastas."
-  },
-  {
-    name: "Gimnasio",
-    description: "Entrenamiento físico en sala de musculación o fitness."
-  },
-  {
-    name: "CrossFit",
-    description: "Entrenamiento funcional de alta intensidad."
-  },
-  {
-    name: "Atletismo",
-    description: "Deporte que engloba pruebas de pista y campo."
-  },
-  {
-    name: "Natación",
-    description: "Deporte acuático que consiste en desplazarse en el agua."
-  },
-  {
-    name: "Ciclismo",
-    description: "Deporte que consiste en montar en bicicleta."
-  },
-  {
-    name: "Pádel",
-    description: "Deporte de raqueta que se juega en parejas en una pista cerrada."
-  }
+  { name: "futbol", description: "Deporte de equipo que se juega con un balón y dos porterías." },
+  { name: "tenis", description: "Deporte de raqueta que se juega en una pista dividida por una red." },
+  { name: "baloncesto", description: "Deporte de equipo que se juega con un balón y dos canastas." },
+  { name: "gimnasio", description: "Entrenamiento físico en sala de musculación o fitness." },
+  { name: "crossfit", description: "Entrenamiento funcional de alta intensidad." },
+  { name: "atletismo", description: "Deporte que engloba pruebas de pista y campo." },
+  { name: "natacion", description: "Deporte acuático que consiste en desplazarse en el agua." },
+  { name: "ciclismo", description: "Deporte que consiste en montar en bicicleta." },
+  { name: "padel", description: "Deporte de raqueta que se juega en parejas en una pista cerrada." }
 ]; 
