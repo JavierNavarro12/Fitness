@@ -158,8 +158,6 @@ Genera un informe de suplementación personalizado y profesional para el siguien
 
 Primero, escribe el informe personalizado con explicaciones y consejos.
 Después, añade una sección titulada "Productos recomendados" con una lista de enlaces directos a productos reales de los suplementos recomendados en tiendas online (por ejemplo, Amazon España, Decathlon, etc.).
-El formato de la lista debe ser:
-- [Nombre del suplemento](URL del producto)
 
 No repitas el resumen del perfil, solo el informe y la lista de productos.
 El informe debe ser claro, profesional y fácil de leer.

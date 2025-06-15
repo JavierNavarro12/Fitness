@@ -14,62 +14,47 @@ interface Supplement {
   link: string;
 }
 
-// Función para extraer suplementos recomendados y generar enlaces de búsqueda
-function extractSupplementsWithLinks(content: string): Supplement[] {
-  // Busca líneas que contengan los suplementos recomendados
+// Función para extraer suplementos recomendados SOLO de la sección "Suplementación Recomendada"
+function extractSupplementsFromRecommendedSection(content: string): string[] {
   const lines = content.split('\n');
-  const supplements: Supplement[] = [];
-  
-  // Patrón para detectar suplementos en diferentes formatos
-  const supplementPatterns = [
-    // Formato: 1. **Suplemento:**
-    /\d+\.\s*\*\*([^*:]+):?\*\*/,
-    // Formato: - **Suplemento**
-    /^[-*]\s*\*\*([^*]+)\*\*/,
-    // Formato: **Suplemento:**
-    /\*\*([^*:]+):?\*\*/
+  const startIdx = lines.findIndex(line => line.toLowerCase().includes('suplementación recomendada'));
+  if (startIdx === -1) return [];
+  // Buscar el final de la sección (siguiente encabezado o fin)
+  let endIdx = lines.length;
+  for (let i = startIdx + 1; i < lines.length; i++) {
+    if (lines[i].startsWith('###') || lines[i].startsWith('####')) {
+      endIdx = i;
+      break;
+    }
+  }
+  // Extraer nombres de suplementos de la sección
+  const supplementNames: string[] = [];
+  const supplementPattern = /\*\*([^*]+)\*\*/g;
+  const exclude = [
+    'Alimentación', 'Entrenamiento', 'Descanso', 'Suplementos Actuales',
+    'Deporte Principal', 'Nivel de Experiencia', 'Frecuencia de Entrenamiento',
+    'Condiciones Médicas', 'Objetivo', 'Edad', 'Género', 'Peso', 'Altura', 'Ninguno', 'Ninguna'
   ];
-
-  // Palabras clave que no son suplementos
-  const nonSupplementKeywords = [
-    'Informe',
-    'Objetivo',
-    'Deporte',
-    'Nivel',
-    'Frecuencia',
-    'Peso',
-    'Altura',
-    'Edad',
-    'Género',
-    'Condiciones',
-    'Alergias',
-    'Suplementos actuales',
-    'Productos Recomendados',
-    'Enlaces a productos recomendados'
-  ];
-
-  for (const line of lines) {
-    // Ignora líneas con URLs vacías
-    if (line.includes('(URL del producto)')) continue;
-
-    for (const pattern of supplementPatterns) {
-      const match = line.match(pattern);
-      if (match) {
-        const name = match[1].trim();
-        // Evita duplicados y líneas que no son suplementos
-        if (name && 
-            !supplements.some(s => s.name.toLowerCase() === name.toLowerCase()) &&
-            !nonSupplementKeywords.some(keyword => name.includes(keyword))) {
-          supplements.push({
-            name,
-            link: `https://www.amazon.es/s?k=${encodeURIComponent(name)}`
-          });
-        }
+  for (let i = startIdx + 1; i < endIdx; i++) {
+    let match;
+    while ((match = supplementPattern.exec(lines[i])) !== null) {
+      const name = match[1].replace(/:$/, '').trim();
+      // Evitar duplicados y nombres genéricos o de resumen
+      if (name && !supplementNames.includes(name) && name.length > 2 && !exclude.includes(name)) {
+        supplementNames.push(name);
       }
     }
   }
+  return supplementNames;
+}
 
-  return supplements;
+// Función para extraer suplementos con enlaces SOLO de la lista de recomendados
+function extractSupplementsWithLinks(content: string): Supplement[] {
+  const recommendedSupplements = extractSupplementsFromRecommendedSection(content);
+  return recommendedSupplements.map(name => ({
+    name,
+    link: `https://www.amazon.es/s?k=${encodeURIComponent(name)}`
+  }));
 }
 
 const ReportView: React.FC<ReportViewProps> = ({ report }) => {
@@ -90,21 +75,24 @@ const ReportView: React.FC<ReportViewProps> = ({ report }) => {
   const filteredContent = report.content
     .split('\n')
     .filter(line => {
-      // Elimina líneas que contienen el resumen del formulario
-      if (line.includes('Objetivo:') || 
-          line.includes('Deporte principal:') ||
-          line.includes('Nivel de experiencia:') ||
-          line.includes('Frecuencia de entrenamiento:') ||
-          line.includes('Peso:') ||
-          line.includes('Altura:') ||
-          line.includes('Edad:') ||
-          line.includes('Género:') ||
-          line.includes('Condiciones médicas:') ||
-          line.includes('Alergias:') ||
-          line.includes('Suplementos actuales:') ||
-          line.includes('(URL del producto)') ||
-          line.includes('Productos Recomendados:') ||
-          line.includes('Enlaces a productos recomendados:')) {
+      // Elimina líneas que contienen el resumen del formulario o campos no deseados
+      if (
+        line.includes('Objetivo:') ||
+        line.includes('Deporte principal:') ||
+        line.includes('Nivel de experiencia:') ||
+        line.includes('Frecuencia de entrenamiento:') ||
+        line.includes('Peso:') ||
+        line.includes('Altura:') ||
+        line.includes('Edad:') ||
+        line.includes('Género:') ||
+        line.includes('Condiciones médicas:') ||
+        line.includes('Alergias:') ||
+        line.includes('Suplementos actuales:') ||
+        line.includes('Suplementos Actuales:') ||
+        line.includes('(URL del producto)') ||
+        line.includes('Productos Recomendados:') ||
+        line.includes('Enlaces a productos recomendados:')
+      ) {
         return false;
       }
       return true;
