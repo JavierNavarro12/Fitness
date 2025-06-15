@@ -1,13 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../types';
-import { FaFile, FaRegCopy, FaCircleCheck, FaDownload } from 'react-icons/fa6';
+import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash } from 'react-icons/fa6';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReportPDF from './ReportPDF';
 import ReactMarkdown from 'react-markdown';
 
 interface ReportViewProps {
   report: Report;
+  onDelete?: (reportId: string) => void;
 }
 
 interface Supplement {
@@ -140,7 +141,7 @@ function filterPersonalizationSummary(content: string): string {
   return filtered.join('\n');
 }
 
-const ReportView: React.FC<ReportViewProps> = ({ report }) => {
+const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -186,17 +187,27 @@ const ReportView: React.FC<ReportViewProps> = ({ report }) => {
               />
             }
             fileName={`informe-${new Date(report.createdAt).toLocaleDateString()}.pdf`}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto px-0 py-0 sm:px-4 sm:py-2 font-semibold text-xs sm:text-sm transition shadow-sm border-0"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto px-0 py-0 sm:px-4 sm:py-2 font-semibold text-xs sm:text-sm gap-1 sm:gap-2 transition shadow-sm border-0"
             style={{ textDecoration: 'none' }}
           >
-            {({ loading }) => loading
-              ? <span className="hidden sm:inline">Generando PDF...</span>
-              : <>
-                  {FaDownload({ className: "text-lg" })}
-                  <span className="hidden sm:inline ml-2">Descargar PDF</span>
-                </>
-            }
+            {({ loading }) => loading ? <span className="hidden sm:inline">Generando PDF...</span> : <>
+              {FaDownload({ className: "text-lg" })}
+              <span className="hidden sm:inline ml-2">Descargar PDF</span>
+            </>}
           </PDFDownloadLink>
+          {onDelete && report.id && (
+            <button
+              onClick={() => {
+                if (window.confirm('¿Seguro que quieres eliminar este informe?') && report.id) {
+                  onDelete(report.id);
+                }
+              }}
+              className="flex items-center justify-center w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition ml-1"
+              title="Eliminar informe"
+            >
+              {FaTrash({ className: "text-lg" })}
+            </button>
+          )}
         </div>
       </div>
       {/* Contenido del informe */}

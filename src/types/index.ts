@@ -47,6 +47,7 @@ export interface SportProfile {
 }
 
 export interface Report {
+  id?: string;
   content: string;
   createdAt: string;
   userId: string;

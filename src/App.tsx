@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { UserProfile, Report } from './types';
@@ -51,7 +51,7 @@ function App() {
           // Cargar reportes del usuario
           const reportsQuery = query(collection(db, 'reports'), where('userId', '==', user.uid));
           const reportsSnapshot = await getDocs(reportsQuery);
-          const reports = reportsSnapshot.docs.map(doc => doc.data() as Report);
+          const reports = reportsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Report));
           setUserReports(reports);
         } catch (error: any) {
           if (
@@ -206,6 +206,16 @@ El informe debe ser claro, profesional y fácil de leer.
       console.error('Error al generar el informe:', error);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handleDeleteReport = async (reportId: string) => {
+    try {
+      await deleteDoc(doc(db, 'reports', reportId));
+      setUserReports(prev => prev.filter(r => r.id !== reportId));
+    } catch (error) {
+      alert('Error al eliminar el informe.');
+      console.error(error);
     }
   };
 
@@ -448,7 +458,7 @@ El informe debe ser claro, profesional y fácil de leer.
             ) : (
               <div className="space-y-6">
                 {userReports.map((report, index) => (
-                  <ReportView key={index} report={report} />
+                  <ReportView key={index} report={report} onDelete={handleDeleteReport} />
                 ))}
               </div>
             )}
