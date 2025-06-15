@@ -183,7 +183,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   };
 
   return (
-    <div className={`max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-12 sm:py-8 px-4 sm:px-8 ${step === 2 ? 'mt-16' : step === 3 ? 'mt-8' : 'mt-24'}`}>
+    <div className={`max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-12 sm:py-8 px-4 sm:px-8 ${step === 2 ? 'mt-2' : step === 3 ? 'mt-0' : 'mt-4'}`}>
       {/* Wizard Steps */}
       <div className="flex justify-between items-center mb-8 relative w-full">
         {steps.map((s, i) => {
