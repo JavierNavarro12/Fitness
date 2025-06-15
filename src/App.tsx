@@ -133,6 +133,7 @@ Generate a personalized and professional supplementation report for the followin
 - Current supplements: ${customProfile.currentSupplements.join(', ') || 'None'}
 
 First, write the personalized report with explanations and advice.
+For each recommended supplement, include the recommended dose (in grams, capsules, etc.) and the best time of day to take it (e.g., after training, with breakfast, etc.).
 Then, add a section titled "Recommended products" with a list of direct links to real products of the recommended supplements in online stores (e.g., Amazon, Decathlon, etc.).
 The format of the list should be:
 - [Supplement name](Product URL)
@@ -157,7 +158,10 @@ Genera un informe de suplementación personalizado y profesional para el siguien
 - Suplementos actuales: ${customProfile.currentSupplements.join(', ') || 'Ninguno'}
 
 Primero, escribe el informe personalizado con explicaciones y consejos.
+Para cada suplemento recomendado, incluye la dosis recomendada (en gramos, cápsulas, etc.) y el mejor momento del día para tomarlo (por ejemplo: después de entrenar, con el desayuno, etc.).
 Después, añade una sección titulada "Productos recomendados" con una lista de enlaces directos a productos reales de los suplementos recomendados en tiendas online (por ejemplo, Amazon España, Decathlon, etc.).
+El formato de la lista debe ser:
+- [Nombre del suplemento](URL del producto)
 
 No repitas el resumen del perfil, solo el informe y la lista de productos.
 El informe debe ser claro, profesional y fácil de leer.
@@ -389,7 +393,7 @@ El informe debe ser claro, profesional y fácil de leer.
             </div>
             {/* Desktop: layout original */}
             <div className="hidden sm:block">
-              <StepForm onComplete={handleSaveProfile} />
+          <StepForm onComplete={handleSaveProfile} />
             </div>
           </>
         )}

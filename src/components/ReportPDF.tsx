@@ -75,13 +75,13 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ title, content, supplements, date
         {content}
       </Text>
       {supplements.length > 0 && (
-        <View>
-          <Text style={styles.sectionTitle}>Enlaces a productos recomendados:</Text>
-          <View style={styles.supplementList}>
+        <View style={{ marginTop: 24, padding: 12, borderRadius: 10, backgroundColor: '#f9fafb', border: '1px solid #fca5a5' }}>
+          <Text style={{ color: '#dc2626', fontWeight: 'bold', fontSize: 14, marginBottom: 8 }}>Enlaces a productos recomendados:</Text>
+          <View style={{ marginLeft: 12 }}>
             {supplements.map((supp, idx) => (
-              <Text key={idx} style={styles.supplementItem}>
+              <Text key={idx} style={{ marginBottom: 6, fontSize: 12 }}>
                 {`${idx + 1}. `}
-                <Link src={supp.link} style={styles.link}>{supp.name}</Link>
+                <Link src={supp.link} style={{ color: '#2563eb', textDecoration: 'underline', fontWeight: 'bold' }}>{supp.name}</Link>
               </Text>
             ))}
           </View>

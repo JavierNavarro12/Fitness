@@ -4,6 +4,7 @@ import { Report } from '../types';
 import { FaFile, FaRegCopy, FaCircleCheck, FaDownload } from 'react-icons/fa6';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReportPDF from './ReportPDF';
+import ReactMarkdown from 'react-markdown';
 
 interface ReportViewProps {
   report: Report;
@@ -14,10 +15,22 @@ interface Supplement {
   link: string;
 }
 
-// Función para extraer suplementos recomendados SOLO de la sección "Suplementación Recomendada"
-function extractSupplementsFromRecommendedSection(content: string): string[] {
+// Extraer solo los suplementos recomendados por la IA de la sección correspondiente
+function extractSupplementsFromRecommendedSectionOnly(content: string): string[] {
   const lines = content.split('\n');
-  const startIdx = lines.findIndex(line => line.toLowerCase().includes('suplementación recomendada'));
+  // Buscar posibles títulos de sección
+  const sectionTitles = [
+    'suplementación recomendada',
+    'productos recomendados',
+    'recomendaciones',
+    'suplementos recomendados',
+    'suplementos sugeridos',
+  ];
+  let startIdx = -1;
+  for (const title of sectionTitles) {
+    startIdx = lines.findIndex(line => line.toLowerCase().includes(title));
+    if (startIdx !== -1) break;
+  }
   if (startIdx === -1) return [];
   // Buscar el final de la sección (siguiente encabezado o fin)
   let endIdx = lines.length;
@@ -31,30 +44,100 @@ function extractSupplementsFromRecommendedSection(content: string): string[] {
   const supplementNames: string[] = [];
   const supplementPattern = /\*\*([^*]+)\*\*/g;
   const exclude = [
-    'Alimentación', 'Entrenamiento', 'Descanso', 'Suplementos Actuales',
-    'Deporte Principal', 'Nivel de Experiencia', 'Frecuencia de Entrenamiento',
-    'Condiciones Médicas', 'Objetivo', 'Edad', 'Género', 'Peso', 'Altura', 'Ninguno', 'Ninguna'
+    'Alimentación', 'Entrenamiento', 'Descanso', 'Suplementos Actuales', 'Objetivo', 'Deporte principal', 'Nivel de experiencia', 'Frecuencia de entrenamiento', 'Peso', 'Altura', 'Edad', 'Género', 'Condiciones médicas', 'Alergias', 'Informe', 'Introducción', 'Recomendaciones', 'Productos recomendados'
   ];
+  // 1. Buscar nombres en negrita
   for (let i = startIdx + 1; i < endIdx; i++) {
     let match;
     while ((match = supplementPattern.exec(lines[i])) !== null) {
       const name = match[1].replace(/:$/, '').trim();
-      // Evitar duplicados y nombres genéricos o de resumen
       if (name && !supplementNames.includes(name) && name.length > 2 && !exclude.includes(name)) {
         supplementNames.push(name);
+      }
+    }
+  }
+  // 2. Si no hay nombres en negrita, buscar líneas de lista
+  if (supplementNames.length === 0) {
+    for (let i = startIdx + 1; i < endIdx; i++) {
+      const line = lines[i].trim();
+      // Línea de lista tipo '- Suplemento' o '1. Suplemento'
+      if ((line.startsWith('-') || /^\d+\./.test(line)) && line.length > 2) {
+        // Quitar el guion o número y espacios
+        let name = line.replace(/^(-|\d+\.)\s*/, '').replace(/:$/, '').trim();
+        // Quitar posibles URLs
+        name = name.replace(/\(https?:[^)]+\)/, '').trim();
+        if (name && !supplementNames.includes(name) && name.length > 2 && !exclude.includes(name)) {
+          supplementNames.push(name);
+        }
       }
     }
   }
   return supplementNames;
 }
 
-// Función para extraer suplementos con enlaces SOLO de la lista de recomendados
+function cleanSupplementName(name: string): string {
+  return name
+    .replace(/\[|\]/g, '') // quitar corchetes
+    .replace(/\(URL\)/gi, '') // quitar (URL) o (url)
+    .replace(/\(https?:[^)]+\)/gi, '') // quitar paréntesis con http...
+    .replace(/\s+/g, ' ') // espacios extra
+    .trim();
+}
+
 function extractSupplementsWithLinks(content: string): Supplement[] {
-  const recommendedSupplements = extractSupplementsFromRecommendedSection(content);
-  return recommendedSupplements.map(name => ({
-    name,
-    link: `https://www.amazon.es/s?k=${encodeURIComponent(name)}`
-  }));
+  const recommendedSupplements = extractSupplementsFromRecommendedSectionOnly(content);
+  return recommendedSupplements.map(name => {
+    const cleanName = cleanSupplementName(name);
+    return {
+      name: cleanName,
+      link: `https://www.amazon.es/s?k=${encodeURIComponent(cleanName)}`
+    };
+  });
+}
+
+// Filtrar líneas del resumen del formulario de personalización
+function filterPersonalizationSummary(content: string): string {
+  const keywords = [
+    'Objetivo:',
+    'Deporte Principal:',
+    'Deporte principal:',
+    'Nivel de Experiencia:',
+    'Nivel de experiencia:',
+    'Frecuencia de Entrenamiento:',
+    'Frecuencia de entrenamiento:',
+    'Peso:',
+    'Altura:',
+    'Edad:',
+    'Género:',
+    'Condiciones Médicas:',
+    'Condiciones médicas:',
+    'Alergias:',
+    'Suplementos Actuales:',
+    'Suplementos actuales:'
+  ];
+  const lines = content.split('\n');
+  let filtered: string[] = [];
+  let skipBlock = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // Eliminar bloque de 'Perfil Físico:'
+    if (line.trim().startsWith('Perfil Físico:')) {
+      skipBlock = true;
+      continue;
+    }
+    if (skipBlock) {
+      // Termina el bloque al encontrar una línea vacía o una sección de recomendaciones
+      if (line.trim() === '' || /Recomendaciones?:/i.test(line)) {
+        skipBlock = false;
+      } else {
+        continue;
+      }
+    }
+    // Eliminar cualquier línea que contenga una palabra clave
+    if (keywords.some(k => line.includes(k))) continue;
+    filtered.push(line);
+  }
+  return filtered.join('\n');
 }
 
 const ReportView: React.FC<ReportViewProps> = ({ report }) => {
@@ -72,32 +155,9 @@ const ReportView: React.FC<ReportViewProps> = ({ report }) => {
   const supplements = extractSupplementsWithLinks(report.content);
 
   // Filtrar el contenido para eliminar el resumen del formulario y la sección de productos
-  const filteredContent = report.content
-    .split('\n')
-    .filter(line => {
-      // Elimina líneas que contienen el resumen del formulario o campos no deseados
-      if (
-        line.includes('Objetivo:') ||
-        line.includes('Deporte principal:') ||
-        line.includes('Nivel de experiencia:') ||
-        line.includes('Frecuencia de entrenamiento:') ||
-        line.includes('Peso:') ||
-        line.includes('Altura:') ||
-        line.includes('Edad:') ||
-        line.includes('Género:') ||
-        line.includes('Condiciones médicas:') ||
-        line.includes('Alergias:') ||
-        line.includes('Suplementos actuales:') ||
-        line.includes('Suplementos Actuales:') ||
-        line.includes('(URL del producto)') ||
-        line.includes('Productos Recomendados:') ||
-        line.includes('Enlaces a productos recomendados:')
-      ) {
-        return false;
-      }
-      return true;
-    })
-    .join('\n');
+  const filteredContent = filterPersonalizationSummary(report.content);
+
+  const supplementsWithLinks = extractSupplementsWithLinks(report.content);
 
   return (
     <div ref={reportRef} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-0 md:p-0 border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -140,33 +200,28 @@ const ReportView: React.FC<ReportViewProps> = ({ report }) => {
         </div>
       </div>
       {/* Contenido del informe */}
-      <div className="px-6 py-6 md:py-8">
-        <div className="prose max-w-none text-gray-900 dark:text-gray-100 prose-p:mb-4 prose-p:leading-relaxed prose-p:text-base prose-p:font-medium">
-          {filteredContent.split('\n').map((paragraph: string, i: number) => (
-            <p key={i}>{paragraph}</p>
-          ))}
+      <div className="px-6 py-4">
+        <div className="text-xs text-gray-500 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
+        <div className="prose dark:prose-invert max-w-none text-base">
+          <ReactMarkdown>{filteredContent}</ReactMarkdown>
         </div>
-        {supplements.length > 0 && (
-          <div className="mt-8 p-6 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border border-red-100 dark:border-red-700 rounded-xl shadow-inner">
-            <h4 className="font-bold text-red-700 dark:text-red-300 mb-4 text-lg flex items-center gap-2">
-              {FaFile({ className: "text-red-400 dark:text-red-300" })}
-              {t('Enlaces a productos recomendados:')}
-            </h4>
-            <ul className="space-y-2">
-              {supplements.map((supp, idx) => (
-                <li key={idx} className="flex items-center gap-2">
-                  <span className="text-red-400 dark:text-red-300">•</span>
-                  <a 
-                    href={supp.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-semibold"
+        {supplementsWithLinks.length > 0 && (
+          <div className="mt-8 p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-red-200 dark:border-red-700">
+            <div className="font-bold text-red-700 dark:text-red-400 mb-4 text-lg">Enlaces a productos recomendados:</div>
+            <ol className="list-decimal pl-6 space-y-2">
+              {supplementsWithLinks.map((supp, idx) => (
+                <li key={idx}>
+                  <a
+                    href={supp.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lg font-semibold text-blue-700 underline hover:text-blue-900 transition"
                   >
                     {supp.name}
                   </a>
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
         )}
       </div>
