@@ -226,16 +226,18 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Información Personal')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">
+                <label htmlFor="age-input" className="block text-gray-600 mb-1">
                   {t('Edad')} <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="age-input"
                   type="number"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition appearance-none"
                   style={{ MozAppearance: 'textfield' }}
                   value={profile.age === 0 ? '' : profile.age}
                   placeholder="0"
                   onChange={e => handleInputChange('age', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                  aria-label={t('Edad')}
                 />
               </div>
               <div>
@@ -287,27 +289,31 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Medidas Corporales')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">
+                <label htmlFor="weight-input" className="block text-gray-600 mb-1">
                   {t('Peso (kg)')} <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="weight-input"
                   type="number"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.weight === 0 ? '' : profile.weight}
                   placeholder="0"
                   onChange={e => handleInputChange('weight', e.target.value === '' ? 0 : parseFloat(e.target.value))}
+                  aria-label={t('Peso (kg)')}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">
+                <label htmlFor="height-input" className="block text-gray-600 mb-1">
                   {t('Altura (cm)')} <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="height-input"
                   type="number"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.height === 0 ? '' : profile.height}
                   placeholder="0"
                   onChange={e => handleInputChange('height', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                  aria-label={t('Altura (cm)')}
                 />
               </div>
             </div>
@@ -318,36 +324,46 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Experiencia Deportiva')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">
+                <label htmlFor="experience-select" className="block text-gray-600 mb-1">
                   {t('Nivel de experiencia')} <span className="text-red-500">*</span>
                 </label>
                 <Select
+                  inputId="experience-select"
+                  aria-label={t('Nivel de experiencia')}
                   classNamePrefix="react-select"
                   options={experienceOptions}
                   value={experienceOptions.find(opt => opt.value === profile.experience)}
                   onChange={opt => handleInputChange('experience', opt?.value || '')}
                   isSearchable={false}
                   styles={selectStyles}
+                  menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
+                  menuPosition="fixed"
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">
+                <label htmlFor="frequency-select" className="block text-gray-600 mb-1">
                   {t('Frecuencia de entrenamiento')} <span className="text-red-500">*</span>
                 </label>
                 <Select
+                  inputId="frequency-select"
+                  aria-label={t('Frecuencia de entrenamiento')}
                   classNamePrefix="react-select"
                   options={frequencyOptions}
                   value={frequencyOptions.find(opt => opt.value === profile.frequency)}
                   onChange={opt => handleInputChange('frequency', opt?.value || '')}
                   isSearchable={false}
                   styles={selectStyles}
+                  menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
+                  menuPosition="fixed"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-gray-600 mb-1">
+                <label htmlFor="sport-select" className="block text-gray-600 mb-1">
                   {t('Deporte principal')} <span className="text-red-500">*</span>
                 </label>
                 <Select
+                  inputId="sport-select"
+                  aria-label={t('Deporte principal')}
                   classNamePrefix="react-select"
                   options={sportOptions}
                   value={sportOptions.find(opt => opt.value === profile.sport) || null}
@@ -367,43 +383,51 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Salud y Objetivos')}</h2>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">{t('Condiciones médicas')}</label>
+                <label htmlFor="medical-conditions-input" className="block text-gray-600 mb-1">{t('Condiciones médicas')}</label>
                 <input
+                  id="medical-conditions-input"
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={medicalConditionsInput}
                   placeholder={t('Ejemplo: Asma, Diabetes')}
                   onChange={e => setMedicalConditionsInput(e.target.value)}
+                  aria-label={t('Condiciones médicas')}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">{t('Alergias')}</label>
+                <label htmlFor="allergies-input" className="block text-gray-600 mb-1">{t('Alergias')}</label>
                 <input
+                  id="allergies-input"
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={allergiesInput}
                   placeholder={t('Ejemplo: Lactosa, Gluten')}
                   onChange={e => setAllergiesInput(e.target.value)}
+                  aria-label={t('Alergias')}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">{t('Objetivo')}</label>
+                <label htmlFor="objective-input" className="block text-gray-600 mb-1">{t('Objetivo')}</label>
                 <input
+                  id="objective-input"
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.objective}
                   placeholder={t('Ejemplo: Ganar masa muscular')}
                   onChange={e => handleInputChange('objective', e.target.value)}
+                  aria-label={t('Objetivo')}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">{t('Suplementos actuales')}</label>
+                <label htmlFor="supplements-input" className="block text-gray-600 mb-1">{t('Suplementos actuales')}</label>
                 <input
+                  id="supplements-input"
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={currentSupplementsInput}
                   placeholder={t('Ejemplo: Proteína, Creatina')}
                   onChange={e => setCurrentSupplementsInput(e.target.value)}
+                  aria-label={t('Suplementos actuales')}
                 />
               </div>
             </div>
