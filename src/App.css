@@ -137,3 +137,11 @@ input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
+
+/* Forzar scroll en el menú de React Select en móvil */
+.react-select__menu-list {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+}

@@ -61,8 +61,16 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   ];
 
   const sportOptions = [
-    { value: '', label: t('Selecciona un deporte') },
-    ...sportProfiles.map(sport => ({ value: sport.name, label: t(sport.name) }))
+    ...sportProfiles.map(sport => ({ value: sport.name, label: t(sport.name) })),
+    { value: 'spacer1', label: ' ' },
+    { value: 'spacer2', label: ' ' },
+    { value: 'spacer3', label: ' ' },
+    { value: 'spacer4', label: ' ' },
+    { value: 'spacer5', label: ' ' },
+    { value: 'spacer6', label: ' ' },
+    { value: 'spacer7', label: ' ' },
+    { value: 'spacer8', label: ' ' },
+    
   ];
 
   const selectStyles = {
@@ -84,6 +92,8 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
       zIndex: 50,
       width: '100%',
       fontSize: '1rem',
+      maxHeight: 200,
+      overflowY: 'auto',
     }),
     option: (base: any, state: any) => ({
       ...base,
@@ -340,10 +350,13 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <Select
                   classNamePrefix="react-select"
                   options={sportOptions}
-                  value={sportOptions.find(opt => opt.value === profile.sport)}
+                  value={sportOptions.find(opt => opt.value === profile.sport) || null}
                   onChange={opt => handleInputChange('sport', opt?.value || '')}
                   isSearchable={false}
                   styles={selectStyles}
+                  menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
+                  menuPosition="fixed"
+                  placeholder={t('Selecciona un deporte')}
                 />
               </div>
             </div>
