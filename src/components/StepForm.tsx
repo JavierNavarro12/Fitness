@@ -342,7 +342,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                   options={sportOptions}
                   value={sportOptions.find(opt => opt.value === profile.sport)}
                   onChange={opt => handleInputChange('sport', opt?.value || '')}
-                  isSearchable={true}
+                  isSearchable={false}
                   styles={selectStyles}
                 />
               </div>
