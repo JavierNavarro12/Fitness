@@ -75,18 +75,37 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-12 sm:py-8 px-4 sm:px-8">
       {/* Wizard Steps */}
-      <div className="flex justify-between mb-8">
+      <div className="flex justify-between items-center mb-8 relative w-full">
         {steps.map((s, i) => {
           const Icon = s.icon as React.FC<{ size?: number }>;
+          const isCompleted = i < step;
+          const isActive = i === step;
           return (
-            <div key={i} className="flex flex-col items-center flex-1">
-              <div className={`rounded-full p-3 mb-2 ${i === step ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                {Icon ? <Icon size={28} /> : null}
+            <React.Fragment key={i}>
+              <div className="flex flex-col items-center flex-1 min-w-0">
+                <div
+                  className={`step-circle transition-colors duration-300 rounded-full mb-1 border-2
+                    ${isCompleted ? 'bg-green-500 border-green-500 text-white'
+                      : isActive ? 'bg-red-600 border-red-600 text-white'
+                      : 'bg-gray-200 border-gray-300 text-gray-500'}
+                    w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-lg sm:text-xl`}
+                >
+                  {Icon ? <Icon size={20} /> : null}
+                </div>
+                <span className={`text-[10px] sm:text-xs font-semibold text-center break-words ${isActive ? 'text-red-600' : isCompleted ? 'text-green-600' : 'text-gray-500'}`}>
+                  {t(s.label)}
+                </span>
               </div>
-              <span className={`text-xs font-semibold ${i === step ? 'text-red-600' : 'text-gray-500'}`}>{t(s.label)}</span>
-            </div>
+              {i < steps.length - 1 && (
+                <div
+                  className={`step-connector transition-all duration-500 h-1 flex-1 mx-0.5 sm:mx-2 rounded-full
+                    ${isCompleted ? 'bg-green-500' : isActive ? 'bg-red-300' : 'bg-gray-200'}`}
+                  style={{ minWidth: 8 }}
+                />
+              )}
+            </React.Fragment>
           );
         })}
       </div>

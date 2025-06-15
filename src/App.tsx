@@ -13,6 +13,7 @@ import { faPencil, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 import Switch from './components/Switch';
 import LanguageSwitch from './components/LanguageSwitch';
+import BottomNav from './components/BottomNav';
 
 const NAVS = [
   { key: 'home', label: 'Inicio' },
@@ -248,7 +249,7 @@ El informe debe ser claro, profesional y fácil de leer.
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
       {/* HEADER */}
-      <header className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40">
+      <header className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40 hidden sm:block">
         <div className="container mx-auto flex flex-row items-center justify-between py-2 px-2 relative">
           {/* Título */}
           <h1 className="text-3xl font-bold text-red-700 dark:text-red-300 mx-auto">NutriMind</h1>
@@ -329,6 +330,11 @@ El informe debe ser claro, profesional y fácil de leer.
         </nav>
       </header>
 
+      {/* Header móvil fijo */}
+      <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-center h-14 sm:hidden">
+        <h1 className="text-2xl font-bold text-red-700 dark:text-red-300">NutriMind</h1>
+      </header>
+
       {/* MODAL PERFIL */}
       {showProfileModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -371,12 +377,23 @@ El informe debe ser claro, profesional y fácil de leer.
       )}
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 container mx-auto px-4 py-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <main className="flex-1 container mx-auto px-4 pt-20 pb-20 sm:pt-8 sm:pb-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {nav === 'home' && (
           <Home onStart={() => setNav('custom')} />
         )}
         {nav === 'custom' && !showSummary && !isEditingProfile && (
-          <StepForm onComplete={handleSaveProfile} />
+          <>
+            {/* Móvil: centrado vertical */}
+            <div className="flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -translate-y-6">
+              <div className="mt-2 w-full flex justify-center">
+                <StepForm onComplete={handleSaveProfile} />
+              </div>
+            </div>
+            {/* Desktop: layout original */}
+            <div className="hidden sm:block">
+              <StepForm onComplete={handleSaveProfile} />
+            </div>
+          </>
         )}
         {nav === 'custom' && showSummary && customProfile && !isEditingProfile && (
           <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 relative">
@@ -422,7 +439,6 @@ El informe debe ser claro, profesional y fácil de leer.
         )}
         {nav === 'reports' && (
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-red-700 mb-6">{t('Mis Informes')}</h2>
             {userReports.length === 0 ? (
               <div className="text-center text-gray-500 py-12">
                 {t('No tienes informes generados aún.')}
@@ -436,8 +452,44 @@ El informe debe ser claro, profesional y fácil de leer.
             )}
           </div>
         )}
+        {nav === 'profile' && (
+          <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mt-4 mb-24 flex flex-col items-center">
+            <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2">
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-gray-400 text-4xl">👤</span>
+              )}
+            </div>
+            <div className="text-center mb-4">
+              <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
+              <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
+            </div>
+            {userProfile && (
+              <ul className="w-full mb-6 space-y-2 text-gray-900 dark:text-gray-100 text-[15px]">
+                <li><b>Edad:</b> {userProfile.age}</li>
+                <li><b>Género:</b> {userProfile.gender === 'male' ? 'Masculino' : userProfile.gender === 'female' ? 'Femenino' : 'Otro'}</li>
+                <li><b>Peso:</b> {userProfile.weight} kg</li>
+                <li><b>Altura:</b> {userProfile.height} cm</li>
+                <li><b>Objetivo:</b> {userProfile.objective}</li>
+                <li><b>Experiencia:</b> {userProfile.experience === 'beginner' ? 'Principiante' : userProfile.experience === 'intermediate' ? 'Intermedio' : 'Avanzado'}</li>
+                <li><b>Frecuencia de entrenamiento:</b> {userProfile.frequency === 'low' ? 'Baja (1-2 veces/semana)' : userProfile.frequency === 'medium' ? 'Media (3-4 veces/semana)' : 'Alta (5+ veces/semana)'}</li>
+                <li><b>Deporte principal:</b> {userProfile.sport}</li>
+                <li><b>Condiciones médicas:</b> {userProfile.medicalConditions.join(', ') || 'Ninguna'}</li>
+                <li><b>Alergias:</b> {userProfile.allergies.join(', ') || 'Ninguna'}</li>
+                <li><b>Suplementos actuales:</b> {userProfile.currentSupplements.join(', ') || 'Ninguno'}</li>
+              </ul>
+            )}
+            <button
+              onClick={() => signOut(auth)}
+              className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-lg transition-all duration-200"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        )}
       </main>
-      <footer className="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12">
+      <footer className="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12 hidden sm:block">
         <div className="container mx-auto text-center">
           <p>© 2024 Fitness Supplements Advisor. {t('Todos los derechos reservados.')}</p>
           <p className="text-sm text-gray-400 dark:text-gray-300 mt-2">
@@ -445,6 +497,8 @@ El informe debe ser claro, profesional y fácil de leer.
           </p>
         </div>
       </footer>
+      {/* Bottom navigation bar solo visible en móvil */}
+      <BottomNav nav={nav} setNav={setNav} user={user} onSignOut={() => signOut(auth)} />
     </div>
   );
 }

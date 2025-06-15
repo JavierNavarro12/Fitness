@@ -36,3 +36,94 @@
     transform: rotate(360deg);
   }
 }
+
+/* Estilos personalizados para la barra de pasos en StepForm */
+.step-circle {
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06);
+  transition: background 0.3s, border 0.3s, color 0.3s;
+}
+
+.step-connector {
+  transition: background 0.5s, width 0.5s;
+  min-width: 8px;
+  max-width: 40px;
+  height: 4px;
+  margin-top: -20px;
+  z-index: 0;
+}
+
+@media (min-width: 640px) {
+  .step-connector {
+    min-width: 16px;
+    max-width: 60px;
+    height: 6px;
+    margin-top: -24px;
+  }
+}
+
+/* Mejoras visuales para la sección de informes */
+.report-card {
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
+  border-radius: 1.25rem;
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  background: #fff;
+}
+.report-header {
+  background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);
+  color: #fff;
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.report-header .icon {
+  font-size: 2rem;
+  margin-right: 0.75rem;
+}
+.report-content {
+  padding: 2rem;
+}
+.report-copy-btn {
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #dc2626;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.report-copy-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.report-products {
+  background: linear-gradient(120deg, #f3f4f6 0%, #fff 100%);
+  border: 1px solid #fecaca;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 8px 0 rgba(220,38,38,0.06);
+}
+.report-products h4 {
+  color: #dc2626;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.report-products ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.report-products li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
