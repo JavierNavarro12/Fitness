@@ -37,6 +37,11 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   });
   const [error, setError] = useState<string | null>(null);
 
+  // Estados locales string para los campos multi-valor
+  const [medicalConditionsInput, setMedicalConditionsInput] = useState(profile.medicalConditions.join(', '));
+  const [allergiesInput, setAllergiesInput] = useState(profile.allergies.join(', '));
+  const [currentSupplementsInput, setCurrentSupplementsInput] = useState(profile.currentSupplements.join(', '));
+
   const genderOptions = [
     { value: 'male', label: t('Masculino') },
     { value: 'female', label: t('Femenino') },
@@ -96,6 +101,15 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   };
 
   const nextStep = () => {
+    // Antes de avanzar, sincroniza los campos multi-valor si estamos en el paso 3
+    if (step === 3) {
+      setProfile(prev => ({
+        ...prev,
+        medicalConditions: medicalConditionsInput.split(',').map(s => s.trim()).filter(Boolean),
+        allergies: allergiesInput.split(',').map(s => s.trim()).filter(Boolean),
+        currentSupplements: currentSupplementsInput.split(',').map(s => s.trim()).filter(Boolean),
+      }));
+    }
     // Validación por paso
     if (step === 0) {
       if (!profile.age || !profile.gender) {
@@ -134,6 +148,13 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Sincroniza los campos multi-valor antes de enviar
+    setProfile(prev => ({
+      ...prev,
+      medicalConditions: medicalConditionsInput.split(',').map(s => s.trim()).filter(Boolean),
+      allergies: allergiesInput.split(',').map(s => s.trim()).filter(Boolean),
+      currentSupplements: currentSupplementsInput.split(',').map(s => s.trim()).filter(Boolean),
+    }));
     // Validación personalizada final
     if (!profile.age || !profile.gender || !profile.weight || !profile.height || !profile.experience || !profile.frequency || !profile.sport || !profile.objective) {
       const missingFields = [];
@@ -337,9 +358,9 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <input
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
-                  value={profile.medicalConditions.join(', ')}
+                  value={medicalConditionsInput}
                   placeholder={t('Ejemplo: Asma, Diabetes')}
-                  onChange={e => handleInputChange('medicalConditions', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                  onChange={e => setMedicalConditionsInput(e.target.value)}
                 />
               </div>
               <div>
@@ -347,9 +368,9 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <input
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
-                  value={profile.allergies.join(', ')}
+                  value={allergiesInput}
                   placeholder={t('Ejemplo: Lactosa, Gluten')}
-                  onChange={e => handleInputChange('allergies', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                  onChange={e => setAllergiesInput(e.target.value)}
                 />
               </div>
               <div>
@@ -367,9 +388,9 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <input
                   type="text"
                   className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
-                  value={profile.currentSupplements.join(', ')}
+                  value={currentSupplementsInput}
                   placeholder={t('Ejemplo: Proteína, Creatina')}
-                  onChange={e => handleInputChange('currentSupplements', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                  onChange={e => setCurrentSupplementsInput(e.target.value)}
                 />
               </div>
             </div>
