@@ -187,7 +187,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
               />
             }
             fileName={`informe-${new Date(report.createdAt).toLocaleDateString()}.pdf`}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto px-0 py-0 sm:px-4 sm:py-2 font-semibold text-xs sm:text-sm gap-1 sm:gap-2 transition shadow-sm border-0"
+            className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition"
             style={{ textDecoration: 'none' }}
           >
             {({ loading }) => loading ? <span className="hidden sm:inline">Generando PDF...</span> : <>

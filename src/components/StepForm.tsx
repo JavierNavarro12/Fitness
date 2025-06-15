@@ -4,6 +4,7 @@ import { FaUser, FaRuler, FaDumbbell, FaHeartbeat } from 'react-icons/fa';
 import { IconType } from 'react-icons';
 import { sportProfiles } from '../data/supplements';
 import { useTranslation } from 'react-i18next';
+import Select from 'react-select';
 
 interface StepFormProps {
   onComplete: (profile: UserProfile) => void;
@@ -36,46 +37,122 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   });
   const [error, setError] = useState<string | null>(null);
 
+  const genderOptions = [
+    { value: 'male', label: t('Masculino') },
+    { value: 'female', label: t('Femenino') },
+    { value: 'other', label: t('Otro') },
+  ];
+
+  const experienceOptions = [
+    { value: 'beginner', label: t('Principiante') },
+    { value: 'intermediate', label: t('Intermedio') },
+    { value: 'advanced', label: t('Avanzado') },
+  ];
+
+  const frequencyOptions = [
+    { value: 'low', label: t('Baja (1-2 veces/semana)') },
+    { value: 'medium', label: t('Media (3-4 veces/semana)') },
+    { value: 'high', label: t('Alta (5+ veces/semana)') },
+  ];
+
+  const sportOptions = [
+    { value: '', label: t('Selecciona un deporte') },
+    ...sportProfiles.map(sport => ({ value: sport.name, label: t(sport.name) }))
+  ];
+
+  const selectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      borderRadius: '0.75rem',
+      backgroundColor: state.isFocused ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)',
+      borderColor: state.isFocused ? '#dc2626' : '#d1d5db',
+      boxShadow: state.isFocused ? '0 0 0 2px #dc262633' : '0 1px 2px 0 rgba(0,0,0,0.04)',
+      minHeight: '44px',
+      fontSize: '1rem',
+      color: '#111827',
+      width: '100%',
+      transition: 'all 0.2s',
+    }),
+    menu: (base: any) => ({
+      ...base,
+      borderRadius: '0.75rem',
+      zIndex: 50,
+      width: '100%',
+      fontSize: '1rem',
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#dc2626' : state.isFocused ? '#fee2e2' : '#fff',
+      color: state.isSelected ? '#fff' : '#111827',
+      fontWeight: state.isSelected ? 700 : 500,
+      fontSize: '1rem',
+      cursor: 'pointer',
+    }),
+  };
+
   const handleInputChange = (field: keyof UserProfile, value: any) => {
     setProfile(prev => ({ ...prev, [field]: value }));
     setError(null);
   };
 
-  const nextStep = () => setStep(s => Math.min(s + 1, steps.length - 1));
+  const nextStep = () => {
+    // Validación por paso
+    if (step === 0) {
+      if (!profile.age || !profile.gender) {
+        const missingFields = [];
+        if (!profile.age) missingFields.push(t('Edad'));
+        if (!profile.gender) missingFields.push(t('Género'));
+        setError(t('Por favor, completa los siguientes campos obligatorios: ') + missingFields.join(', '));
+        return;
+      }
+    }
+    if (step === 1) {
+      if (!profile.weight || !profile.height) {
+        const missingFields = [];
+        if (!profile.weight) missingFields.push(t('Peso'));
+        if (!profile.height) missingFields.push(t('Altura'));
+        setError(t('Por favor, completa los siguientes campos obligatorios: ') + missingFields.join(', '));
+        return;
+      }
+    }
+    if (step === 2) {
+      if (!profile.experience || !profile.frequency || !profile.sport) {
+        const missingFields = [];
+        if (!profile.experience) missingFields.push(t('Nivel de experiencia'));
+        if (!profile.frequency) missingFields.push(t('Frecuencia de entrenamiento'));
+        if (!profile.sport) missingFields.push(t('Deporte principal'));
+        setError(t('Por favor, completa los siguientes campos obligatorios: ') + missingFields.join(', '));
+        return;
+      }
+    }
+    // El último paso solo tiene campos opcionales
+    setError(null);
+    setStep(s => Math.min(s + 1, steps.length - 1));
+  };
+
   const prevStep = () => setStep(s => Math.max(s - 1, 0));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validación personalizada
-    if (!profile.age) {
-      setError(t('Por favor, introduce tu edad'));
-      return;
-    }
-    if (!profile.gender) {
-      setError(t('Por favor, selecciona tu género'));
-      return;
-    }
-    if (!profile.weight) {
-      setError(t('Por favor, introduce tu peso'));
-      return;
-    }
-    if (!profile.height) {
-      setError(t('Por favor, introduce tu altura'));
-      return;
-    }
-    if (!profile.sport) {
-      setError(t('Por favor, selecciona tu deporte principal'));
-      return;
-    }
-    if (!profile.objective) {
-      setError(t('Por favor, introduce tu objetivo'));
+    // Validación personalizada final
+    if (!profile.age || !profile.gender || !profile.weight || !profile.height || !profile.experience || !profile.frequency || !profile.sport || !profile.objective) {
+      const missingFields = [];
+      if (!profile.age) missingFields.push(t('Edad'));
+      if (!profile.gender) missingFields.push(t('Género'));
+      if (!profile.weight) missingFields.push(t('Peso'));
+      if (!profile.height) missingFields.push(t('Altura'));
+      if (!profile.experience) missingFields.push(t('Nivel de experiencia'));
+      if (!profile.frequency) missingFields.push(t('Frecuencia de entrenamiento'));
+      if (!profile.sport) missingFields.push(t('Deporte principal'));
+      if (!profile.objective) missingFields.push(t('Objetivo'));
+      setError(t('Por favor, completa los siguientes campos obligatorios: ') + missingFields.join(', '));
       return;
     }
     onComplete(profile);
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-12 sm:py-8 px-4 sm:px-8">
+    <div className={`max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-12 sm:py-8 px-4 sm:px-8 ${step === 2 ? 'mt-16' : step === 3 ? 'mt-8' : 'mt-24'}`}>
       {/* Wizard Steps */}
       <div className="flex justify-between items-center mb-8 relative w-full">
         {steps.map((s, i) => {
@@ -118,26 +195,58 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Información Personal')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">{t('Edad')}</label>
+                <label className="block text-gray-600 mb-1">
+                  {t('Edad')} <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="number"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
                   value={profile.age === 0 ? '' : profile.age}
                   placeholder="0"
                   onChange={e => handleInputChange('age', e.target.value === '' ? 0 : parseInt(e.target.value))}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">{t('Género')}</label>
-                <select
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                  value={profile.gender}
-                  onChange={e => handleInputChange('gender', e.target.value)}
-                >
-                  <option value="male">{t('Masculino')}</option>
-                  <option value="female">{t('Femenino')}</option>
-                  <option value="other">{t('Otro')}</option>
-                </select>
+                <label className="block text-gray-600 mb-1">
+                  {t('Género')} <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  classNamePrefix="react-select"
+                  options={genderOptions}
+                  value={genderOptions.find(opt => opt.value === profile.gender)}
+                  onChange={opt => handleInputChange('gender', opt?.value || '')}
+                  isSearchable={false}
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      borderRadius: '0.75rem',
+                      backgroundColor: state.isFocused ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)',
+                      borderColor: state.isFocused ? '#dc2626' : '#d1d5db',
+                      boxShadow: state.isFocused ? '0 0 0 2px #dc262633' : '0 1px 2px 0 rgba(0,0,0,0.04)',
+                      minHeight: '44px',
+                      fontSize: '1rem',
+                      color: '#111827',
+                      width: '100%',
+                      transition: 'all 0.2s',
+                    }),
+                    menu: base => ({
+                      ...base,
+                      borderRadius: '0.75rem',
+                      zIndex: 50,
+                      width: '100%',
+                      fontSize: '1rem',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected ? '#dc2626' : state.isFocused ? '#fee2e2' : '#fff',
+                      color: state.isSelected ? '#fff' : '#111827',
+                      fontWeight: state.isSelected ? 700 : 500,
+                      fontSize: '1rem',
+                      cursor: 'pointer',
+                    }),
+                  }}
+                />
               </div>
             </div>
           </>
@@ -147,20 +256,24 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Medidas Corporales')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">{t('Peso (kg)')}</label>
+                <label className="block text-gray-600 mb-1">
+                  {t('Peso (kg)')} <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="number"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.weight === 0 ? '' : profile.weight}
                   placeholder="0"
                   onChange={e => handleInputChange('weight', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">{t('Altura (cm)')}</label>
+                <label className="block text-gray-600 mb-1">
+                  {t('Altura (cm)')} <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="number"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.height === 0 ? '' : profile.height}
                   placeholder="0"
                   onChange={e => handleInputChange('height', e.target.value === '' ? 0 : parseInt(e.target.value))}
@@ -170,58 +283,60 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
           </>
         )}
         {step === 2 && (
-          <>
+          <div className="-mt-1">
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Experiencia Deportiva')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1">{t('Nivel de experiencia')}</label>
-                <select
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                  value={profile.experience}
-                  onChange={e => handleInputChange('experience', e.target.value)}
-                >
-                  <option value="beginner">{t('Principiante')}</option>
-                  <option value="intermediate">{t('Intermedio')}</option>
-                  <option value="advanced">{t('Avanzado')}</option>
-                </select>
+                <label className="block text-gray-600 mb-1">
+                  {t('Nivel de experiencia')} <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  classNamePrefix="react-select"
+                  options={experienceOptions}
+                  value={experienceOptions.find(opt => opt.value === profile.experience)}
+                  onChange={opt => handleInputChange('experience', opt?.value || '')}
+                  isSearchable={false}
+                  styles={selectStyles}
+                />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1">{t('Frecuencia de entrenamiento')}</label>
-                <select
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                  value={profile.frequency}
-                  onChange={e => handleInputChange('frequency', e.target.value)}
-                >
-                  <option value="low">{t('Baja (1-2 veces/semana)')}</option>
-                  <option value="medium">{t('Media (3-4 veces/semana)')}</option>
-                  <option value="high">{t('Alta (5+ veces/semana)')}</option>
-                </select>
+                <label className="block text-gray-600 mb-1">
+                  {t('Frecuencia de entrenamiento')} <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  classNamePrefix="react-select"
+                  options={frequencyOptions}
+                  value={frequencyOptions.find(opt => opt.value === profile.frequency)}
+                  onChange={opt => handleInputChange('frequency', opt?.value || '')}
+                  isSearchable={false}
+                  styles={selectStyles}
+                />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-gray-600 mb-1">{t('Deporte principal')}</label>
-                <select
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
-                  value={profile.sport || ''}
-                  onChange={e => handleInputChange('sport', e.target.value)}
-                >
-                  <option value="">{t('Selecciona un deporte')}</option>
-                  {sportProfiles.map((sport) => (
-                    <option key={sport.name} value={sport.name}>{t(sport.name)}</option>
-                  ))}
-                </select>
+                <label className="block text-gray-600 mb-1">
+                  {t('Deporte principal')} <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  classNamePrefix="react-select"
+                  options={sportOptions}
+                  value={sportOptions.find(opt => opt.value === profile.sport)}
+                  onChange={opt => handleInputChange('sport', opt?.value || '')}
+                  isSearchable={true}
+                  styles={selectStyles}
+                />
               </div>
             </div>
-          </>
+          </div>
         )}
         {step === 3 && (
-          <>
+          <div>
             <h2 className="text-xl font-bold text-red-700 mb-4">{t('Salud y Objetivos')}</h2>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-gray-600 mb-1">{t('Condiciones médicas')}</label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.medicalConditions.join(', ')}
                   placeholder={t('Ejemplo: Asma, Diabetes')}
                   onChange={e => handleInputChange('medicalConditions', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
@@ -231,7 +346,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <label className="block text-gray-600 mb-1">{t('Alergias')}</label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.allergies.join(', ')}
                   placeholder={t('Ejemplo: Lactosa, Gluten')}
                   onChange={e => handleInputChange('allergies', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
@@ -241,7 +356,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <label className="block text-gray-600 mb-1">{t('Objetivo')}</label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.objective}
                   placeholder={t('Ejemplo: Ganar masa muscular')}
                   onChange={e => handleInputChange('objective', e.target.value)}
@@ -251,14 +366,14 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <label className="block text-gray-600 mb-1">{t('Suplementos actuales')}</label>
                 <input
                   type="text"
-                  className="w-full border rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                   value={profile.currentSupplements.join(', ')}
                   placeholder={t('Ejemplo: Proteína, Creatina')}
                   onChange={e => handleInputChange('currentSupplements', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                 />
               </div>
             </div>
-          </>
+          </div>
         )}
         <div className="flex justify-between mt-8">
           {step > 0 && (

@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 import Switch from './components/Switch';
 import LanguageSwitch from './components/LanguageSwitch';
 import BottomNav from './components/BottomNav';
+import SplashScreen from './components/SplashScreen';
+import { FaMoon, FaSun } from 'react-icons/fa';
 
 const NAVS = [
   { key: 'home', label: 'Inicio' },
@@ -37,6 +39,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('darkMode') === 'true';
   });
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -198,8 +201,8 @@ El informe debe ser claro, profesional y fácil de leer.
         userId: user.uid,
       };
 
-      await addDoc(collection(db, 'reports'), newReport);
-      setUserReports(prev => [newReport, ...prev]);
+      const docRef = await addDoc(collection(db, 'reports'), newReport);
+      setUserReports(prev => [{ ...newReport, id: docRef.id }, ...prev]);
       setShowSummary(false);
       setNav('reports');
     } catch (error) {
@@ -253,6 +256,13 @@ El informe debe ser claro, profesional y fácil de leer.
     const lang = localStorage.getItem('lang');
     if (lang) i18n.changeLanguage(lang);
   }, [i18n]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showSplash) return <SplashScreen />;
 
   if (!user) {
     return <Auth onAuthSuccess={() => window.location.reload()} />;
@@ -511,6 +521,16 @@ El informe debe ser claro, profesional y fácil de leer.
       </footer>
       {/* Bottom navigation bar solo visible en móvil */}
       <BottomNav nav={nav} setNav={setNav} user={user} onSignOut={() => signOut(auth)} />
+      {/* Botón de modo oscuro simple solo en móvil, arriba a la derecha */}
+      <div className="fixed top-2 right-4 z-50 sm:hidden">
+        <button
+          onClick={() => setDarkMode(d => !d)}
+          className="bg-gray-200 dark:bg-gray-700 rounded-full p-2 shadow text-xl transition"
+          aria-label="Cambiar modo oscuro"
+        >
+          {darkMode ? FaSun({ className: "text-yellow-400" }) : FaMoon({ className: "text-gray-800" })}
+        </button>
+      </div>
     </div>
   );
 }
