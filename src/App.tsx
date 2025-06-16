@@ -258,7 +258,7 @@ El informe debe ser claro, profesional y fácil de leer.
   }, [i18n]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2000);
+    const timer = setTimeout(() => setShowSplash(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
