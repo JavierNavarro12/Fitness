@@ -54,7 +54,9 @@ function App() {
           // Cargar reportes del usuario
           const reportsQuery = query(collection(db, 'reports'), where('userId', '==', user.uid));
           const reportsSnapshot = await getDocs(reportsQuery);
-          const reports = reportsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Report));
+          const reports = reportsSnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() } as Report))
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           setUserReports(reports);
         } catch (error: any) {
           if (
