@@ -47,7 +47,6 @@ function App() {
   const megaMenuPanelRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const [menuContentOffset, setMenuContentOffset] = useState(0);
   const [menuContentMargin, setMenuContentMargin] = useState(0);
   const [menuPanelTop, setMenuPanelTop] = useState(NAVBAR_HEIGHT);
 
@@ -315,16 +314,6 @@ El informe debe ser claro, profesional y fácil de leer.
       setMenuContentMargin(margin);
     }
   }, [megaMenuOpen, menuPanelTop]);
-
-  useEffect(() => {
-    if (megaMenuOpen && inicioBtnRef.current && megaMenuPanelRef.current) {
-      const btnRect = inicioBtnRef.current.getBoundingClientRect();
-      const panelRect = megaMenuPanelRef.current.getBoundingClientRect();
-      // Calcula la distancia desde el borde izquierdo del panel al centro del botón Inicio
-      const offset = btnRect.left + btnRect.width / 2 - panelRect.left;
-      setMenuContentOffset(offset);
-    }
-  }, [megaMenuOpen, headerHeight]);
 
   useEffect(() => {
     function updateMenuPanelTop() {
