@@ -46,7 +46,6 @@ function App() {
   const inicioBtnRef = useRef<HTMLButtonElement>(null);
   const megaMenuPanelRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
   const [menuContentMargin, setMenuContentMargin] = useState(0);
   const [menuPanelTop, setMenuPanelTop] = useState(NAVBAR_HEIGHT);
 
@@ -293,17 +292,6 @@ El informe debe ser claro, profesional y fácil de leer.
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [megaMenuOpen]);
-
-  useEffect(() => {
-    if (headerRef.current) {
-      setHeaderHeight(headerRef.current.offsetHeight);
-    }
-    const handleResize = () => {
-      if (headerRef.current) setHeaderHeight(headerRef.current.offsetHeight);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     if (megaMenuOpen && inicioBtnRef.current && megaMenuPanelRef.current) {
