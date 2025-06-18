@@ -7,7 +7,7 @@ interface WelcomeProps {
 const Welcome: React.FC<WelcomeProps> = ({ onStart }) => {
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-xl p-8">
-      <h2 className="text-4xl font-bold text-red-600 mb-6">¡Bienvenido a NutriMind!</h2>
+      <h2 className="text-4xl font-bold text-red-600 mb-6">¡Bienvenido a EGN!</h2>
       
       <div className="space-y-4 text-gray-700">
         <p className="text-lg">

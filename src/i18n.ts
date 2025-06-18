@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   es: {
     translation: {
-      'Bienvenido a NutriMind': 'Bienvenido a NutriMind',
+      'Bienvenido a EGN': 'Bienvenido a EGN',
       'Personalización': 'Personalización',
       'Mis informes': 'Mis informes',
       'Inicio': 'Inicio',
@@ -24,7 +24,7 @@ const resources = {
       'Cerrar sesión': 'Cerrar sesión',
       'Idioma': 'Idioma',
       'Modo oscuro': 'Modo oscuro',
-      'NutriMind es tu asesor inteligente de suplementación deportiva. Personaliza tu perfil, genera informes profesionales y resuelve tus dudas con nuestra IA experta. ¡Optimiza tu rendimiento y salud con recomendaciones basadas en tu perfil y objetivos!': 'NutriMind es tu asesor inteligente de suplementación deportiva. Personaliza tu perfil, genera informes profesionales y resuelve tus dudas con nuestra IA experta. ¡Optimiza tu rendimiento y salud con recomendaciones basadas en tu perfil y objetivos!',
+      'EGN es tu asesor inteligente de suplementación deportiva. Personaliza tu perfil, genera informes profesionales y resuelve tus dudas con nuestra IA experta. ¡Optimiza tu rendimiento y salud con recomendaciones basadas en tu perfil y objetivos!': 'EGN es tu asesor inteligente de suplementación deportiva. Personaliza tu perfil, genera informes profesionales y resuelve tus dudas con nuestra IA experta. ¡Optimiza tu rendimiento y salud con recomendaciones basadas en tu perfil y objetivos!',
       '¿Listo para empezar?': '¿Listo para empezar?',
       'Ve a la sección': 'Ve a la sección',
       'para crear tu perfil y obtener recomendaciones personalizadas.': 'para crear tu perfil y obtener recomendaciones personalizadas.',
@@ -92,7 +92,7 @@ const resources = {
   },
   en: {
     translation: {
-      'Bienvenido a NutriMind': 'Welcome to NutriMind',
+      'Bienvenido a EGN': 'Welcome to EGN',
       'Personalización': 'Personalization',
       'Mis informes': 'My reports',
       'Inicio': 'Home',
@@ -112,7 +112,7 @@ const resources = {
       'Cerrar sesión': 'Log out',
       'Idioma': 'Language',
       'Modo oscuro': 'Dark mode',
-      'NutriMind es tu asesor inteligente de suplementación deportiva. Personaliza tu perfil, genera informes profesionales y resuelve tus dudas con nuestra IA experta. ¡Optimiza tu rendimiento y salud con recomendaciones basadas en tu perfil y objetivos!': 'NutriMind is your smart sports supplementation advisor. Personalize your profile, generate professional reports, and solve your doubts with our expert AI. Optimize your performance and health with recommendations based on your profile and goals!',
+      'EGN es tu asesor inteligente de suplementación deportiva. Personaliza tu perfil, genera informes profesionales y resuelve tus dudas con nuestra IA experta. ¡Optimiza tu rendimiento y salud con recomendaciones basadas en tu perfil y objetivos!': 'EGN is your smart sports supplementation advisor. Personalize your profile, generate professional reports, and solve your doubts with our expert AI. Optimize your performance and health with recommendations based on your profile and goals!',
       '¿Listo para empezar?': 'Ready to start?',
       'Ve a la sección': 'Go to the',
       'para crear tu perfil y obtener recomendaciones personalizadas.': 'to create your profile and get personalized recommendations.',

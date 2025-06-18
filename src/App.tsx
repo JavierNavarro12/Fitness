@@ -22,7 +22,9 @@ const NAVS = [
   { key: 'custom', label: 'Personalización' },
   { key: 'reports', label: 'Mis informes' },
 ];
-//
+// NAVBAR_HEIGHT constante para altura base del header
+const NAVBAR_HEIGHT = 64;
+
 function App() {
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -40,6 +42,14 @@ function App() {
     return localStorage.getItem('darkMode') === 'true';
   });
   const [showSplash, setShowSplash] = useState(true);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const inicioBtnRef = useRef<HTMLButtonElement>(null);
+  const megaMenuPanelRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [menuContentOffset, setMenuContentOffset] = useState(0);
+  const [menuContentMargin, setMenuContentMargin] = useState(0);
+  const [menuPanelTop, setMenuPanelTop] = useState(NAVBAR_HEIGHT);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -264,6 +274,70 @@ El informe debe ser claro, profesional y fácil de leer.
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (!megaMenuOpen) return;
+    function handleMouseMove(e: MouseEvent) {
+      const btn = inicioBtnRef.current;
+      const panel = megaMenuPanelRef.current;
+      if (!btn || !panel) return;
+      const btnRect = btn.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const { clientX: x, clientY: y } = e;
+      const overBtn =
+        x >= btnRect.left && x <= btnRect.right && y >= btnRect.top && y <= btnRect.bottom;
+      const overPanel =
+        x >= panelRect.left && x <= panelRect.right && y >= panelRect.top && y <= panelRect.bottom;
+      if (!overBtn && !overPanel) {
+        setMegaMenuOpen(false);
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [megaMenuOpen]);
+
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+    const handleResize = () => {
+      if (headerRef.current) setHeaderHeight(headerRef.current.offsetHeight);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (megaMenuOpen && inicioBtnRef.current && megaMenuPanelRef.current) {
+      const btnRect = inicioBtnRef.current.getBoundingClientRect();
+      const panelRect = megaMenuPanelRef.current.getBoundingClientRect();
+      // Alinea el contenido con el borde izquierdo del botón Inicio
+      const margin = btnRect.left - panelRect.left;
+      setMenuContentMargin(margin);
+    }
+  }, [megaMenuOpen, menuPanelTop]);
+
+  useEffect(() => {
+    if (megaMenuOpen && inicioBtnRef.current && megaMenuPanelRef.current) {
+      const btnRect = inicioBtnRef.current.getBoundingClientRect();
+      const panelRect = megaMenuPanelRef.current.getBoundingClientRect();
+      // Calcula la distancia desde el borde izquierdo del panel al centro del botón Inicio
+      const offset = btnRect.left + btnRect.width / 2 - panelRect.left;
+      setMenuContentOffset(offset);
+    }
+  }, [megaMenuOpen, headerHeight]);
+
+  useEffect(() => {
+    function updateMenuPanelTop() {
+      if (megaMenuOpen && inicioBtnRef.current) {
+        const btnRect = inicioBtnRef.current.getBoundingClientRect();
+        setMenuPanelTop(btnRect.bottom);
+      }
+    }
+    updateMenuPanelTop();
+    window.addEventListener('resize', updateMenuPanelTop);
+    return () => window.removeEventListener('resize', updateMenuPanelTop);
+  }, [megaMenuOpen]);
+
   if (showSplash) return <SplashScreen />;
 
   if (!user) {
@@ -273,12 +347,89 @@ El informe debe ser claro, profesional y fácil de leer.
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
       {/* HEADER */}
-      <header className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-40 hidden sm:block">
-        <div className="container mx-auto flex flex-row items-center justify-between py-2 px-2 relative">
-          {/* Título */}
-          <h1 className="text-3xl font-bold text-red-700 dark:text-red-300 mx-auto">NutriMind</h1>
-          {/* Avatar arriba derecha */}
-          <div className="absolute right-4 top-1 flex items-center" ref={userMenuRef}>
+      <header
+        ref={headerRef}
+        className="bg-white dark:bg-gray-900 sticky top-0 z-50 hidden sm:block relative"
+      >
+        <div className="max-w-7xl mx-auto flex flex-row items-center justify-between py-2 px-4 relative" style={{ minHeight: NAVBAR_HEIGHT }}>
+          {/* EGN a la izquierda */}
+          <span className="text-3xl font-bold text-red-700 dark:text-red-300">EGN</span>
+          {/* NAVBAR en el centro */}
+          <nav className="flex-1 flex justify-center">
+            <ul className="flex gap-8 items-center">
+              <li className="relative group">
+                <div
+                  className="relative"
+                  onMouseEnter={() => setMegaMenuOpen(true)}
+                  onMouseLeave={() => setMegaMenuOpen(false)}
+                  style={{ display: 'inline-block' }}
+                >
+                  <button
+                    ref={inicioBtnRef}
+                    className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                    onClick={() => {
+                      setNav('home');
+                      setShowSummary(false);
+                      setMegaMenuOpen(false);
+                    }}
+                  >
+                    {t('Inicio')}
+                  </button>
+                  {megaMenuOpen && (
+                    <>
+                      {/* Overlay blur más agresivo */}
+                      <div className="fixed inset-0 z-40" style={{ top: menuPanelTop }}>
+                        <div className="w-full h-full backdrop-blur-[16px] bg-white/70" />
+                      </div>
+                    <div
+                      ref={megaMenuPanelRef}
+                      className="fixed left-0 w-screen bg-white dark:bg-gray-900 animate-fade-in z-50"
+                      style={{ borderRadius: 0, top: menuPanelTop }}
+                    >
+                      <div className="max-w-7xl mx-auto px-8 py-8" style={{ marginLeft: menuContentMargin > 0 ? menuContentMargin : undefined }}>
+                        {[
+                          { key: 'conocenos', label: 'Conócenos', nav: 'home' },
+                          { key: 'deportes', label: 'Deportes', nav: 'custom' },
+                          { key: 'salud', label: 'Salud y Bienestar', nav: 'salud' },
+                          { key: 'grasa', label: 'Quema de Grasa', nav: 'grasa' },
+                          { key: 'mujer', label: 'Específico Mujer', nav: 'mujer' },
+                          { key: 'cognitivo', label: 'Rendimiento Cognitivo', nav: 'cognitivo' },
+                        ].map(section => (
+                          <button
+                            key={section.key}
+                            className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-red-600 transition-colors py-2 text-left w-full"
+                            onClick={() => { setNav(section.nav); setMegaMenuOpen(false); }}
+                          >
+                            {section.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    </>
+                  )}
+                </div>
+              </li>
+              {NAVS.filter(tab => tab.key !== 'home').map(tab => (
+                <li key={tab.key} className="flex">
+                  <button
+                    className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                    onClick={() => {
+                      setNav(tab.key);
+                      setShowSummary(false);
+                      if (tab.key === 'custom') {
+                        setCustomProfile(null);
+                        setIsEditingProfile(false);
+                      }
+                    }}
+                  >
+                    {t(tab.label)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          {/* Perfil a la derecha */}
+          <div className="flex items-center" ref={userMenuRef}>
             <button
               className="flex items-center focus:outline-none"
               onClick={() => setShowUserMenu((v) => !v)}
@@ -330,33 +481,11 @@ El informe debe ser claro, profesional y fácil de leer.
             )}
           </div>
         </div>
-        {/* NAVBAR centrado debajo del header */}
-        <nav className="w-full flex justify-center bg-white dark:bg-gray-900 shadow-sm border-t border-gray-100 dark:border-gray-800">
-          <ul className="flex w-full justify-between md:justify-center px-4 md:px-0 gap-2 md:gap-16 py-2 items-center">
-            {NAVS.map(tab => (
-              <li key={tab.key} className="flex-1 md:flex-none flex justify-center">
-                <button
-                  className={`whitespace-nowrap text-sm md:text-lg font-semibold px-1 md:px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
-                  onClick={() => {
-                    setNav(tab.key);
-                    setShowSummary(false);
-                    if (tab.key === 'custom') {
-                      setCustomProfile(null);
-                      setIsEditingProfile(false);
-                    }
-                  }}
-                >
-                  {t(tab.label)}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </header>
 
       {/* Header móvil fijo */}
       <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-center h-14 sm:hidden">
-        <h1 className="text-2xl font-bold text-red-700 dark:text-red-300">NutriMind</h1>
+        <h1 className="text-2xl font-bold text-red-700 dark:text-red-300">EGN</h1>
       </header>
 
       {/* MODAL PERFIL */}

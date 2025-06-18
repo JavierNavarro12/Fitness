@@ -64,7 +64,7 @@ const ChatAI: React.FC = () => {
       {open && (
         <div className="fixed bottom-24 right-6 z-50 w-80 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in">
           <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
-            NutriMind IA
+            EGN IA
             <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
           </div>
           <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
