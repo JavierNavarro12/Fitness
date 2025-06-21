@@ -1,29 +1,84 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense, lazy } from 'react';
 import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { UserProfile, Report } from './types';
-import Auth from './components/Auth';
-import Home from './components/Home';
-import StepForm from './components/StepForm';
-import ReportView from './components/ReportView';
-import './App.css';
+import Auth from './components/auth/Auth';
+import SplashScreen from './components/layout/SplashScreen';
+import Footer from './components/layout/Footer';
+import SearchPanel from './components/ui/SearchPanel';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { searchableContent } from './data/content';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
-import Switch from './components/Switch';
-import LanguageSwitch from './components/LanguageSwitch';
-import BottomNav from './components/BottomNav';
-import SplashScreen from './components/SplashScreen';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import Switch from './components/ui/Switch';
+import LanguageSwitch from './components/ui/LanguageSwitch';
+import BottomNav from './components/layout/BottomNav';
+import MobileMenu from './components/layout/MobileMenu';
+
+// Lazy load page components
+const HomePage = lazy(() => import('./components/pages/HomePage'));
+const Deportes = lazy(() => import('./components/pages/Deportes'));
+const Salud = lazy(() => import('./components/pages/Salud'));
+const Grasa = lazy(() => import('./components/pages/Grasa'));
+const Mujer = lazy(() => import('./components/pages/Mujer'));
+const Cognitivo = lazy(() => import('./components/pages/Cognitivo'));
+const FAQ = lazy(() => import('./components/pages/FAQ'));
+const Terms = lazy(() => import('./components/pages/Terms'));
+const Privacy = lazy(() => import('./components/pages/Privacy'));
+const Contact = lazy(() => import('./components/pages/Contact'));
+const StepForm = lazy(() => import('./components/reports/StepForm'));
+const ReportView = lazy(() => import('./components/reports/ReportView'));
 
 const NAVS = [
-  { key: 'home', label: 'Inicio' },
-  { key: 'custom', label: 'Personalización' },
-  { key: 'reports', label: 'Mis informes' },
+  { key: 'home', label: 'nav.home' },
+  { key: 'custom', label: 'nav.custom' },
+  { key: 'reports', label: 'nav.reports' },
 ];
+
+const megaMenuItems = [
+  { key: 'conocenos', label: 'megaMenu.conocenos', nav: 'home' },
+  { key: 'deportes', label: 'megaMenu.deportes', nav: 'deportes' },
+  { key: 'salud', label: 'megaMenu.salud', nav: 'salud' },
+  { key: 'grasa', label: 'megaMenu.grasa', nav: 'grasa' },
+  { key: 'mujer', label: 'megaMenu.mujer', nav: 'mujer' },
+  { key: 'cognitivo', label: 'megaMenu.cognitivo', nav: 'cognitivo' },
+];
+
 // NAVBAR_HEIGHT constante para altura base del header
 const NAVBAR_HEIGHT = 64;
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center h-full flex-1 py-20">
+    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-red-600"></div>
+  </div>
+);
+
+const SearchIcon = ({ className = '' }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+  </svg>
+);
+
+const HamburgerIcon = ({ className = '' }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+  </svg>
+);
+
+const UserCircleIcon = ({ className = '' }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const LogoutIcon = ({ className = '' }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+  </svg>
+);
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -46,10 +101,25 @@ function App() {
   const inicioBtnRef = useRef<HTMLButtonElement>(null);
   const megaMenuPanelRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  const [menuContentMargin, setMenuContentMargin] = useState(0);
   const [menuPanelTop, setMenuPanelTop] = useState(NAVBAR_HEIGHT);
+  const [menuContentMargin, setMenuContentMargin] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<typeof searchableContent>([]);
+  const [searchResultToHighlight, setSearchResultToHighlight] = useState<{ page: string; id: string } | null>(null);
+  const searchPanelRef = useRef<HTMLDivElement>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const navChangedBySearch = useRef(false);
 
   useEffect(() => {
+    // Inicializar AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true,
+      offset: 100
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
@@ -100,6 +170,17 @@ function App() {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchPanelRef.current && !searchPanelRef.current.contains(event.target as Node)) {
+        setSearchQuery('');
+        setSearchResults([]);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [searchResults]);
 
   const handleLogout = async () => {
     try {
@@ -294,26 +375,73 @@ El informe debe ser claro, profesional y fácil de leer.
   }, [megaMenuOpen]);
 
   useEffect(() => {
-    if (megaMenuOpen && inicioBtnRef.current && megaMenuPanelRef.current) {
-      const btnRect = inicioBtnRef.current.getBoundingClientRect();
-      const panelRect = megaMenuPanelRef.current.getBoundingClientRect();
-      // Alinea el contenido con el borde izquierdo del botón Inicio
-      const margin = btnRect.left - panelRect.left;
-      setMenuContentMargin(margin);
-    }
-  }, [megaMenuOpen, menuPanelTop]);
-
-  useEffect(() => {
-    function updateMenuPanelTop() {
+    function updateMenuPanelPosition() {
       if (megaMenuOpen && inicioBtnRef.current) {
         const btnRect = inicioBtnRef.current.getBoundingClientRect();
         setMenuPanelTop(btnRect.bottom);
+        setMenuContentMargin(btnRect.left - 16);
       }
     }
-    updateMenuPanelTop();
-    window.addEventListener('resize', updateMenuPanelTop);
-    return () => window.removeEventListener('resize', updateMenuPanelTop);
+    updateMenuPanelPosition();
+    window.addEventListener('resize', updateMenuPanelPosition);
+    return () => window.removeEventListener('resize', updateMenuPanelPosition);
   }, [megaMenuOpen]);
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    const lowerCaseQuery = query.toLowerCase();
+    const results = searchableContent.filter(
+      (item) =>
+        item.title.toLowerCase().includes(lowerCaseQuery) ||
+        item.content.toLowerCase().includes(lowerCaseQuery)
+    );
+    setSearchResults(results);
+  };
+
+  const handleResultClick = (result: { category: string; id: string; }) => {
+    navChangedBySearch.current = true;
+    setNav(result.category);
+    setSearchResultToHighlight({ page: result.category, id: result.id });
+    setSearchQuery('');
+    setSearchResults([]);
+    setShowSummary(false);
+  };
+
+  useEffect(() => {
+    if (navChangedBySearch.current) {
+      // Navegación por búsqueda, el otro efecto se encargará del scroll.
+      navChangedBySearch.current = false;
+    } else {
+      // Navegación normal, scroll al principio.
+      window.scrollTo(0, 0);
+    }
+  }, [nav]);
+
+  const handleMobileNav = (nav: string) => {
+    setNav(nav);
+    setShowSummary(false);
+  };
+
+  useEffect(() => {
+    if (searchResultToHighlight) {
+      // Pequeño delay para asegurar que el componente de la página se ha renderizado
+      setTimeout(() => {
+        const element = document.getElementById(searchResultToHighlight.id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('highlight-search-result');
+          setTimeout(() => {
+            element.classList.remove('highlight-search-result');
+          }, 2500); // Duración del resaltado
+        }
+      }, 100);
+    }
+  }, [searchResultToHighlight]);
 
   if (showSplash) return <SplashScreen />;
 
@@ -322,148 +450,198 @@ El informe debe ser claro, profesional y fácil de leer.
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col pb-20 sm:pb-0">
       {/* HEADER */}
       <header
         ref={headerRef}
-        className="bg-white dark:bg-gray-900 sticky top-0 z-50 hidden sm:block relative"
+        className="bg-white dark:bg-gray-900 sticky top-0 z-50 hidden sm:block"
       >
-        <div className="max-w-7xl mx-auto flex flex-row items-center justify-between py-2 px-4 relative" style={{ minHeight: NAVBAR_HEIGHT }}>
-          {/* EGN a la izquierda */}
-          <span className="text-3xl font-bold text-red-700 dark:text-red-300">EGN</span>
-          {/* NAVBAR en el centro */}
-          <nav className="flex-1 flex justify-center">
-            <ul className="flex gap-8 items-center">
-              <li className="relative group">
-                <div
-                  className="relative"
-                  onMouseEnter={() => setMegaMenuOpen(true)}
-                  onMouseLeave={() => setMegaMenuOpen(false)}
-                  style={{ display: 'inline-block' }}
-                >
-                  <button
-                    ref={inicioBtnRef}
-                    className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
-                    onClick={() => {
-                      setNav('home');
-                      setShowSummary(false);
-                      setMegaMenuOpen(false);
-                    }}
+        <div className="max-w-7xl mx-auto flex items-center py-2 px-4" style={{ minHeight: NAVBAR_HEIGHT }}>
+          {/* Izquierda: Logo y Nav */}
+          <div className="flex items-center flex-shrink-0">
+            <span className="text-3xl font-bold text-red-700 dark:text-red-300">EGN</span>
+            <nav className="ml-48">
+              <ul className="flex gap-8 items-center">
+                <li className="static group">
+                  <div
+                    onMouseEnter={() => setMegaMenuOpen(true)}
+                    onMouseLeave={() => setMegaMenuOpen(false)}
+                    style={{ display: 'inline-block' }}
                   >
-                    {t('Inicio')}
-                  </button>
-                  {megaMenuOpen && (
-                    <>
-                      {/* Overlay blur más agresivo */}
-                      <div className="fixed inset-0 z-40" style={{ top: menuPanelTop }}>
-                        <div className="w-full h-full backdrop-blur-[16px] bg-white/70" />
-                      </div>
-                    <div
-                      ref={megaMenuPanelRef}
-                      className="fixed left-0 w-screen bg-white dark:bg-gray-900 animate-fade-in z-50"
-                      style={{ borderRadius: 0, top: menuPanelTop }}
+                    <button
+                      ref={inicioBtnRef}
+                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                      onClick={() => {
+                        setNav('home');
+                        setShowSummary(false);
+                        setMegaMenuOpen(false);
+                      }}
                     >
-                      <div className="max-w-7xl mx-auto px-8 py-8" style={{ marginLeft: menuContentMargin > 0 ? menuContentMargin : undefined }}>
-                        {[
-                          { key: 'conocenos', label: 'Conócenos', nav: 'home' },
-                          { key: 'deportes', label: 'Deportes', nav: 'custom' },
-                          { key: 'salud', label: 'Salud y Bienestar', nav: 'salud' },
-                          { key: 'grasa', label: 'Quema de Grasa', nav: 'grasa' },
-                          { key: 'mujer', label: 'Específico Mujer', nav: 'mujer' },
-                          { key: 'cognitivo', label: 'Rendimiento Cognitivo', nav: 'cognitivo' },
-                        ].map(section => (
-                          <button
-                            key={section.key}
-                            className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-red-600 transition-colors py-2 text-left w-full"
-                            onClick={() => { setNav(section.nav); setMegaMenuOpen(false); }}
-                          >
-                            {section.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    </>
+                      {t('Inicio')}
+                    </button>
+                    {megaMenuOpen && (
+                      <>
+                        {/* Overlay blur más agresivo */}
+                        <div className="fixed inset-0 z-40" style={{ top: menuPanelTop }}>
+                          <div className="w-full h-full backdrop-blur-[16px] bg-white/70" />
+                        </div>
+                        <div
+                          ref={megaMenuPanelRef}
+                          className="fixed left-0 w-screen bg-white dark:bg-gray-900 animate-fade-in z-50"
+                          style={{ borderRadius: 0, top: menuPanelTop }}
+                        >
+                          <div className="px-4 py-8" style={{ marginLeft: menuContentMargin }}>
+                            {megaMenuItems.map(section => (
+                              <button
+                                key={section.key}
+                                className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-red-600 transition-colors py-2 text-left w-full"
+                                onClick={() => { setNav(section.nav); setMegaMenuOpen(false); }}
+                              >
+                                {t(section.label)}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </li>
+                {NAVS.filter(tab => tab.key !== 'home').map(tab => (
+                  <li key={tab.key} className="flex">
+                    <button
+                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                      onClick={() => {
+                        setNav(tab.key);
+                        setShowSummary(false);
+                        if (tab.key === 'custom') {
+                          setCustomProfile(null);
+                          setIsEditingProfile(false);
+                        }
+                      }}
+                    >
+                      {t(tab.label)}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Spacer para empujar a la derecha */}
+          <div className="flex-grow" />
+
+          {/* Derecha: Búsqueda y Perfil */}
+          <div className="flex items-center flex-shrink-0" ref={searchPanelRef}>
+            <SearchPanel
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              results={searchResults}
+              onResultClick={handleResultClick}
+            />
+            <div className="flex items-center ml-20 relative" ref={userMenuRef}>
+              <button
+                className="flex items-center focus:outline-none"
+                onClick={() => setShowUserMenu((v) => !v)}
+                aria-label="Menú de usuario"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-red-200">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-gray-400 text-xl">👤</span>
                   )}
                 </div>
-              </li>
-              {NAVS.filter(tab => tab.key !== 'home').map(tab => (
-                <li key={tab.key} className="flex">
-                  <button
-                    className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
-                    onClick={() => {
-                      setNav(tab.key);
-                      setShowSummary(false);
-                      if (tab.key === 'custom') {
-                        setCustomProfile(null);
-                        setIsEditingProfile(false);
-                      }
-                    }}
-                  >
-                    {t(tab.label)}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          {/* Perfil a la derecha */}
-          <div className="flex items-center" ref={userMenuRef}>
-            <button
-              className="flex items-center focus:outline-none"
-              onClick={() => setShowUserMenu((v) => !v)}
-              aria-label="Menú de usuario"
-            >
-              <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-red-200">
-                {user?.photoURL ? (
-                  <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-gray-400 text-xl">👤</span>
-                )}
-              </div>
-              <span className="ml-2 font-semibold text-gray-800 dark:text-gray-100 text-base hidden md:block">
-                {user?.displayName || user?.email?.split('@')[0]}
-              </span>
-              <FontAwesomeIcon icon={faChevronDown} className="ml-1 text-gray-500 hidden md:block" />
-            </button>
-            {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border z-50 animate-fade-in">
-                <button
-                  className="w-full text-center px-4 py-3 hover:bg-gray-100 text-gray-700 rounded-t-lg"
-                  onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
-                >
-                  {t('Ver perfil')}
-                </button>
-                <button
-                  className="w-full text-center px-4 py-3 hover:bg-gray-100 text-gray-700"
-                  onClick={handleLogout}
-                >
-                  {t('Cerrar sesión')}
-                </button>
-                <div className="border-t border-gray-200 my-1" />
-                <div className="flex flex-row gap-3 justify-center items-center px-4 py-2">
-                  <div style={{ transform: 'scale(0.8)' }}>
-                    <LanguageSwitch
-                      checked={i18n.language === 'en'}
-                      onChange={() => {
-                        const newLang = i18n.language === 'es' ? 'en' : 'es';
-                        i18n.changeLanguage(newLang);
-                        localStorage.setItem('lang', newLang);
-                      }}
-                    />
+                <span className="ml-2 font-semibold text-gray-800 dark:text-gray-100 text-base hidden md:block">
+                  {user?.displayName || user?.email?.split('@')[0]}
+                </span>
+                <FontAwesomeIcon icon={faChevronDown} className="ml-1 text-gray-500 hidden md:block" />
+              </button>
+              {showUserMenu && (
+                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 overflow-hidden z-50 animate-fade-in">
+                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{user?.displayName || user?.email?.split('@')[0]}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
                   </div>
-                  <div style={{ transform: 'scale(0.8)' }}>
-                    <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
+
+                  <div className="py-2">
+                    <button
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
+                    >
+                      <UserCircleIcon className="w-5 h-5" />
+                      <span>{t('Ver perfil')}</span>
+                    </button>
+                    <button
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
+                      onClick={handleLogout}
+                    >
+                      <LogoutIcon className="w-5 h-5" />
+                      <span>{t('Cerrar sesión')}</span>
+                    </button>
+                  </div>
+                  
+                  <div className="bg-gray-50 dark:bg-gray-900/50 p-2">
+                    <div className="flex justify-center items-center gap-2">
+                      <LanguageSwitch
+                        checked={i18n.language === 'en'}
+                        onChange={() => {
+                          const newLang = i18n.language === 'es' ? 'en' : 'es';
+                          i18n.changeLanguage(newLang);
+                          localStorage.setItem('lang', newLang);
+                        }}
+                      />
+                      <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Header móvil fijo */}
-      <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-center h-14 sm:hidden">
-        <h1 className="text-2xl font-bold text-red-700 dark:text-red-300">EGN</h1>
+      <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-between h-14 sm:hidden px-6">
+        <span
+          className="text-2xl font-bold text-red-700 dark:text-red-300 cursor-pointer"
+          onClick={() => setNav('home')}
+        >
+          EGN
+        </span>
+        <div className="flex items-center gap-4">
+            <button onClick={() => setShowMobileSearch(v => !v)} className="text-gray-600 dark:text-gray-300">
+                <SearchIcon className="h-6 w-6" />
+            </button>
+            <button onClick={() => setMobileMenuOpen(true)} className="text-gray-600 dark:text-gray-300">
+                <HamburgerIcon className="h-7 w-7" />
+            </button>
+        </div>
       </header>
+      
+      {/* Mobile Search Overlay */}
+      {showMobileSearch && (
+        <div className="fixed top-14 left-0 w-full bg-white dark:bg-gray-800 p-4 z-30 shadow-md sm:hidden animate-fade-in-down">
+           <SearchPanel
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              results={searchResults}
+              onResultClick={(result) => {
+                handleResultClick(result);
+                setShowMobileSearch(false);
+              }}
+            />
+        </div>
+      )}
+
+      <MobileMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        onNavigate={handleMobileNav}
+        menuItems={megaMenuItems}
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode(v => !v)}
+        i18n={i18n}
+      />
 
       {/* MODAL PERFIL */}
       {showProfileModal && (
@@ -507,138 +685,133 @@ El informe debe ser claro, profesional y fácil de leer.
       )}
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 container mx-auto px-4 pt-20 pb-20 sm:pt-8 sm:pb-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        {nav === 'home' && (
-          <Home onStart={() => setNav('custom')} />
-        )}
-        {nav === 'custom' && !showSummary && !isEditingProfile && (
-          <>
-            {/* Móvil: centrado vertical */}
-            <div className="flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -translate-y-6">
-              <div className="mt-2 w-full flex justify-center">
-                <StepForm onComplete={handleSaveProfile} />
+      <main className="flex-1 flex flex-col container mx-auto px-4 pt-20 sm:pt-8 pb-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-aos="fade-up">
+        <Suspense fallback={<LoadingSpinner />}>
+          {nav === 'home' && <HomePage onStart={() => setNav('custom')} />}
+          {nav === 'deportes' && <Deportes />}
+          {nav === 'salud' && <Salud />}
+          {nav === 'grasa' && <Grasa />}
+          {nav === 'mujer' && <Mujer />}
+          {nav === 'cognitivo' && <Cognitivo />}
+          {nav === 'faq' && <FAQ setNav={setNav} />}
+          {nav === 'terms' && <Terms />}
+          {nav === 'privacy' && <Privacy />}
+          {nav === 'contact' && <Contact />}
+
+          {nav === 'custom' && !showSummary && !isEditingProfile && (
+            <>
+              {/* Móvil: centrado vertical */}
+              <div className="flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -translate-y-6">
+                <div className="mt-2 w-full flex justify-center">
+                  <StepForm onComplete={handleSaveProfile} />
+                </div>
               </div>
+              {/* Desktop: layout original */}
+              <div className="hidden sm:flex items-center justify-center min-h-[calc(100vh-8rem)]">
+            <StepForm onComplete={handleSaveProfile} />
+              </div>
+            </>
+          )}
+          {nav === 'custom' && showSummary && customProfile && !isEditingProfile && (
+            <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 relative">
+              <button
+                className="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl"
+                title={t('Editar perfil')}
+                onClick={() => setIsEditingProfile(true)}
+              >
+                <FontAwesomeIcon icon={faPencil} size="lg" />
+              </button>
+              <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('Resumen de tu perfil')}</h2>
+              <ul className="mb-6 space-y-2 text-gray-900 dark:text-gray-100">
+                <li><b>{t('Edad')}:</b> {customProfile.age}</li>
+                <li><b>{t('Género')}:</b> {mapGender(customProfile.gender)}</li>
+                <li><b>{t('Peso')}:</b> {customProfile.weight} kg</li>
+                <li><b>{t('Altura')}:</b> {customProfile.height} cm</li>
+                <li><b>{t('Objetivo')}:</b> {customProfile.objective}</li>
+                <li><b>{t('Experiencia')}:</b> {mapExperience(customProfile.experience)}</li>
+                <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(customProfile.frequency)}</li>
+                <li><b>{t('Deporte principal')}:</b> {customProfile.sport}</li>
+                <li><b>{t('Condiciones médicas')}:</b> {customProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
+                <li><b>{t('Alergias')}:</b> {customProfile.allergies.join(', ') || t('Ninguna')}</li>
+                <li><b>{t('Suplementos actuales')}:</b> {customProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
+              </ul>
+              <button
+                onClick={handleGenerateReport}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg text-xl transition-all duration-200 w-full"
+                disabled={generating}
+              >
+                {generating ? t('Generando informe...') : t('Generar informe')}
+              </button>
             </div>
-            {/* Desktop: layout original */}
-            <div className="hidden sm:block">
-          <StepForm onComplete={handleSaveProfile} />
-            </div>
-          </>
-        )}
-        {nav === 'custom' && showSummary && customProfile && !isEditingProfile && (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 relative">
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl"
-              title={t('Editar perfil')}
-              onClick={() => setIsEditingProfile(true)}
-            >
-              <FontAwesomeIcon icon={faPencil} size="lg" />
-            </button>
-            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('Resumen de tu perfil')}</h2>
-            <ul className="mb-6 space-y-2 text-gray-900 dark:text-gray-100">
-              <li><b>{t('Edad')}:</b> {customProfile.age}</li>
-              <li><b>{t('Género')}:</b> {mapGender(customProfile.gender)}</li>
-              <li><b>{t('Peso')}:</b> {customProfile.weight} kg</li>
-              <li><b>{t('Altura')}:</b> {customProfile.height} cm</li>
-              <li><b>{t('Objetivo')}:</b> {customProfile.objective}</li>
-              <li><b>{t('Experiencia')}:</b> {mapExperience(customProfile.experience)}</li>
-              <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(customProfile.frequency)}</li>
-              <li><b>{t('Deporte principal')}:</b> {customProfile.sport}</li>
-              <li><b>{t('Condiciones médicas')}:</b> {customProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
-              <li><b>{t('Alergias')}:</b> {customProfile.allergies.join(', ') || t('Ninguna')}</li>
-              <li><b>{t('Suplementos actuales')}:</b> {customProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
-            </ul>
-            <button
-              onClick={handleGenerateReport}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg text-xl transition-all duration-200 w-full"
-              disabled={generating}
-            >
-              {generating ? t('Generando informe...') : t('Generar informe')}
-            </button>
-          </div>
-        )}
-        {nav === 'custom' && isEditingProfile && customProfile && (
-          <StepForm
-            onComplete={(profile) => {
-              setCustomProfile(profile);
-              setIsEditingProfile(false);
-            }}
-            initialProfile={customProfile}
-            isEditing={true}
-          />
-        )}
-        {nav === 'reports' && (
-          <div className="max-w-4xl mx-auto">
-            {userReports.length === 0 ? (
-              <div className="text-center text-gray-500 py-12">
-                {t('No tienes informes generados aún.')}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {userReports.map((report, index) => (
-                  <ReportView key={index} report={report} onDelete={handleDeleteReport} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-        {nav === 'profile' && (
-          <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mt-4 mb-24 flex flex-col items-center">
-            <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+          )}
+          {nav === 'custom' && isEditingProfile && customProfile && (
+            <StepForm
+              onComplete={(profile) => {
+                setCustomProfile(profile);
+                setIsEditingProfile(false);
+              }}
+              initialProfile={customProfile}
+              isEditing={true}
+            />
+          )}
+          {nav === 'reports' && (
+            <div className="max-w-4xl mx-auto">
+              {userReports.length === 0 ? (
+                <div className="text-center text-gray-500 py-12">
+                  {t('No tienes informes generados aún.')}
+                </div>
               ) : (
-                <span className="text-gray-400 text-4xl">👤</span>
+                <div className="space-y-6">
+                  {userReports.map((report, index) => (
+                    <ReportView key={index} report={report} onDelete={handleDeleteReport} />
+                  ))}
+                </div>
               )}
             </div>
-            <div className="text-center mb-4">
-              <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
-              <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
+          )}
+          {nav === 'profile' && (
+            <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mt-4 mb-24 flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
+              <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2" data-aos="zoom-in" data-aos-delay="300">
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-gray-400 text-4xl">👤</span>
+                )}
+              </div>
+              <div className="text-center mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
+                <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
+              </div>
+              {userProfile && (
+                <ul className="w-full mb-6 space-y-2 text-gray-900 dark:text-gray-100 text-[15px]" data-aos="fade-up" data-aos-delay="500">
+                  <li data-aos="fade-left" data-aos-delay="600"><b>{t('Edad')}:</b> {userProfile.age}</li>
+                  <li data-aos="fade-left" data-aos-delay="700"><b>{t('Género')}:</b> {userProfile.gender === 'male' ? t('Masculino') : userProfile.gender === 'female' ? t('Femenino') : t('Otro')}</li>
+                  <li data-aos="fade-left" data-aos-delay="800"><b>{t('Peso')}:</b> {userProfile.weight} kg</li>
+                  <li data-aos="fade-left" data-aos-delay="900"><b>{t('Altura')}:</b> {userProfile.height} cm</li>
+                  <li data-aos="fade-left" data-aos-delay="1000"><b>{t('Objetivo')}:</b> {userProfile.objective}</li>
+                  <li data-aos="fade-left" data-aos-delay="1100"><b>{t('Experiencia')}:</b> {userProfile.experience === 'beginner' ? t('Principiante') : userProfile.experience === 'intermediate' ? t('Intermedio') : t('Avanzado')}</li>
+                  <li data-aos="fade-left" data-aos-delay="1200"><b>{t('Frecuencia de entrenamiento')}:</b> {userProfile.frequency === 'low' ? t('Baja (1-2 veces/semana)') : userProfile.frequency === 'medium' ? t('Media (3-4 veces/semana)') : t('Alta (5+ veces/semana)')}</li>
+                  <li data-aos="fade-left" data-aos-delay="1300"><b>{t('Deporte principal')}:</b> {userProfile.sport}</li>
+                  <li data-aos="fade-left" data-aos-delay="1400"><b>{t('Condiciones médicas')}:</b> {userProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
+                  <li data-aos="fade-left" data-aos-delay="1500"><b>{t('Alergias')}:</b> {userProfile.allergies.join(', ') || t('Ninguna')}</li>
+                  <li data-aos="fade-left" data-aos-delay="1600"><b>{t('Suplementos actuales')}:</b> {userProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
+                </ul>
+              )}
+              <button
+                onClick={() => signOut(auth)}
+                className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-lg transition-all duration-200"
+                data-aos="zoom-in"
+                data-aos-delay="1700"
+              >
+                {t('Cerrar sesión')}
+              </button>
             </div>
-            {userProfile && (
-              <ul className="w-full mb-6 space-y-2 text-gray-900 dark:text-gray-100 text-[15px]">
-                <li><b>Edad:</b> {userProfile.age}</li>
-                <li><b>Género:</b> {userProfile.gender === 'male' ? 'Masculino' : userProfile.gender === 'female' ? 'Femenino' : 'Otro'}</li>
-                <li><b>Peso:</b> {userProfile.weight} kg</li>
-                <li><b>Altura:</b> {userProfile.height} cm</li>
-                <li><b>Objetivo:</b> {userProfile.objective}</li>
-                <li><b>Experiencia:</b> {userProfile.experience === 'beginner' ? 'Principiante' : userProfile.experience === 'intermediate' ? 'Intermedio' : 'Avanzado'}</li>
-                <li><b>Frecuencia de entrenamiento:</b> {userProfile.frequency === 'low' ? 'Baja (1-2 veces/semana)' : userProfile.frequency === 'medium' ? 'Media (3-4 veces/semana)' : 'Alta (5+ veces/semana)'}</li>
-                <li><b>Deporte principal:</b> {userProfile.sport}</li>
-                <li><b>Condiciones médicas:</b> {userProfile.medicalConditions.join(', ') || 'Ninguna'}</li>
-                <li><b>Alergias:</b> {userProfile.allergies.join(', ') || 'Ninguna'}</li>
-                <li><b>Suplementos actuales:</b> {userProfile.currentSupplements.join(', ') || 'Ninguno'}</li>
-              </ul>
-            )}
-            <button
-              onClick={() => signOut(auth)}
-              className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-lg transition-all duration-200"
-            >
-              Cerrar sesión
-            </button>
-          </div>
-        )}
+          )}
+        </Suspense>
       </main>
-      <footer className="bg-gray-800 dark:bg-gray-900 text-white p-6 mt-12 hidden sm:block">
-        <div className="container mx-auto text-center">
-          <p>© 2024 Fitness Supplements Advisor. {t('Todos los derechos reservados.')}</p>
-          <p className="text-sm text-gray-400 dark:text-gray-300 mt-2">
-            {t('Las recomendaciones son sugerencias generales. Consulta con un profesional de la salud antes de comenzar cualquier suplementación.')}
-          </p>
-        </div>
-      </footer>
+      <Footer setNav={setNav} />
       {/* Bottom navigation bar solo visible en móvil */}
       <BottomNav nav={nav} setNav={setNav} user={user} onSignOut={() => signOut(auth)} />
-      {/* Botón de modo oscuro simple solo en móvil, arriba a la derecha */}
-      <div className="fixed top-2 right-4 z-50 sm:hidden">
-        <button
-          onClick={() => setDarkMode(d => !d)}
-          className="bg-gray-200 dark:bg-gray-700 rounded-full p-2 shadow text-xl transition"
-          aria-label="Cambiar modo oscuro"
-        >
-          {darkMode ? FaSun({ className: "text-yellow-400" }) : FaMoon({ className: "text-gray-800" })}
-        </button>
-      </div>
     </div>
   );
 }

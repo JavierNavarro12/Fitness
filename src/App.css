@@ -145,3 +145,10 @@ input[type='number'] {
   touch-action: pan-y !important;
   -webkit-overflow-scrolling: touch !important;
 }
+
+.highlight-search-result {
+  transition: all 0.5s ease-in-out;
+  box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0.6); /* Sombra roja más prominente */
+  transform: scale(1.02); /* Un ligero aumento de tamaño */
+  border-radius: 1.5rem; /* Asegura que el borde redondeado se mantenga */
+}

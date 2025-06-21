@@ -1,3 +1,14 @@
 [build]
   command = "npm install --legacy-peer-deps && npm run build"
-  publish = "build" 
+  publish = "build"
+
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
+
+[functions]
+  node_bundler = "esbuild"
+  
+[forms]
+  [forms.contact]
+    to = ["endlessgoalsnutrition@gmail.com"]
+    subject = "Nuevo mensaje desde el formulario de EGN Fitness" 
