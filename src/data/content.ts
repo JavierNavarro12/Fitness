@@ -111,7 +111,7 @@ export const searchableContent = [
     category: 'cognitivo',
     title: 'cognitivo.adaptogenos.title',
     content: 'cognitivo.adaptogenos.content',
-    image: 'https://images.pexels.com/photos/4195403/pexels-photo-4195403.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+    image: 'https://images.pexels.com/photos/1051838/pexels-photo-1051838.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   },
   {
     id: 'salud-cerebral-largo-plazo',
@@ -125,6 +125,6 @@ export const searchableContent = [
     category: 'cognitivo',
     title: 'cognitivo.estrategias.title',
     content: 'cognitivo.estrategias.content',
-    image: ''
+    image: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   },
 ]; 

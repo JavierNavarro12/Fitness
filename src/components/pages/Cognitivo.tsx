@@ -4,7 +4,7 @@ import { searchableContent } from '../../data/content';
 
 const cognitivoData = searchableContent.filter(item => item.category === 'cognitivo');
 
-const CognitivoCard = ({ id, title, content, icon }: { id: string, title: string, content: string, icon: React.ReactNode }) => {
+const CognitivoCard = ({ id, title, content, icon, image }: { id: string, title: string, content: string, icon: React.ReactNode, image: string }) => {
   const { t } = useTranslation();
   const translatedContent = t(content);
   const puntosClave = translatedContent.split('.').map((s: string) => {
@@ -13,21 +13,28 @@ const CognitivoCard = ({ id, title, content, icon }: { id: string, title: string
   }).filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
 
   return (
-    <div id={id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-shadow duration-300 p-6 flex flex-col items-center text-center" data-aos="fade-up">
-      <div className="text-purple-500 mb-4" data-aos="zoom-in">{icon}</div>
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3" data-aos="fade-right">{t(title)}</h3>
-      {puntosClave.length > 0 ? (
-        <ul className="space-y-3 text-left text-gray-600 dark:text-gray-300">
-          {puntosClave.map((punto: { nombre: string, desc: string }, index: number) => (
-            <li key={index} className="flex items-start" data-aos="fade-left" data-aos-delay={100 + index * 100}>
-              <span className="text-purple-500 mr-2 mt-1">&#10148;</span>
-              <span><strong>{punto.nombre}:</strong> {punto.desc}</span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-600 dark:text-gray-300 text-center" data-aos="fade-up" data-aos-delay="100">{translatedContent}</p>
-      )}
+    <div id={id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-shadow duration-300 flex flex-col overflow-hidden" data-aos="fade-up">
+      <div className="h-40">
+        <img src={image} alt={t(title)} className="w-full h-full object-cover" />
+      </div>
+      <div className="p-6 flex flex-col items-center text-center flex-1">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="text-purple-500" data-aos="zoom-in">{icon}</div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white" data-aos="fade-right">{t(title)}</h3>
+          </div>
+          {puntosClave.length > 0 ? (
+            <ul className="space-y-3 text-left text-gray-600 dark:text-gray-300">
+              {puntosClave.map((punto: { nombre: string, desc: string }, index: number) => (
+                <li key={index} className="flex items-start" data-aos="fade-left" data-aos-delay={100 + index * 100}>
+                  <span className="text-green-500 mr-2 mt-1">✓</span>
+                  <span><strong>{punto.nombre}:</strong> {punto.desc}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 dark:text-gray-300 text-center" data-aos="fade-up" data-aos-delay="100">{translatedContent}</p>
+          )}
+      </div>
     </div>
   );
 };
@@ -41,11 +48,12 @@ const Cognitivo = () => {
     <svg key="shield" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
       <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
     </svg>,
-    <svg key="brain" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
-      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
+    <svg key="beaker" className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+      <path fillRule="evenodd" d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z" clipRule="evenodd" />
+      <path fillRule="evenodd" d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.133 2.845a.75.75 0 01.936-.528l1.752.875a.75.75 0 010 1.352l-1.752.875a.75.75 0 01-.936-.528v-1.047z" clipRule="evenodd" />
     </svg>,
-    <svg key="book" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    <svg key="check-circle" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
     </svg>
   ];
 
