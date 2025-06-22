@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { searchableContent } from '../../data/content';
+import { searchableContent } from '../../../data/content';
 
 const grasaData = searchableContent.filter(item => item.category === 'grasa');
 
@@ -37,8 +37,33 @@ const GrasaCard = ({ id, title, image, content, icon }: { id: string, title: str
 );
 };
 
-const Grasa = () => {
+interface PageProps {
+  itemToHighlight: { page: string; id: string } | null;
+  onHighlightComplete: () => void;
+}
+
+const Grasa: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (itemToHighlight && itemToHighlight.page === 'grasa') {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(itemToHighlight.id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.style.transition = 'all 0.3s ease-in-out';
+          element.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.5)';
+          setTimeout(() => {
+            element.style.boxShadow = '';
+          }, 2000);
+        }
+        onHighlightComplete();
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [itemToHighlight, onHighlightComplete]);
+
   const cardIcons = [
     <svg key="fire" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
       <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.08-2.747c-.33-.33-.654-.715-.927-1.157a3.117 3.117 0 00-.235-1.559zM5.5 14a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" clipRule="evenodd"/>

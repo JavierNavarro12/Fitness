@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { searchableContent } from '../../data/content';
+import { searchableContent } from '../../../data/content';
 
 const mujerData = searchableContent.filter(item => item.category === 'mujer');
 
@@ -35,8 +35,33 @@ const MujerCard = ({ id, title, image, content, icon }: { id: string, title: str
 );
 };
 
-const Mujer = () => {
+interface PageProps {
+  itemToHighlight: { page: string; id: string } | null;
+  onHighlightComplete: () => void;
+}
+
+const Mujer: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (itemToHighlight && itemToHighlight.page === 'mujer') {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(itemToHighlight.id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.style.transition = 'all 0.3s ease-in-out';
+          element.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.5)';
+          setTimeout(() => {
+            element.style.boxShadow = '';
+          }, 2000);
+        }
+        onHighlightComplete();
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [itemToHighlight, onHighlightComplete]);
+
   const cardIcons = [
     <svg key="heart" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
       <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"/>
@@ -55,17 +80,19 @@ const Mujer = () => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
-      <div className="text-center mb-16" data-aos="fade-in">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-pink-600 dark:text-pink-400 tracking-tight">{t('Salud y Bienestar para la Mujer')}</h1>
-        <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
-          {t('Las necesidades nutricionales y fisiológicas de las mujeres son únicas. Esta sección se enfoca en suplementos clave para apoyar la salud hormonal, ósea y el bienestar general femenino.')}
-        </p>
-      </div>
+      <div className="relative rounded-2xl overflow-hidden mb-12 shadow-lg" data-aos="fade-in">
+        <div className="text-center mb-16" data-aos="fade-in">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-pink-600 dark:text-pink-400 tracking-tight">{t('Salud y Bienestar para la Mujer')}</h1>
+          <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
+            {t('Las necesidades nutricionales y fisiológicas de las mujeres son únicas. Esta sección se enfoca en suplementos clave para apoyar la salud hormonal, ósea y el bienestar general femenino.')}
+          </p>
+        </div>
 
-      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {mujerData.map((item, index) => (
-          <MujerCard {...item} icon={cardIcons[index]} key={item.id} />
-        ))}
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {mujerData.map((item, index) => (
+            <MujerCard {...item} icon={cardIcons[index]} key={item.id} />
+          ))}
+        </div>
       </div>
     </div>
   );

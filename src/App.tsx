@@ -3,34 +3,41 @@ import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteD
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { UserProfile, Report } from './types';
-import Auth from './components/auth/Auth';
+import Auth from './components/features/auth/Auth';
 import SplashScreen from './components/layout/SplashScreen';
 import Footer from './components/layout/Footer';
-import SearchPanel from './components/ui/SearchPanel';
+import SearchPanel from './components/shared/SearchPanel';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { searchableContent } from './data/content';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
-import Switch from './components/ui/Switch';
-import LanguageSwitch from './components/ui/LanguageSwitch';
+import Switch from './components/shared/Switch';
+import LanguageSwitch from './components/shared/LanguageSwitch';
 import BottomNav from './components/layout/BottomNav';
 import MobileMenu from './components/layout/MobileMenu';
 
+interface SearchResult {
+  id: string;
+  category: string;
+  title: string;
+  snippet?: string;
+}
+
 // Lazy load page components
-const HomePage = lazy(() => import('./components/pages/HomePage'));
-const Deportes = lazy(() => import('./components/pages/Deportes'));
-const Salud = lazy(() => import('./components/pages/Salud'));
-const Grasa = lazy(() => import('./components/pages/Grasa'));
-const Mujer = lazy(() => import('./components/pages/Mujer'));
-const Cognitivo = lazy(() => import('./components/pages/Cognitivo'));
-const FAQ = lazy(() => import('./components/pages/FAQ'));
-const Terms = lazy(() => import('./components/pages/Terms'));
-const Privacy = lazy(() => import('./components/pages/Privacy'));
-const Contact = lazy(() => import('./components/pages/Contact'));
-const StepForm = lazy(() => import('./components/reports/StepForm'));
-const ReportView = lazy(() => import('./components/reports/ReportView'));
+const HomePage = lazy(() => import('./components/features/pages/HomePage'));
+const Deportes = lazy(() => import('./components/features/pages/Deportes'));
+const Salud = lazy(() => import('./components/features/pages/Salud'));
+const Grasa = lazy(() => import('./components/features/pages/Grasa'));
+const Mujer = lazy(() => import('./components/features/pages/Mujer'));
+const Cognitivo = lazy(() => import('./components/features/pages/Cognitivo'));
+const FAQ = lazy(() => import('./components/features/pages/FAQ'));
+const Terms = lazy(() => import('./components/features/pages/Terms'));
+const Privacy = lazy(() => import('./components/features/pages/Privacy'));
+const Contact = lazy(() => import('./components/features/pages/Contact'));
+const StepForm = lazy(() => import('./components/features/reports/StepForm'));
+const ReportView = lazy(() => import('./components/features/reports/ReportView'));
 
 const NAVS = [
   { key: 'home', label: 'nav.home' },
@@ -104,7 +111,7 @@ function App() {
   const [menuPanelTop, setMenuPanelTop] = useState(NAVBAR_HEIGHT);
   const [menuContentMargin, setMenuContentMargin] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<typeof searchableContent>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchResultToHighlight, setSearchResultToHighlight] = useState<{ page: string; id: string } | null>(null);
   const searchPanelRef = useRef<HTMLDivElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -159,6 +166,8 @@ function App() {
   // Cerrar el menú si se hace clic fuera
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (showMobileSearch) return;
+
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setShowUserMenu(false);
       }
@@ -169,10 +178,12 @@ function App() {
       document.removeEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showUserMenu]);
+  }, [showUserMenu, showMobileSearch]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (showMobileSearch) return;
+
       if (searchPanelRef.current && !searchPanelRef.current.contains(event.target as Node)) {
         setSearchQuery('');
         setSearchResults([]);
@@ -180,7 +191,21 @@ function App() {
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [searchResults]);
+  }, [searchResults, showMobileSearch]);
+
+  useEffect(() => {
+    if (navChangedBySearch.current) {
+      // Si la navegación fue por búsqueda, el efecto de abajo se encargará.
+      return;
+    }
+    // Para navegación normal, ir al principio.
+    window.scrollTo(0, 0);
+  }, [nav]);
+
+  const handleHighlightComplete = () => {
+    navChangedBySearch.current = false;
+    setSearchResultToHighlight(null);
+  };
 
   const handleLogout = async () => {
     try {
@@ -394,12 +419,41 @@ El informe debe ser claro, profesional y fácil de leer.
       return;
     }
 
-    const lowerCaseQuery = query.toLowerCase();
-    const results = searchableContent.filter(
-      (item) =>
-        item.title.toLowerCase().includes(lowerCaseQuery) ||
-        item.content.toLowerCase().includes(lowerCaseQuery)
-    );
+    const lowerCaseQuery = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    const results = searchableContent.reduce((acc: SearchResult[], item) => {
+      const translatedTitle = t(item.title).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const translatedContent = t(item.content);
+      const normalizedContent = translatedContent.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      const titleMatch = translatedTitle.includes(lowerCaseQuery);
+      const contentMatch = normalizedContent.includes(lowerCaseQuery);
+
+      if (titleMatch || contentMatch) {
+        let snippet = '';
+        if (contentMatch) {
+          const sentences = translatedContent.split('. ');
+          const matchingSentence = sentences.find((sentence: string) =>
+            sentence.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(lowerCaseQuery)
+          );
+          if (matchingSentence) {
+            snippet = matchingSentence.trim();
+            if(!snippet.endsWith('.')) {
+              snippet += '.';
+            }
+          }
+        }
+        
+        acc.push({
+          id: item.id,
+          category: item.category,
+          title: item.title,
+          snippet: snippet || undefined,
+        });
+      }
+      return acc;
+    }, []);
+
     setSearchResults(results);
   };
 
@@ -412,36 +466,10 @@ El informe debe ser claro, profesional y fácil de leer.
     setShowSummary(false);
   };
 
-  useEffect(() => {
-    if (navChangedBySearch.current) {
-      // Navegación por búsqueda, el otro efecto se encargará del scroll.
-      navChangedBySearch.current = false;
-    } else {
-      // Navegación normal, scroll al principio.
-      window.scrollTo(0, 0);
-    }
-  }, [nav]);
-
   const handleMobileNav = (nav: string) => {
     setNav(nav);
     setShowSummary(false);
   };
-
-  useEffect(() => {
-    if (searchResultToHighlight) {
-      // Pequeño delay para asegurar que el componente de la página se ha renderizado
-      setTimeout(() => {
-        const element = document.getElementById(searchResultToHighlight.id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('highlight-search-result');
-          setTimeout(() => {
-            element.classList.remove('highlight-search-result');
-          }, 2500); // Duración del resaltado
-        }
-      }, 100);
-    }
-  }, [searchResultToHighlight]);
 
   if (showSplash) return <SplashScreen />;
 
@@ -625,7 +653,7 @@ El informe debe ser claro, profesional y fácil de leer.
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
               results={searchResults}
-              onResultClick={(result) => {
+              onResultClick={(result: { id: string; category: string; }) => {
                 handleResultClick(result);
                 setShowMobileSearch(false);
               }}
@@ -688,11 +716,11 @@ El informe debe ser claro, profesional y fácil de leer.
       <main className="flex-1 flex flex-col container mx-auto px-4 pt-20 sm:pt-8 pb-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-aos="fade-up">
         <Suspense fallback={<LoadingSpinner />}>
         {nav === 'home' && <HomePage onStart={() => setNav('custom')} />}
-        {nav === 'deportes' && <Deportes />}
-        {nav === 'salud' && <Salud />}
-        {nav === 'grasa' && <Grasa />}
-        {nav === 'mujer' && <Mujer />}
-        {nav === 'cognitivo' && <Cognitivo />}
+        {nav === 'deportes' && <Deportes itemToHighlight={searchResultToHighlight} onHighlightComplete={handleHighlightComplete} />}
+        {nav === 'salud' && <Salud itemToHighlight={searchResultToHighlight} onHighlightComplete={handleHighlightComplete} />}
+        {nav === 'grasa' && <Grasa itemToHighlight={searchResultToHighlight} onHighlightComplete={handleHighlightComplete} />}
+        {nav === 'mujer' && <Mujer itemToHighlight={searchResultToHighlight} onHighlightComplete={handleHighlightComplete} />}
+        {nav === 'cognitivo' && <Cognitivo itemToHighlight={searchResultToHighlight} onHighlightComplete={handleHighlightComplete} />}
           {nav === 'faq' && <FAQ setNav={setNav} />}
           {nav === 'terms' && <Terms />}
           {nav === 'privacy' && <Privacy />}

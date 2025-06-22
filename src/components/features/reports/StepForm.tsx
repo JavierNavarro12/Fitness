@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { UserProfile } from '../../types';
+import { UserProfile } from '../../../types';
 import { FaUser, FaRuler, FaDumbbell, FaHeartbeat } from 'react-icons/fa';
 import { IconType } from 'react-icons';
-import { sportProfiles } from '../../data/formData';
+import { sportProfiles } from '../../../data/formData';
 import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 

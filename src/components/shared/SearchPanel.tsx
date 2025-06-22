@@ -5,7 +5,7 @@ import { FaSearch } from 'react-icons/fa';
 interface SearchPanelProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  results: Array<{ id: string; category: string; title: string }>;
+  results: Array<{ id: string; category: string; title: string; snippet?: string; }>;
   onResultClick: (result: { id: string; category: string; }) => void;
 }
 
@@ -63,6 +63,11 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
                 >
                   <span className="font-semibold text-gray-800 dark:text-gray-100">{t(result.title)}</span>
                   <span className="block text-sm text-red-600 dark:text-red-400 capitalize">{t(result.category)}</span>
+                  {result.snippet && (
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 italic truncate">
+                      {result.snippet}
+                    </p>
+                  )}
                 </button>
               </li>
             ))}

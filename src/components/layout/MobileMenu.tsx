@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Switch from '../ui/Switch';
-import LanguageSwitch from '../ui/LanguageSwitch';
+import Switch from '../shared/Switch';
+import LanguageSwitch from '../shared/LanguageSwitch';
 
 // Define the type for a menu item
 interface MenuItem {

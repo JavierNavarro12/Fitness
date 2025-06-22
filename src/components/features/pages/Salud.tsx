@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { searchableContent } from '../../data/content';
+import { searchableContent } from '../../../data/content';
 
 const saludData = searchableContent.filter(item => item.category === 'salud');
 
@@ -35,8 +35,33 @@ const SaludCard = ({ id, title, image, content }: { id: string, title: string, i
   )
 };
 
-const Salud = () => {
+interface PageProps {
+  itemToHighlight: { page: string; id: string } | null;
+  onHighlightComplete: () => void;
+}
+
+const Salud: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (itemToHighlight && itemToHighlight.page === 'salud') {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(itemToHighlight.id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.style.transition = 'all 0.3s ease-in-out';
+          element.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.5)';
+          setTimeout(() => {
+            element.style.boxShadow = '';
+          }, 2000);
+        }
+        onHighlightComplete();
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [itemToHighlight, onHighlightComplete]);
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
       <div className="relative rounded-2xl overflow-hidden mb-12 shadow-lg" data-aos="fade-in">
