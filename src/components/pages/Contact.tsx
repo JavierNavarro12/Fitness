@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// Helper function to encode form data for Netlify
+const encode = (data: { [key: string]: any }) => {
+  return Object.keys(data)
+    .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+    .join("&");
+}
+
 const Contact: React.FC = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -18,13 +25,10 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setSubmissionStatus('sending');
 
-    const form = e.target as HTMLFormElement;
-    const data = new FormData(form);
-
     fetch('/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(data as any).toString(),
+      body: encode({ 'form-name': 'contact', ...formData }),
     })
       .then(() => {
         setSubmissionStatus('success');
