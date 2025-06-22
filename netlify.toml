@@ -2,12 +2,13 @@
   command = "npm install --legacy-peer-deps && npm run build"
   publish = "build"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
 
-[functions]
-  node_bundler = "esbuild"
-  
 [forms]
   [forms.contact]
     to = ["endlessgoalsnutrition@gmail.com"]
