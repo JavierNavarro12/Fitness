@@ -11,6 +11,9 @@
 # production
 /build
 
+# Generated files
+/public/sitemap.xml
+
 # misc
 .DS_Store
 .env.local
