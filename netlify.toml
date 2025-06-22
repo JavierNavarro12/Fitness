@@ -6,6 +6,9 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+[functions."openai-chat"]
+  timeout = 25 # seconds
+
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
 
