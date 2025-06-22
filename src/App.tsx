@@ -46,7 +46,6 @@ const NAVS = [
 ];
 
 const megaMenuItems = [
-  { key: 'conocenos', label: 'megaMenu.conocenos', nav: 'home' },
   { key: 'deportes', label: 'megaMenu.deportes', nav: 'deportes' },
   { key: 'salud', label: 'megaMenu.salud', nav: 'salud' },
   { key: 'grasa', label: 'megaMenu.grasa', nav: 'grasa' },
@@ -340,21 +339,21 @@ El informe debe ser claro, profesional y fácil de leer.
 
   // Funciones de mapeo para mostrar los valores traducidos
   const mapGender = (g: string) => {
-    if (g === 'male') return t('Masculino');
-    if (g === 'female') return t('Femenino');
-    if (g === 'other') return t('Otro');
+    if (g === 'male') return t('gender.male');
+    if (g === 'female') return t('gender.female');
+    if (g === 'other') return t('gender.other');
     return g;
   };
   const mapExperience = (e: string) => {
-    if (e === 'beginner') return t('Principiante');
-    if (e === 'intermediate') return t('Intermedio');
-    if (e === 'advanced') return t('Avanzado');
+    if (e === 'beginner') return t('experience.beginner');
+    if (e === 'intermediate') return t('experience.intermediate');
+    if (e === 'advanced') return t('experience.advanced');
     return e;
   };
   const mapFrequency = (f: string) => {
-    if (f === 'low') return t('Baja (1-2 veces/semana)');
-    if (f === 'medium') return t('Media (3-4 veces/semana)');
-    if (f === 'high') return t('Alta (5+ veces/semana)');
+    if (f === 'low') return t('frequency.low');
+    if (f === 'medium') return t('frequency.medium');
+    if (f === 'high') return t('frequency.high');
     return f;
   };
 
@@ -488,8 +487,19 @@ El informe debe ser claro, profesional y fácil de leer.
           {/* Izquierda: Logo y Nav */}
           <div className="flex items-center flex-shrink-0">
             <span className="text-3xl font-bold text-red-700 dark:text-red-300">EGN</span>
-            <nav className="ml-48">
+            <nav className="ml-24">
               <ul className="flex gap-8 items-center">
+                <li key="home" className="flex">
+                  <button
+                    className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                    onClick={() => {
+                      setNav('home');
+                      setShowSummary(false);
+                    }}
+                  >
+                    {t('nav.home')}
+                  </button>
+                </li>
                 <li className="static group">
                   <div
                     onMouseEnter={() => setMegaMenuOpen(true)}
@@ -498,14 +508,9 @@ El informe debe ser claro, profesional y fácil de leer.
                   >
                     <button
                       ref={inicioBtnRef}
-                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
-                      onClick={() => {
-                        setNav('home');
-                        setShowSummary(false);
-                        setMegaMenuOpen(false);
-                      }}
+                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 text-red-700 hover:bg-red-100`}
                     >
-                      {t('Inicio')}
+                      {t('nav.categories')}
                     </button>
                     {megaMenuOpen && (
                       <>
@@ -597,14 +602,14 @@ El informe debe ser claro, profesional y fácil de leer.
                     onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
                   >
                       <UserCircleIcon className="w-5 h-5" />
-                      <span>{t('Ver perfil')}</span>
+                      <span>{t('userDropdown.viewProfile')}</span>
                   </button>
                   <button
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
                     onClick={handleLogout}
                   >
                       <LogoutIcon className="w-5 h-5" />
-                      <span>{t('Cerrar sesión')}</span>
+                      <span>{t('userDropdown.logout')}</span>
                   </button>
                   </div>
                   
@@ -681,7 +686,7 @@ El informe debe ser claro, profesional y fácil de leer.
             >
               ×
             </button>
-            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('Mi Perfil')}</h2>
+            <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('profileSummary.title')}</h2>
             <div className="flex flex-col items-center mb-6">
               <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2">
                 {user?.photoURL ? (
@@ -695,17 +700,17 @@ El informe debe ser claro, profesional y fácil de leer.
             </div>
             {userProfile && (
               <ul className="space-y-2 text-gray-700 dark:text-gray-200">
-                <li><b>{t('Edad')}:</b> {userProfile.age}</li>
-                <li><b>{t('Género')}:</b> {mapGender(userProfile.gender)}</li>
-                <li><b>{t('Peso')}:</b> {userProfile.weight} kg</li>
-                <li><b>{t('Altura')}:</b> {userProfile.height} cm</li>
-                <li><b>{t('Objetivo')}:</b> {userProfile.objective}</li>
-                <li><b>{t('Experiencia')}:</b> {mapExperience(userProfile.experience)}</li>
-                <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(userProfile.frequency)}</li>
-                <li><b>{t('Deporte principal')}:</b> {t(userProfile.sport)}</li>
-                <li><b>{t('Condiciones médicas')}:</b> {userProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
-                <li><b>{t('Alergias')}:</b> {userProfile.allergies.join(', ') || t('Ninguna')}</li>
-                <li><b>{t('Suplementos actuales')}:</b> {userProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
+                <li><b>{t('profileSummary.age')}:</b> {userProfile.age}</li>
+                <li><b>{t('profileSummary.gender')}:</b> {mapGender(userProfile.gender)}</li>
+                <li><b>{t('profileSummary.weight')}:</b> {userProfile.weight} kg</li>
+                <li><b>{t('profileSummary.height')}:</b> {userProfile.height} cm</li>
+                <li><b>{t('profileSummary.objective')}:</b> {userProfile.objective}</li>
+                <li><b>{t('profileSummary.experience')}:</b> {mapExperience(userProfile.experience)}</li>
+                <li><b>{t('profileSummary.trainingFrequency')}:</b> {mapFrequency(userProfile.frequency)}</li>
+                <li><b>{t('profileSummary.mainSport')}:</b> {t(userProfile.sport)}</li>
+                <li><b>{t('profileSummary.medicalConditions')}:</b> {userProfile.medicalConditions.join(', ') || t('profileSummary.none')}</li>
+                <li><b>{t('profileSummary.allergies')}:</b> {userProfile.allergies.join(', ') || t('profileSummary.none')}</li>
+                <li><b>{t('profileSummary.currentSupplements')}:</b> {userProfile.currentSupplements.join(', ') || t('profileSummary.none')}</li>
               </ul>
             )}
           </div>
@@ -750,26 +755,26 @@ El informe debe ser claro, profesional y fácil de leer.
               >
                 <FontAwesomeIcon icon={faPencil} size="lg" />
               </button>
-              <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('Resumen de tu perfil')}</h2>
+              <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('profileSummary.title')}</h2>
               <ul className="mb-6 space-y-2 text-gray-900 dark:text-gray-100">
-                <li><b>{t('Edad')}:</b> {customProfile.age}</li>
-                <li><b>{t('Género')}:</b> {mapGender(customProfile.gender)}</li>
-                <li><b>{t('Peso')}:</b> {customProfile.weight} kg</li>
-                <li><b>{t('Altura')}:</b> {customProfile.height} cm</li>
-                <li><b>{t('Objetivo')}:</b> {customProfile.objective}</li>
-                <li><b>{t('Experiencia')}:</b> {mapExperience(customProfile.experience)}</li>
-                <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(customProfile.frequency)}</li>
-                <li><b>{t('Deporte principal')}:</b> {t(customProfile.sport)}</li>
-                <li><b>{t('Condiciones médicas')}:</b> {customProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
-                <li><b>{t('Alergias')}:</b> {customProfile.allergies.join(', ') || t('Ninguna')}</li>
-                <li><b>{t('Suplementos actuales')}:</b> {customProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
+                <li><b>{t('profileSummary.age')}:</b> {customProfile.age}</li>
+                <li><b>{t('profileSummary.gender')}:</b> {mapGender(customProfile.gender)}</li>
+                <li><b>{t('profileSummary.weight')}:</b> {customProfile.weight} kg</li>
+                <li><b>{t('profileSummary.height')}:</b> {customProfile.height} cm</li>
+                <li><b>{t('profileSummary.objective')}:</b> {customProfile.objective}</li>
+                <li><b>{t('profileSummary.experience')}:</b> {mapExperience(customProfile.experience)}</li>
+                <li><b>{t('profileSummary.trainingFrequency')}:</b> {mapFrequency(customProfile.frequency)}</li>
+                <li><b>{t('profileSummary.mainSport')}:</b> {t(customProfile.sport)}</li>
+                <li><b>{t('profileSummary.medicalConditions')}:</b> {customProfile.medicalConditions.join(', ') || t('profileSummary.none')}</li>
+                <li><b>{t('profileSummary.allergies')}:</b> {customProfile.allergies.join(', ') || t('profileSummary.none')}</li>
+                <li><b>{t('profileSummary.currentSupplements')}:</b> {customProfile.currentSupplements.join(', ') || t('profileSummary.none')}</li>
               </ul>
               <button
                 onClick={handleGenerateReport}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg text-xl transition-all duration-200 w-full"
+                className="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
                 disabled={generating}
               >
-                {generating ? t('Generando informe...') : t('Generar informe')}
+                {generating ? t('profileSummary.generatingButton') : t('profileSummary.generateButton')}
               </button>
             </div>
           </div>

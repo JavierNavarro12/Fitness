@@ -82,9 +82,9 @@ const Mujer: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) =>
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
       <div className="relative rounded-2xl overflow-hidden mb-12 shadow-lg" data-aos="fade-in">
         <div className="text-center mb-16" data-aos="fade-in">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-pink-600 dark:text-pink-400 tracking-tight">{t('Salud y Bienestar para la Mujer')}</h1>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-pink-600 dark:text-pink-400 tracking-tight">{t('mujer.title')}</h1>
           <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
-            {t('Las necesidades nutricionales y fisiológicas de las mujeres son únicas. Esta sección se enfoca en suplementos clave para apoyar la salud hormonal, ósea y el bienestar general femenino.')}
+            {t('mujer.description')}
           </p>
         </div>
 

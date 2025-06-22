@@ -43,14 +43,14 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
           
           {/* Column 1: Navigation */}
           <div data-aos="fade-up" data-aos-delay="100">
-            <h3 className="font-bold text-lg mb-4 text-red-400">{t('Navegación')}</h3>
+            <h3 className="font-bold text-lg mb-4 text-red-400">{t('footer.nav.title')}</h3>
             <ul className="space-y-2">
               <li>
                 <button 
                   onClick={() => handleNavigation('home')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Inicio')}
+                  {t('footer.nav.home')}
                 </button>
               </li>
               <li>
@@ -58,7 +58,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('deportes')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Deportes')}
+                  {t('footer.nav.deportes')}
                 </button>
               </li>
               <li>
@@ -66,7 +66,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('salud')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Salud y Bienestar')}
+                  {t('footer.nav.salud')}
                 </button>
               </li>
               <li>
@@ -74,7 +74,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('grasa')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Quema de Grasa')}
+                  {t('footer.nav.grasa')}
                 </button>
               </li>
               <li>
@@ -82,7 +82,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('mujer')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Específico Mujer')}
+                  {t('footer.nav.mujer')}
                 </button>
               </li>
               <li>
@@ -90,7 +90,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('cognitivo')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Rendimiento Cognitivo')}
+                  {t('footer.nav.cognitivo')}
                 </button>
               </li>
             </ul>
@@ -98,14 +98,14 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
 
           {/* Column 2: Services */}
           <div data-aos="fade-up" data-aos-delay="200">
-            <h3 className="font-bold text-lg mb-4 text-red-400">{t('Servicios')}</h3>
+            <h3 className="font-bold text-lg mb-4 text-red-400">{t('footer.services.title')}</h3>
             <ul className="space-y-2">
               <li>
                 <button 
                   onClick={() => handleNavigation('custom')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Personalización')}
+                  {t('footer.services.custom')}
                 </button>
               </li>
               <li>
@@ -113,7 +113,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('reports')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Mis Informes')}
+                  {t('footer.services.reports')}
                 </button>
               </li>
               <li>
@@ -121,7 +121,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   onClick={() => handleNavigation('faq')}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
-                  {t('Preguntas Frecuentes')}
+                  {t('footer.services.faq')}
                 </button>
               </li>
             </ul>
@@ -129,7 +129,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
 
           {/* Column 3: Contact */}
           <div data-aos="fade-up" data-aos-delay="300">
-            <h3 className="font-bold text-lg mb-4 text-red-400">{t('Contacto')}</h3>
+            <h3 className="font-bold text-lg mb-4 text-red-400">{t('footer.contact.title')}</h3>
             <ul className="space-y-3">
               <li>
                 <button 
@@ -140,7 +140,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
-                  {t('Formulario de Contacto')}
+                  {t('footer.contact.form')}
                 </button>
               </li>
               <li>
@@ -151,7 +151,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  Madrid, España
+                  {t('footer.contact.location')}
                 </button>
               </li>
             </ul>
@@ -161,7 +161,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
           <div className="flex flex-col items-start lg:items-end" data-aos="fade-up" data-aos-delay="400">
             <div className="mb-4">
               <span className="text-2xl font-bold text-red-400">EGN</span>
-              <p className="text-sm text-gray-400 mt-1">{t('Tu compañero de fitness inteligente')}</p>
+              <p className="text-sm text-gray-400 mt-1">{t('footer.tagline')}</p>
             </div>
             <div className="flex space-x-4">
               <button
@@ -196,19 +196,19 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
         </div>
 
         <div className="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500" data-aos="fade-up" data-aos-delay="500">
-          <p>&copy; {new Date().getFullYear()} EGN Fitness. {t('Todos los derechos reservados')}.</p>
+          <p>&copy; {new Date().getFullYear()} EGN Fitness. {t('footer.copyright')}.</p>
           <div className="flex justify-center space-x-4 mt-2 text-sm">
             <button 
               onClick={() => handleNavigation('terms')}
               className="hover:text-red-400 transition-colors duration-200"
             >
-              {t('Términos de Servicio')}
+              {t('footer.legal.terms')}
             </button>
             <button 
               onClick={() => handleNavigation('privacy')}
               className="hover:text-red-400 transition-colors duration-200"
             >
-              {t('Política de Privacidad')}
+              {t('footer.legal.privacy')}
             </button>
           </div>
         </div>

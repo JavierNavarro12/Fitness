@@ -79,9 +79,9 @@ const Grasa: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) =>
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
       <div className="text-center mb-16" data-aos="fade-in">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">{t('Quema de Grasa Inteligente')}</h1>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">{t('grasa.title')}</h1>
         <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
-          {t('La pérdida de grasa es un objetivo común, pero requiere un enfoque estratégico. Descubre los suplementos que pueden optimizar tus esfuerzos, siempre como complemento a una dieta y entrenamiento adecuados.')}
+          {t('grasa.description')}
         </p>
       </div>
 

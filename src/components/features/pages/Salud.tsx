@@ -20,7 +20,7 @@ const SaludCard = ({ id, title, image, content }: { id: string, title: string, i
         <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-3" data-aos="fade-right" data-aos-delay="300">{t(title)}</h2>
         <p className="text-gray-700 dark:text-gray-300 mb-6" data-aos="fade-up" data-aos-delay="400">{intro}</p>
         <div data-aos="fade-up" data-aos-delay="500">
-          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b-2 border-blue-200 pb-2">{t('Puntos Clave')}</h3>
+          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b-2 border-blue-200 pb-2">{t('salud.card.puntosClave')}</h3>
           <ul className="space-y-4 mt-4">
             {puntosClave.map((punto: { nombre: string, desc: string }, index: number) => (
               <li key={punto.nombre} data-aos="fade-left" data-aos-delay={600 + index * 100}>
@@ -67,20 +67,20 @@ const Salud: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) =>
       <div className="relative rounded-2xl overflow-hidden mb-12 shadow-lg" data-aos="fade-in">
         <img
           src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt={t('Salud y Bienestar')}
+          alt={t('salud.title')}
           className="w-full h-64 sm:h-80 object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20"></div>
         <div className="absolute bottom-0 left-0 p-6 sm:p-8">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight">
-            {t('Salud y Bienestar')}
+            {t('salud.title')}
           </h1>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto text-center mb-16" data-aos="fade-up" data-aos-delay="200">
         <p className="text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300">
-          {t('Una base sólida de salud es esencial para cualquier objetivo de fitness. Aquí encontrarás suplementos que apoyan tu bienestar general, desde vitaminas hasta antioxidantes.')}
+          {t('salud.description')}
         </p>
       </div>
 

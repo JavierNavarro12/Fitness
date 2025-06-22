@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface UserDrawerProps {
   open: boolean;
@@ -30,6 +31,8 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
   onLogin,
   onRegister,
 }) => {
+  const { t } = useTranslation();
+
   if (!open) return null;
   return (
     <>
@@ -43,7 +46,7 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
         <div className="flex flex-col h-full min-h-0 flex-1 overflow-y-auto">
           {/* Cabecera */}
           <div className="flex items-center justify-between px-4 sm:px-10 py-6 sm:py-8 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Mi cuenta</span>
+            <span className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{t('userDrawer.title')}</span>
             <button
               className="text-2xl text-gray-400 hover:text-red-600 font-bold"
               onClick={onClose}
@@ -61,7 +64,7 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
               )}
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-gray-800 dark:text-gray-100 text-lg sm:text-xl">{user.firstName || 'Invitado'}</span>
+              <span className="font-semibold text-gray-800 dark:text-gray-100 text-lg sm:text-xl">{user.firstName || t('userDrawer.guest')}</span>
               <span className="text-gray-500 dark:text-gray-300 text-sm sm:text-base">{user.email}</span>
             </div>
           </div>
@@ -73,7 +76,7 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
                 style={{lineHeight: 'normal'}}
                 onClick={() => { onLogin(); onClose(); }}
               >
-                <span className="font-bold text-lg sm:text-xl">Iniciar sesión</span>
+                <span className="font-bold text-lg sm:text-xl">{t('userDrawer.login')}</span>
                 {arrowIcon}
               </button>
               <button
@@ -81,7 +84,7 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
                 style={{lineHeight: 'normal'}}
                 onClick={() => { onRegister(); onClose(); }}
               >
-                <span className="font-bold text-lg sm:text-xl">Registro</span>
+                <span className="font-bold text-lg sm:text-xl">{t('userDrawer.register')}</span>
                 {arrowIcon}
               </button>
             </div>
@@ -92,14 +95,14 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
               className="flex items-center w-full px-2 py-4 sm:py-5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left font-semibold text-gray-700 dark:text-gray-200 text-lg sm:text-xl transition"
               onClick={() => { onProfile(); onClose(); }}
             >
-              <span className={iconClass}>👤</span> Ver perfil
+              <span className={iconClass}>👤</span> {t('userDrawer.profile')}
             </button>
             {!isGuest && (
               <button
                 className="flex items-center w-full px-2 py-4 sm:py-5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-left font-semibold text-gray-700 dark:text-gray-200 text-lg sm:text-xl transition"
                 onClick={() => { onLogout(); onClose(); }}
               >
-                <span className={iconClass}>🚪</span> Cerrar sesión
+                <span className={iconClass}>🚪</span> {t('userDrawer.logout')}
               </button>
             )}
           </nav>

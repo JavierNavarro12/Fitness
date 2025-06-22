@@ -174,16 +174,16 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
       <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-700 dark:to-red-500">
         <div className="flex items-center gap-2 sm:gap-3">
           {FaFile({ className: "text-white text-xl sm:text-2xl" })}
-          <span className="text-white font-bold text-base sm:text-lg md:text-xl">Informe personalizado</span>
+          <span className="text-white font-bold text-base sm:text-lg md:text-xl">{t('report.title')}</span>
         </div>
         <div className="flex flex-row items-center gap-1 sm:gap-2">
           <button
             onClick={handleCopy}
             className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition"
-            title={t('Copiar')}
+            title={t('report.copy')}
           >
             {copied ? FaCircleCheck({ className: "text-green-500" }) : FaRegCopy({})}
-            <span className="hidden sm:inline ml-2">{copied ? t('¡Copiado!') : t('Copiar')}</span>
+            <span className="hidden sm:inline ml-2">{copied ? t('report.copied') : t('report.copy')}</span>
           </button>
           <PDFDownloadLink
             document={
@@ -198,9 +198,9 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
             className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition"
             style={{ textDecoration: 'none' }}
           >
-            {({ loading }) => loading ? <span className="hidden sm:inline">Generando PDF...</span> : <>
+            {({ loading }) => loading ? <span className="hidden sm:inline">{t('report.generatingPDF')}</span> : <>
               {FaDownload({ className: "text-lg" })}
-              <span className="hidden sm:inline ml-2">Descargar PDF</span>
+              <span className="hidden sm:inline ml-2">{t('report.downloadPDF')}</span>
             </>}
           </PDFDownloadLink>
           {onDelete && report.id && (
@@ -211,7 +211,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
                 }
               }}
               className="flex items-center justify-center w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition ml-1"
-              title="Eliminar informe"
+              title={t('report.delete')}
             >
               {FaTrash({ className: "text-lg" })}
             </button>
@@ -226,7 +226,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
         </div>
         {supplementsWithLinks.length > 0 && (
           <div className="mt-8 p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-red-200 dark:border-red-700">
-            <div className="font-bold text-red-700 dark:text-red-400 mb-4 text-lg">Enlaces a productos recomendados:</div>
+            <div className="font-bold text-red-700 dark:text-red-400 mb-4 text-lg">{t('report.linksTitle')}</div>
             <ol className="list-decimal pl-6 space-y-2">
               {supplementsWithLinks.map((supp, idx) => (
                 <li key={idx}>

@@ -2,16 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const Terms: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="text-center mb-12" data-aos="fade-up">
         <h1 className="text-4xl font-bold text-red-700 dark:text-red-300 mb-4">
-          {t('Términos de Servicio')}
+          {t('terms.title')}
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300">
-          Última actualización: {new Date().toLocaleDateString('es-ES')}
+          {t('terms.lastUpdate', { date: new Date().toLocaleDateString(i18n.language) })}
         </p>
       </div>
 
@@ -19,123 +19,110 @@ const Terms: React.FC = () => {
         
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            1. Aceptación de los Términos
+            {t('terms.section1.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Al acceder y utilizar EGN Fitness (Endless Goals Nutrition), aceptas estar sujeto a estos Términos de Servicio. 
-            Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestro servicio.
+            {t('terms.section1.text')}
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            2. Descripción del Servicio
+            {t('terms.section2.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-            EGN Fitness es una plataforma de asesoramiento en suplementación deportiva que utiliza inteligencia artificial 
-            para proporcionar recomendaciones personalizadas basadas en tu perfil y objetivos.
+            {t('terms.section2.text')}
           </p>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            <strong>Importante:</strong> Nuestras recomendaciones son informativas y no sustituyen el consejo médico profesional. 
-            Siempre consulta con un profesional de la salud antes de comenzar cualquier suplementación.
+            <strong>Importante:</strong> {t('terms.section2.important')}
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            3. Uso Responsable
+            {t('terms.section3.title')}
           </h2>
           <div className="space-y-3">
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • Debes proporcionar información precisa y actualizada en tu perfil
+              {t('terms.section3.item1')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • No debes usar el servicio si tienes menos de 18 años sin supervisión parental
+              {t('terms.section3.item2')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • Eres responsable de consultar con profesionales de la salud antes de seguir nuestras recomendaciones
+              {t('terms.section3.item3')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • No debes usar el servicio para fines ilegales o no autorizados
+              {t('terms.section3.item4')}
             </p>
           </div>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            4. Limitaciones de Responsabilidad
+            {t('terms.section4.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-            EGN Fitness no se hace responsable de:
+            {t('terms.section4.text')}
           </p>
           <div className="space-y-3">
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • Cualquier efecto adverso derivado del uso de suplementos recomendados
+              {t('terms.section4.item1')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • Interacciones con medicamentos o condiciones médicas existentes
+              {t('terms.section4.item2')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • Resultados específicos de rendimiento o salud
+              {t('terms.section4.item3')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              • Interrupciones del servicio o pérdida de datos
+              {t('terms.section4.item4')}
             </p>
           </div>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            5. Privacidad y Datos
+            {t('terms.section5.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Tu privacidad es importante para nosotros. Recopilamos y procesamos datos personales únicamente para 
-            proporcionar nuestros servicios. Consulta nuestra Política de Privacidad para más detalles sobre 
-            cómo manejamos tu información.
+            {t('terms.section5.text')}
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            6. Propiedad Intelectual
+            {t('terms.section6.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Todo el contenido, algoritmos y tecnología de EGN Fitness están protegidos por derechos de autor 
-            y otras leyes de propiedad intelectual. No está permitido copiar, distribuir o modificar nuestro 
-            contenido sin autorización.
+            {t('terms.section6.text')}
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            7. Modificaciones
+            {t('terms.section7.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán 
-            en vigor inmediatamente después de su publicación. Te recomendamos revisar estos términos periódicamente.
+            {t('terms.section7.text')}
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            8. Contacto
+            {t('terms.section8.title')}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Si tienes preguntas sobre estos términos, puedes contactarnos en:
-          </p>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed mt-2">
-            Email: endlessgoalsnutrition@gmail.com
+            {t('terms.section8.text')}
           </p>
         </section>
 
         <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold text-red-700 dark:text-red-300 mb-2">
-            Aviso Legal Importante
+            {t('terms.legalNoticeTitle')}
           </h3>
           <p className="text-gray-600 dark:text-gray-300 text-sm">
-            Las recomendaciones proporcionadas por EGN Fitness son únicamente informativas y educativas. 
-            No constituyen consejo médico, diagnóstico o tratamiento. Siempre consulta con un profesional 
-            de la salud calificado antes de comenzar cualquier programa de suplementación.
+            {t('terms.legalNoticeText')}
           </p>
         </div>
       </div>

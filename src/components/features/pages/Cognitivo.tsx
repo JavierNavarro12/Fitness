@@ -85,9 +85,9 @@ const Cognitivo: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
       <div className="text-center mb-16" data-aos="fade-in">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight">{t('Rendimiento Cognitivo')}</h1>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight">{t('cognitivo.title')}</h1>
         <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
-          {t('Tu cerebro es tu activo más importante. Descubre cómo la suplementación puede potenciar tu enfoque, memoria y resistencia al estrés para un máximo rendimiento mental.')}
+          {t('cognitivo.description')}
         </p>
       </div>
 

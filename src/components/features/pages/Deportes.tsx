@@ -20,7 +20,7 @@ const DeporteCard = ({ id, title, image, content }: { id: string, title: string,
         <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-3" data-aos="fade-right" data-aos-delay="300">{t(title)}</h2>
         <p className="text-gray-700 dark:text-gray-300 mb-6" data-aos="fade-up" data-aos-delay="400">{intro}</p>
         <div data-aos="fade-up" data-aos-delay="500">
-          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b-2 border-red-200 pb-2">{t('Suplementos Clave')}</h3>
+          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b-2 border-red-200 pb-2">{t('deportes.card.suplementos')}</h3>
         <ul className="space-y-4 mt-4">
             {suplementos.map((sup: { nombre: string, desc: string }, index: number) => (
               <li key={sup.nombre} data-aos="fade-left" data-aos-delay={600 + index * 100}>
@@ -74,7 +74,7 @@ const Deportes: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete })
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20"></div>
         <div className="absolute bottom-0 left-0 p-6 sm:p-8">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight">
-            {t('Rendimiento por Deporte')}
+            {t('deportes.title')}
           </h1>
         </div>
       </div>
@@ -82,7 +82,7 @@ const Deportes: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete })
       {/* Intro */}
       <div className="max-w-4xl mx-auto text-center mb-16" data-aos="fade-up" data-aos-delay="200">
         <p className="text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300">
-          {t('Cada disciplina tiene sus propias demandas. Descubre qué suplementos son los más efectivos para tu deporte, ya sea que busques fuerza, resistencia o una recuperación más rápida.')}
+          {t('deportes.description')}
         </p>
       </div>
       

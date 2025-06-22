@@ -34,9 +34,9 @@ const BottomNav: React.FC<BottomNavProps> = ({ nav, setNav }) => {
   const { t } = useTranslation();
 
   const navItems = [
-    { key: 'home', label: t('bottomNav.home'), icon: HomeIcon },
-    { key: 'custom', label: t('bottomNav.custom'), icon: CogIcon },
-    { key: 'reports', label: t('bottomNav.reports'), icon: ClipboardListIcon },
+    { key: 'home', label: t('nav.home'), icon: HomeIcon },
+    { key: 'custom', label: t('nav.custom'), icon: CogIcon },
+    { key: 'reports', label: t('nav.reports'), icon: ClipboardListIcon },
     { key: 'profile', label: t('bottomNav.profile'), icon: UserIcon },
   ];
 

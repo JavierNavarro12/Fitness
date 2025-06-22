@@ -1,5 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
+import { useTranslation } from 'react-i18next';
 
 // Puedes registrar una fuente si quieres un look más profesional
 // Font.register({ family: 'Roboto', src: 'https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxM.woff2' });
@@ -66,29 +67,33 @@ const styles = StyleSheet.create({
   },
 });
 
-const ReportPDF: React.FC<ReportPDFProps> = ({ title, content, supplements, date }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.contentBlock}>
-        {date ? `${date}\n` : ''}
-        {title ? `${title}\n\n` : ''}
-        {content}
-      </Text>
-      {supplements.length > 0 && (
-        <View style={{ marginTop: 24, padding: 12, borderRadius: 10, backgroundColor: '#f9fafb', border: '1px solid #fca5a5' }}>
-          <Text style={{ color: '#dc2626', fontWeight: 'bold', fontSize: 14, marginBottom: 8 }}>Enlaces a productos recomendados:</Text>
-          <View style={{ marginLeft: 12 }}>
-            {supplements.map((supp, idx) => (
-              <Text key={idx} style={{ marginBottom: 6, fontSize: 12 }}>
-                {`${idx + 1}. `}
-                <Link src={supp.link} style={{ color: '#2563eb', textDecoration: 'underline', fontWeight: 'bold' }}>{supp.name}</Link>
-              </Text>
-            ))}
+const ReportPDF: React.FC<ReportPDFProps> = ({ title, content, supplements, date }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.contentBlock}>
+          {date ? `${date}\n` : ''}
+          {title ? `${title}\n\n` : ''}
+          {content}
+        </Text>
+        {supplements.length > 0 && (
+          <View style={{ marginTop: 24, padding: 12, borderRadius: 10, backgroundColor: '#f9fafb', border: '1px solid #fca5a5' }}>
+            <Text style={{ color: '#dc2626', fontWeight: 'bold', fontSize: 14, marginBottom: 8 }}>{t('report.linksTitle')}</Text>
+            <View style={{ marginLeft: 12 }}>
+              {supplements.map((supp, idx) => (
+                <Text key={idx} style={{ marginBottom: 6, fontSize: 12 }}>
+                  {`${idx + 1}. `}
+                  <Link src={supp.link} style={{ color: '#2563eb', textDecoration: 'underline', fontWeight: 'bold' }}>{supp.name}</Link>
+                </Text>
+              ))}
+            </View>
           </View>
-        </View>
-      )}
-    </Page>
-  </Document>
-);
+        )}
+      </Page>
+    </Document>
+  );
+};
 
 export default ReportPDF; 
