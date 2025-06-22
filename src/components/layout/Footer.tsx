@@ -37,7 +37,7 @@ const Footer: React.FC<FooterProps> = ({ setNav }) => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white pt-14 pb-8" data-aos="fade-up">
+    <footer className="hidden sm:block bg-gray-900 text-white pt-14 pb-8" data-aos="fade-up">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           

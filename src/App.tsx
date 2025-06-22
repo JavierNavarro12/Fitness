@@ -337,23 +337,23 @@ El informe debe ser claro, profesional y fácil de leer.
     }
   };
 
-  // Funciones de mapeo para mostrar los valores traducidos
   const mapGender = (g: string) => {
-    if (g === 'male') return t('gender.male');
-    if (g === 'female') return t('gender.female');
-    if (g === 'other') return t('gender.other');
-    return g;
+    if (g === 'male') return 'profile.gender_male';
+    if (g === 'female') return 'profile.gender_female';
+    return 'profile.gender_other';
   };
+
   const mapExperience = (e: string) => {
-    if (e === 'beginner') return t('experience.beginner');
-    if (e === 'intermediate') return t('experience.intermediate');
-    if (e === 'advanced') return t('experience.advanced');
+    if (e === 'beginner') return 'profile.exp_beginner';
+    if (e === 'intermediate') return 'profile.exp_intermediate';
+    if (e === 'advanced') return 'profile.exp_advanced';
     return e;
   };
+
   const mapFrequency = (f: string) => {
-    if (f === 'low') return t('frequency.low');
-    if (f === 'medium') return t('frequency.medium');
-    if (f === 'high') return t('frequency.high');
+    if (f === 'low') return 'profile.freq_low';
+    if (f === 'medium') return 'profile.freq_medium';
+    if (f === 'high') return 'profile.freq_high';
     return f;
   };
 
@@ -699,20 +699,26 @@ El informe debe ser claro, profesional y fácil de leer.
               <span className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</span>
             </div>
             {userProfile && (
-              <ul className="space-y-2 text-gray-700 dark:text-gray-200">
-                <li><b>{t('profileSummary.age')}:</b> {userProfile.age}</li>
-                <li><b>{t('profileSummary.gender')}:</b> {mapGender(userProfile.gender)}</li>
-                <li><b>{t('profileSummary.weight')}:</b> {userProfile.weight} kg</li>
-                <li><b>{t('profileSummary.height')}:</b> {userProfile.height} cm</li>
-                <li><b>{t('profileSummary.objective')}:</b> {userProfile.objective}</li>
-                <li><b>{t('profileSummary.experience')}:</b> {mapExperience(userProfile.experience)}</li>
-                <li><b>{t('profileSummary.trainingFrequency')}:</b> {mapFrequency(userProfile.frequency)}</li>
-                <li><b>{t('profileSummary.mainSport')}:</b> {t(userProfile.sport)}</li>
-                <li><b>{t('profileSummary.medicalConditions')}:</b> {userProfile.medicalConditions.join(', ') || t('profileSummary.none')}</li>
-                <li><b>{t('profileSummary.allergies')}:</b> {userProfile.allergies.join(', ') || t('profileSummary.none')}</li>
-                <li><b>{t('profileSummary.currentSupplements')}:</b> {userProfile.currentSupplements.join(', ') || t('profileSummary.none')}</li>
-              </ul>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                <p><strong>{t('profile.age')}:</strong> {userProfile.age}</p>
+                <p><strong>{t('profile.gender')}:</strong> {t(mapGender(userProfile.gender))}</p>
+                <p><strong>{t('profile.weight')}:</strong> {userProfile.weight} kg</p>
+                <p><strong>{t('profile.height')}:</strong> {userProfile.height} cm</p>
+                <p><strong>{t('profile.objective')}:</strong> {userProfile.objective}</p>
+                <p><strong>{t('profile.experience')}:</strong> {t(mapExperience(userProfile.experience))}</p>
+                <p><strong>{t('profile.trainingFrequency')}:</strong> {t(mapFrequency(userProfile.frequency))}</p>
+                <p><strong>{t('profile.mainSport')}:</strong> {t(userProfile.sport)}</p>
+                <p className="md:col-span-2"><strong>{t('profile.medicalConditions')}:</strong> {userProfile.medicalConditions?.join(', ') || t('profile.none')}</p>
+                <p className="md:col-span-2"><strong>{t('profile.allergies')}:</strong> {userProfile.allergies?.join(', ') || t('profile.none')}</p>
+                <p className="md:col-span-2"><strong>{t('profile.currentSupplements')}:</strong> {userProfile.currentSupplements?.join(', ') || t('profile.none')}</p>
+              </div>
             )}
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
+            >
+              {t('userDropdown.logout')}
+            </button>
           </div>
         </div>
       )}
@@ -758,12 +764,12 @@ El informe debe ser claro, profesional y fácil de leer.
               <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('profileSummary.title')}</h2>
               <ul className="mb-6 space-y-2 text-gray-900 dark:text-gray-100">
                 <li><b>{t('profileSummary.age')}:</b> {customProfile.age}</li>
-                <li><b>{t('profileSummary.gender')}:</b> {mapGender(customProfile.gender)}</li>
+                <li><b>{t('profileSummary.gender')}:</b> {t(mapGender(customProfile.gender))}</li>
                 <li><b>{t('profileSummary.weight')}:</b> {customProfile.weight} kg</li>
                 <li><b>{t('profileSummary.height')}:</b> {customProfile.height} cm</li>
                 <li><b>{t('profileSummary.objective')}:</b> {customProfile.objective}</li>
-                <li><b>{t('profileSummary.experience')}:</b> {mapExperience(customProfile.experience)}</li>
-                <li><b>{t('profileSummary.trainingFrequency')}:</b> {mapFrequency(customProfile.frequency)}</li>
+                <li><b>{t('profileSummary.experience')}:</b> {t(mapExperience(customProfile.experience))}</li>
+                <li><b>{t('profileSummary.trainingFrequency')}:</b> {t(mapFrequency(customProfile.frequency))}</li>
                 <li><b>{t('profileSummary.mainSport')}:</b> {t(customProfile.sport)}</li>
                 <li><b>{t('profileSummary.medicalConditions')}:</b> {customProfile.medicalConditions.join(', ') || t('profileSummary.none')}</li>
                 <li><b>{t('profileSummary.allergies')}:</b> {customProfile.allergies.join(', ') || t('profileSummary.none')}</li>
@@ -805,41 +811,54 @@ El informe debe ser claro, profesional y fácil de leer.
           </div>
         )}
         {nav === 'profile' && (
-            <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mt-4 mb-24 flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
-              <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2" data-aos="zoom-in" data-aos-delay="300">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-gray-400 text-4xl">👤</span>
-              )}
+          <div className="flex flex-col h-full">
+            <div className="max-w-md mx-auto my-auto w-full p-4 sm:p-6 lg:p-8">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div className="text-center mb-6" data-aos="fade-down">
+                  <div className="w-24 h-24 bg-red-100 dark:bg-red-800/50 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-gray-400 text-4xl">👤</span>
+                    )}
+                  </div>
+                </div>
+                <div className="text-center mb-4" data-aos="fade-up" data-aos-delay="400">
+                  <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
+                  <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
+                </div>
+                {userProfile ? (
+                  <>
+                    <ul className="w-full mb-6 space-y-2 text-gray-900 dark:text-gray-100 text-[15px] text-left" data-aos="fade-up" data-aos-delay="500">
+                      <li data-aos="fade-left" data-aos-delay="600"><b>{t('profile.age')}:</b> {userProfile.age}</li>
+                      <li data-aos="fade-left" data-aos-delay="700"><b>{t('profile.gender')}:</b> {t(mapGender(userProfile.gender))}</li>
+                      <li data-aos="fade-left" data-aos-delay="800"><b>{t('profile.weight')}:</b> {userProfile.weight} kg</li>
+                      <li data-aos="fade-left" data-aos-delay="900"><b>{t('profile.height')}:</b> {userProfile.height} cm</li>
+                      <li data-aos="fade-left" data-aos-delay="1000"><b>{t('profile.objective')}:</b> {userProfile.objective}</li>
+                      <li data-aos="fade-left" data-aos-delay="1100"><b>{t('profile.experience')}:</b> {t(mapExperience(userProfile.experience))}</li>
+                      <li data-aos="fade-left" data-aos-delay="1200"><b>{t('profile.trainingFrequency')}:</b> {t(mapFrequency(userProfile.frequency))}</li>
+                      <li data-aos="fade-left" data-aos-delay="1300"><b>{t('profile.mainSport')}:</b> {t(userProfile.sport)}</li>
+                      <li data-aos="fade-left" data-aos-delay="1400"><b>{t('profile.medicalConditions')}:</b> {userProfile.medicalConditions?.join(', ') || t('profile.none')}</li>
+                      <li data-aos="fade-left" data-aos-delay="1500"><b>{t('profile.allergies')}:</b> {userProfile.allergies?.join(', ') || t('profile.none')}</li>
+                      <li data-aos="fade-left" data-aos-delay="1600"><b>{t('profile.currentSupplements')}:</b> {userProfile.currentSupplements?.join(', ') || t('profile.none')}</li>
+                    </ul>
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold"
+                      data-aos="fade-up"
+                      data-aos-delay="1700"
+                    >
+                      {t('userDropdown.logout')}
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-center py-10">
+                    {t('No tienes información de perfil aún.')}
+                  </div>
+                )}
+              </div>
             </div>
-              <div className="text-center mb-4" data-aos="fade-up" data-aos-delay="400">
-              <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
-              <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
-            </div>
-            {userProfile && (
-                <ul className="w-full mb-6 space-y-2 text-gray-900 dark:text-gray-100 text-[15px]" data-aos="fade-up" data-aos-delay="500">
-                  <li data-aos="fade-left" data-aos-delay="600"><b>{t('Edad')}:</b> {userProfile.age}</li>
-                  <li data-aos="fade-left" data-aos-delay="700"><b>{t('Género')}:</b> {mapGender(userProfile.gender)}</li>
-                  <li data-aos="fade-left" data-aos-delay="800"><b>{t('Peso')}:</b> {userProfile.weight} kg</li>
-                  <li data-aos="fade-left" data-aos-delay="900"><b>{t('Altura')}:</b> {userProfile.height} cm</li>
-                  <li data-aos="fade-left" data-aos-delay="1000"><b>{t('Objetivo')}:</b> {userProfile.objective}</li>
-                  <li data-aos="fade-left" data-aos-delay="1100"><b>{t('Experiencia')}:</b> {mapExperience(userProfile.experience)}</li>
-                  <li data-aos="fade-left" data-aos-delay="1200"><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(userProfile.frequency)}</li>
-                  <li data-aos="fade-left" data-aos-delay="1300"><b>{t('Deporte principal')}:</b> {t(userProfile.sport)}</li>
-                  <li data-aos="fade-left" data-aos-delay="1400"><b>{t('Condiciones médicas')}:</b> {userProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
-                  <li data-aos="fade-left" data-aos-delay="1500"><b>{t('Alergias')}:</b> {userProfile.allergies.join(', ') || t('Ninguna')}</li>
-                  <li data-aos="fade-left" data-aos-delay="1600"><b>{t('Suplementos actuales')}:</b> {userProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
-              </ul>
-            )}
-            <button
-              onClick={() => signOut(auth)}
-              className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-lg transition-all duration-200"
-                data-aos="zoom-in"
-                data-aos-delay="1700"
-            >
-                {t('Cerrar sesión')}
-            </button>
           </div>
         )}
         </Suspense>
