@@ -154,10 +154,16 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const [copied, setCopied] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(report.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(report.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      // Opcional: puedes mostrar un toast o mensaje de error si lo deseas
+      console.error(e);
+      setCopied(false);
+    }
   };
 
   // Extraer suplementos recomendados
