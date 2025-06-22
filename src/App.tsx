@@ -323,39 +323,10 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       const data = await response.json();
       const reportContent = data.reply || 'Error: No se pudo generar el contenido del reporte.';
 
-      // --- Inicio de la nueva lógica para parsear enlaces ---
-      let finalReportContent = reportContent;
-      const productSectionRegex = /###\s*(Productos Recomendados|Recommended Products)[\s\S]*/;
-      const productSectionMatch = reportContent.match(productSectionRegex);
-
-      if (productSectionMatch) {
-        const productsBlock = productSectionMatch[0];
-        const productLines = productsBlock.split('\n').slice(1);
-
-        const productLinks = productLines
-          .map((line: string) => {
-            const productName = line.replace(/[-\s*]/g, '').trim();
-            if (productName) {
-              const searchUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(productName)}`;
-              return `- [${productName}](${searchUrl})`;
-            }
-            return null;
-          })
-          .filter(Boolean)
-          .join('\n');
-        
-        // Reemplaza la sección de texto original por la nueva sección con enlaces
-        if (productLinks) {
-            const linkTitle = lang === 'en' ? '### Recommended Product Links' : '### Enlaces a Productos Recomendados';
-            finalReportContent = reportContent.replace(productsBlock, `${linkTitle}\n${productLinks}`);
-        }
-      }
-      // --- Fin de la nueva lógica ---
-
       const newReport = {
         userId: user.uid,
         profile: customProfile,
-        content: finalReportContent, // Guardamos el contenido con los enlaces añadidos
+        content: reportContent,
         createdAt: new Date().toISOString(),
       };
       
