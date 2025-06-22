@@ -228,7 +228,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
         {/* Sección de Enlaces a Productos Recomendados */}
         {supplementsWithLinks.length > 0 && (
           <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-            <h3 className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3">{t('report.productLinks')}</h3>
+            <h3 className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3">Productos Recomendados</h3>
             <ul className="space-y-2">
               {supplementsWithLinks.map((supplement, index) => (
                 <li key={index} className="flex items-center">
