@@ -283,48 +283,59 @@ El formato de la lista debe ser:
 
 No repitas el resumen del perfil, solo el informe y la lista de productos.
 El informe debe ser claro, profesional y fácil de leer.
+
+Provide a detailed report in Spanish with the following sections in Markdown format:
+1.  **Introducción Personalizada**: Brief and motivating introduction.
+2.  **Suplementos Base (Fundamentales)**: Recommended supplements regardless of the goal (e.g., protein, creatine, Omega-3), explaining why for this user.
+3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Specific supplements for the user's goal.
+4.  **Suplementos para tu Deporte (${customProfile.sport})**: Specific supplements for the user's sport.
+5.  **Consideraciones Adicionales**: Health warnings, importance of diet, etc.
+6.  **Resumen y Siguientes Pasos**: Final summary and recommendations.
 `;
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('/.netlify/functions/openai-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'Eres un experto en suplementación deportiva.' },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 700,
+          messages: [{ role: 'user', content: prompt }],
         }),
       });
 
-      const data = await response.json();
-      let aiContent = 'No se pudo generar el informe.';
-      if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
-        aiContent = data.choices[0].message.content.trim();
-      } else if (data.error && data.error.message) {
-        aiContent = data.error.message;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      const data = await response.json();
+      const reportContent = data.reply || 'Error: No se pudo generar el contenido del reporte.';
 
-      const newReport: Report = {
-        content: aiContent,
-        createdAt: new Date().toISOString(),
+      const newReport = {
         userId: user.uid,
+        profile: customProfile,
+        content: reportContent,
+        createdAt: new Date().toISOString(),
       };
-
+      
       const docRef = await addDoc(collection(db, 'reports'), newReport);
-      setUserReports(prev => [{ ...newReport, id: docRef.id }, ...prev]);
-      setShowSummary(false);
-      setNav('reports');
+      setUserReports(prev => [{ id: docRef.id, ...newReport }, ...prev]);
+
     } catch (error) {
-      console.error('Error al generar el informe:', error);
-    } finally {
-      setGenerating(false);
+      console.error("Error generating report:", error);
+      // Opcional: guardar un reporte de error en Firebase
+      const errorReport = {
+        userId: user.uid,
+        profile: customProfile,
+        content: `Error al generar el reporte: ${error instanceof Error ? error.message : String(error)}`,
+        createdAt: new Date().toISOString(),
+      };
+      const docRef = await addDoc(collection(db, 'reports'), errorReport);
+      setUserReports(prev => [{ id: docRef.id, ...errorReport }, ...prev]);
     }
+
+    setGenerating(false);
+    setNav('reports');
   };
 
   const handleDeleteReport = async (reportId: string) => {
