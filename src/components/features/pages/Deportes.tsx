@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
+import { Helmet } from 'react-helmet-async';
 
 const deportesData = searchableContent.filter(item => item.category === 'deportes');
 
@@ -63,37 +64,50 @@ const Deportes: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete })
   }, [itemToHighlight, onHighlightComplete]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
-      {/* Hero Section */}
-      <div className="relative rounded-2xl overflow-hidden mb-12 shadow-lg" data-aos="fade-in">
-        <img
-          src="https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt={t('Rendimiento Deportivo')}
-          className="w-full h-64 sm:h-80 object-cover"
+    <>
+      <Helmet>
+        <title>Suplementos para Deportes - EGN Fitness</title>
+        <meta
+          name="description"
+          content="Descubre los mejores suplementos para deportes de fuerza, resistencia y equipo. Optimiza tu rendimiento en levantamiento de pesas, crossfit, running y más."
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20"></div>
-        <div className="absolute bottom-0 left-0 p-6 sm:p-8">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight">
-            {t('deportes.title')}
-          </h1>
+      </Helmet>
+      <div className="p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
+            {/* Hero Section */}
+            <div className="relative rounded-2xl overflow-hidden mb-12 shadow-lg" data-aos="fade-in">
+              <img
+                src="https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                alt={t('Rendimiento Deportivo')}
+                className="w-full h-64 sm:h-80 object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20"></div>
+              <div className="absolute bottom-0 left-0 p-6 sm:p-8">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight">
+                  {t('deportes.title')}
+                </h1>
+              </div>
+            </div>
+
+            {/* Intro */}
+            <div className="max-w-4xl mx-auto text-center mb-16" data-aos="fade-up" data-aos-delay="200">
+              <p className="text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300">
+                {t('deportes.description')}
+              </p>
+            </div>
+            
+            <div className="max-w-4xl mx-auto">
+              {deportesData.map((deporte, index) => (
+                <div key={deporte.id} data-aos="fade-up" data-aos-delay={index * 200}>
+                  <DeporteCard {...deporte} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Intro */}
-      <div className="max-w-4xl mx-auto text-center mb-16" data-aos="fade-up" data-aos-delay="200">
-        <p className="text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300">
-          {t('deportes.description')}
-        </p>
-      </div>
-      
-      <div className="max-w-4xl mx-auto">
-        {deportesData.map((deporte, index) => (
-          <div key={deporte.id} data-aos="fade-up" data-aos-delay={index * 200}>
-            <DeporteCard {...deporte} />
-          </div>
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 

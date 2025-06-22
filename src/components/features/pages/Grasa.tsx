@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
+import { Helmet } from 'react-helmet-async';
 
 const grasaData = searchableContent.filter(item => item.category === 'grasa');
 
@@ -77,20 +78,31 @@ const Grasa: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }) =>
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
-      <div className="text-center mb-16" data-aos="fade-in">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">{t('grasa.title')}</h1>
-        <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
-          {t('grasa.description')}
-        </p>
-      </div>
+    <>
+      <Helmet>
+        <title>Suplementos para Quema de Grasa - EGN Fitness</title>
+        <meta
+          name="description"
+          content="Descubre suplementos efectivos para la quema de grasa y el control del apetito. Aprende sobre termogénicos y los fundamentos para perder peso."
+        />
+      </Helmet>
+      <div className="p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16" data-aos="fade-in">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">{t('grasa.title')}</h1>
+            <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
+              {t('grasa.description')}
+            </p>
+          </div>
 
-      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {grasaData.map((item, index) => (
-          <GrasaCard {...item} icon={cardIcons[index]} key={item.id} />
-        ))}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {grasaData.map((item, index) => (
+              <GrasaCard {...item} icon={cardIcons[index]} key={item.id} />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

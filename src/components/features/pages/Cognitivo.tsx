@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
+import { Helmet } from 'react-helmet-async';
 
 const cognitivoData = searchableContent.filter(item => item.category === 'cognitivo');
 
@@ -83,20 +84,31 @@ const Cognitivo: React.FC<PageProps> = ({ itemToHighlight, onHighlightComplete }
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10">
-      <div className="text-center mb-16" data-aos="fade-in">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight">{t('cognitivo.title')}</h1>
-        <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
-          {t('cognitivo.description')}
-        </p>
-      </div>
+    <>
+      <Helmet>
+        <title>Suplementos para Rendimiento Cognitivo - EGN Fitness</title>
+        <meta
+          name="description"
+          content="Potencia tu enfoque y memoria con nootrópicos y adaptógenos. Descubre suplementos para la salud cerebral y el manejo del estrés."
+        />
+      </Helmet>
+      <div className="p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16" data-aos="fade-in">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight">{t('cognitivo.title')}</h1>
+            <p className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300" data-aos="fade-up" data-aos-delay="200">
+              {t('cognitivo.description')}
+            </p>
+          </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-        {cognitivoData.map((item, index) => (
-          <CognitivoCard {...item} icon={cardIcons[index]} key={item.id} />
-        ))}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            {cognitivoData.map((item, index) => (
+              <CognitivoCard {...item} icon={cardIcons[index]} key={item.id} />
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
