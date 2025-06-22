@@ -39,7 +39,7 @@ const generateSitemap = async () => {
 
   const formattedSitemap = await prettier.format(sitemap, { parser: 'html' });
 
-  fs.writeFileSync(path.resolve(__dirname, '../public/sitemap.xml'), formattedSitemap);
+  fs.writeFileSync(path.resolve(__dirname, '../build/sitemap.xml'), formattedSitemap);
 
   console.log('Sitemap generated successfully!');
 };
