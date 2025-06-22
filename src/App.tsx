@@ -329,13 +329,11 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       const productSectionMatch = reportContent.match(productSectionRegex);
 
       if (productSectionMatch) {
-        // Extrae solo el contenido de la sección de productos
         const productsBlock = productSectionMatch[0];
-        const productLines = productsBlock.split('\n').slice(1); // Omitir el título de la sección
+        const productLines = productsBlock.split('\n').slice(1);
 
         const productLinks = productLines
           .map((line: string) => {
-            // Limpiar la línea para obtener solo el nombre del producto
             const productName = line.replace(/[-\s*]/g, '').trim();
             if (productName) {
               const searchUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(productName)}`;
@@ -346,9 +344,10 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
           .filter(Boolean)
           .join('\n');
         
+        // Reemplaza la sección de texto original por la nueva sección con enlaces
         if (productLinks) {
-            const linkTitle = lang === 'en' ? '### Product Links' : '### Enlaces a Productos Recomendados';
-            finalReportContent += `\n\n${linkTitle}\n${productLinks}`;
+            const linkTitle = lang === 'en' ? '### Recommended Product Links' : '### Enlaces a Productos Recomendados';
+            finalReportContent = reportContent.replace(productsBlock, `${linkTitle}\n${productLinks}`);
         }
       }
       // --- Fin de la nueva lógica ---

@@ -29,7 +29,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
         { role: 'system', content: 'Eres un experto en suplementación deportiva.' },
         ...messages
       ],
-      max_tokens: 500,
+      max_tokens: 1000,
     });
 
     return {

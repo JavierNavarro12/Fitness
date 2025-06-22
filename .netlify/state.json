@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Vitoria-Gasteiz",
+			"country": {
+				"code": "ES",
+				"name": "Spain"
+			},
+			"subdivision": {
+				"code": "PV",
+				"name": "Basque Country"
+			},
+			"timezone": "Europe/Madrid",
+			"latitude": 42.8571,
+			"longitude": -2.7036,
+			"postalCode": "01010"
+		},
+		"timestamp": 1750618547583
+	}
+}
