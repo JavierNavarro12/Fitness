@@ -58,7 +58,7 @@ const Salud = () => {
           {t('Una base sólida de salud es esencial para cualquier objetivo de fitness. Aquí encontrarás suplementos que apoyan tu bienestar general, desde vitaminas hasta antioxidantes.')}
         </p>
       </div>
-      
+
       <div className="max-w-4xl mx-auto">
         {saludData.map((item, index) => (
           <div key={item.id} data-aos="fade-up" data-aos-delay={index * 200}>

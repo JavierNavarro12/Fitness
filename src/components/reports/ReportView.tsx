@@ -79,6 +79,7 @@ function extractSupplementsFromRecommendedSectionOnly(content: string): string[]
 function cleanSupplementName(name: string): string {
   return name
     .replace(/\[|\]/g, '') // quitar corchetes
+    .replace(/\(URL del producto\)/gi, '') // quitar (URL del producto)
     .replace(/\(URL\)/gi, '') // quitar (URL) o (url)
     .replace(/\(https?:[^)]+\)/gi, '') // quitar paréntesis con http...
     .replace(/\s+/g, ' ') // espacios extra
@@ -121,14 +122,21 @@ function filterPersonalizationSummary(content: string): string {
   let skipBlock = false;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    // Eliminar bloque de 'Perfil Físico:'
-    if (line.trim().startsWith('Perfil Físico:')) {
+    const trimmedLine = line.trim();
+
+    // Skip specific unwanted headers like "Perfil:"
+    if (/^perfil:$/i.test(trimmedLine)) {
+      continue;
+    }
+    
+    // Eliminar bloque de 'Perfil Físico:' o 'Resumen del perfil:'
+    if (/^(perfil|resumen del perfil)/i.test(trimmedLine)) {
       skipBlock = true;
       continue;
     }
     if (skipBlock) {
       // Termina el bloque al encontrar una línea vacía o una sección de recomendaciones
-      if (line.trim() === '' || /Recomendaciones?:/i.test(line)) {
+      if (trimmedLine === '' || /Recomendaciones?:/i.test(trimmedLine)) {
         skipBlock = false;
       } else {
         continue;
@@ -138,7 +146,7 @@ function filterPersonalizationSummary(content: string): string {
     if (keywords.some(k => line.includes(k))) continue;
     filtered.push(line);
   }
-  return filtered.join('\n');
+  return filtered.join('\n').replace(/\[([^\]]+)\]\(URL del producto\)/gi, '$1');
 }
 
 const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {

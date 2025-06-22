@@ -1,11 +1,11 @@
 export interface UserProfile {
   age: number;
-  gender: 'male' | 'female' | 'other';
+  gender: 'male' | 'female' | 'other' | '';
   weight: number;
   height: number;
   objective: string;
-  experience: 'beginner' | 'intermediate' | 'advanced';
-  frequency: 'low' | 'medium' | 'high';
+  experience: 'beginner' | 'intermediate' | 'advanced' | '';
+  frequency: 'low' | 'medium' | 'high' | '';
   sport: string;
   medicalConditions: string[];
   allergies: string[];

@@ -308,28 +308,28 @@ El informe debe ser claro, profesional y fácil de leer.
       await deleteDoc(doc(db, 'reports', reportId));
       setUserReports(prev => prev.filter(r => r.id !== reportId));
     } catch (error) {
-      alert('Error al eliminar el informe.');
+      console.error('Error al eliminar el informe.');
       console.error(error);
     }
   };
 
-  // Funciones de mapeo para mostrar los valores en español
+  // Funciones de mapeo para mostrar los valores traducidos
   const mapGender = (g: string) => {
-    if (g === 'male') return 'Masculino';
-    if (g === 'female') return 'Femenino';
-    if (g === 'other') return 'Otro';
+    if (g === 'male') return t('Masculino');
+    if (g === 'female') return t('Femenino');
+    if (g === 'other') return t('Otro');
     return g;
   };
   const mapExperience = (e: string) => {
-    if (e === 'beginner') return 'Principiante';
-    if (e === 'intermediate') return 'Intermedio';
-    if (e === 'advanced') return 'Avanzado';
+    if (e === 'beginner') return t('Principiante');
+    if (e === 'intermediate') return t('Intermedio');
+    if (e === 'advanced') return t('Avanzado');
     return e;
   };
   const mapFrequency = (f: string) => {
-    if (f === 'low') return 'Baja (1-2 veces/semana)';
-    if (f === 'medium') return 'Media (3-4 veces/semana)';
-    if (f === 'high') return 'Alta (5+ veces/semana)';
+    if (f === 'low') return t('Baja (1-2 veces/semana)');
+    if (f === 'medium') return t('Media (3-4 veces/semana)');
+    if (f === 'high') return t('Alta (5+ veces/semana)');
     return f;
   };
 
@@ -564,20 +564,20 @@ El informe debe ser claro, profesional y fácil de leer.
                   </div>
 
                   <div className="py-2">
-                    <button
+                  <button
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
-                    >
+                    onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
+                  >
                       <UserCircleIcon className="w-5 h-5" />
                       <span>{t('Ver perfil')}</span>
-                    </button>
-                    <button
+                  </button>
+                  <button
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
-                      onClick={handleLogout}
-                    >
+                    onClick={handleLogout}
+                  >
                       <LogoutIcon className="w-5 h-5" />
                       <span>{t('Cerrar sesión')}</span>
-                    </button>
+                  </button>
                   </div>
                   
                   <div className="bg-gray-50 dark:bg-gray-900/50 p-2">
@@ -674,7 +674,7 @@ El informe debe ser claro, profesional y fácil de leer.
                 <li><b>{t('Objetivo')}:</b> {userProfile.objective}</li>
                 <li><b>{t('Experiencia')}:</b> {mapExperience(userProfile.experience)}</li>
                 <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(userProfile.frequency)}</li>
-                <li><b>{t('Deporte principal')}:</b> {userProfile.sport}</li>
+                <li><b>{t('Deporte principal')}:</b> {t(userProfile.sport)}</li>
                 <li><b>{t('Condiciones médicas')}:</b> {userProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
                 <li><b>{t('Alergias')}:</b> {userProfile.allergies.join(', ') || t('Ninguna')}</li>
                 <li><b>{t('Suplementos actuales')}:</b> {userProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
@@ -687,33 +687,34 @@ El informe debe ser claro, profesional y fácil de leer.
       {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 flex flex-col container mx-auto px-4 pt-20 sm:pt-8 pb-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-aos="fade-up">
         <Suspense fallback={<LoadingSpinner />}>
-          {nav === 'home' && <HomePage onStart={() => setNav('custom')} />}
-          {nav === 'deportes' && <Deportes />}
-          {nav === 'salud' && <Salud />}
-          {nav === 'grasa' && <Grasa />}
-          {nav === 'mujer' && <Mujer />}
-          {nav === 'cognitivo' && <Cognitivo />}
+        {nav === 'home' && <HomePage onStart={() => setNav('custom')} />}
+        {nav === 'deportes' && <Deportes />}
+        {nav === 'salud' && <Salud />}
+        {nav === 'grasa' && <Grasa />}
+        {nav === 'mujer' && <Mujer />}
+        {nav === 'cognitivo' && <Cognitivo />}
           {nav === 'faq' && <FAQ setNav={setNav} />}
           {nav === 'terms' && <Terms />}
           {nav === 'privacy' && <Privacy />}
           {nav === 'contact' && <Contact />}
 
-          {nav === 'custom' && !showSummary && !isEditingProfile && (
-            <>
-              {/* Móvil: centrado vertical */}
-              <div className="flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -translate-y-6">
-                <div className="mt-2 w-full flex justify-center">
-                  <StepForm onComplete={handleSaveProfile} />
-                </div>
+        {nav === 'custom' && !showSummary && !isEditingProfile && (
+          <>
+            {/* Móvil: centrado vertical */}
+            <div className="flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -translate-y-6">
+              <div className="mt-2 w-full flex justify-center">
+                <StepForm onComplete={handleSaveProfile} />
               </div>
-              {/* Desktop: layout original */}
+            </div>
+            {/* Desktop: layout original */}
               <div className="hidden sm:flex items-center justify-center min-h-[calc(100vh-8rem)]">
-            <StepForm onComplete={handleSaveProfile} />
-              </div>
-            </>
-          )}
-          {nav === 'custom' && showSummary && customProfile && !isEditingProfile && (
-            <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 relative">
+          <StepForm onComplete={handleSaveProfile} />
+            </div>
+          </>
+        )}
+        {nav === 'custom' && showSummary && customProfile && !isEditingProfile && (
+          <div className="flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-8rem)]">
+            <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 relative">
               <button
                 className="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl"
                 title={t('Editar perfil')}
@@ -730,7 +731,7 @@ El informe debe ser claro, profesional y fácil de leer.
                 <li><b>{t('Objetivo')}:</b> {customProfile.objective}</li>
                 <li><b>{t('Experiencia')}:</b> {mapExperience(customProfile.experience)}</li>
                 <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(customProfile.frequency)}</li>
-                <li><b>{t('Deporte principal')}:</b> {customProfile.sport}</li>
+                <li><b>{t('Deporte principal')}:</b> {t(customProfile.sport)}</li>
                 <li><b>{t('Condiciones médicas')}:</b> {customProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
                 <li><b>{t('Alergias')}:</b> {customProfile.allergies.join(', ') || t('Ninguna')}</li>
                 <li><b>{t('Suplementos actuales')}:</b> {customProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
@@ -743,70 +744,71 @@ El informe debe ser claro, profesional y fácil de leer.
                 {generating ? t('Generando informe...') : t('Generar informe')}
               </button>
             </div>
-          )}
-          {nav === 'custom' && isEditingProfile && customProfile && (
-            <StepForm
-              onComplete={(profile) => {
-                setCustomProfile(profile);
-                setIsEditingProfile(false);
-              }}
-              initialProfile={customProfile}
-              isEditing={true}
-            />
-          )}
-          {nav === 'reports' && (
-            <div className="max-w-4xl mx-auto">
-              {userReports.length === 0 ? (
-                <div className="text-center text-gray-500 py-12">
-                  {t('No tienes informes generados aún.')}
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {userReports.map((report, index) => (
-                    <ReportView key={index} report={report} onDelete={handleDeleteReport} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {nav === 'profile' && (
+          </div>
+        )}
+        {nav === 'custom' && isEditingProfile && customProfile && (
+          <StepForm
+            onComplete={(profile) => {
+              setCustomProfile(profile);
+              setIsEditingProfile(false);
+            }}
+            initialProfile={customProfile}
+            isEditing={true}
+          />
+        )}
+        {nav === 'reports' && (
+          <div className="max-w-4xl mx-auto">
+            {userReports.length === 0 ? (
+              <div className="text-center text-gray-500 py-12">
+                {t('No tienes informes generados aún.')}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {userReports.map((report, index) => (
+                  <ReportView key={index} report={report} onDelete={handleDeleteReport} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {nav === 'profile' && (
             <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 mt-4 mb-24 flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
               <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2" data-aos="zoom-in" data-aos-delay="300">
-                {user?.photoURL ? (
-                  <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-gray-400 text-4xl">👤</span>
-                )}
-              </div>
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-gray-400 text-4xl">👤</span>
+              )}
+            </div>
               <div className="text-center mb-4" data-aos="fade-up" data-aos-delay="400">
-                <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
-                <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
-              </div>
-              {userProfile && (
+              <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{user?.displayName || user?.email?.split('@')[0]}</div>
+              <div className="text-gray-500 dark:text-gray-300 text-sm">{user?.email}</div>
+            </div>
+            {userProfile && (
                 <ul className="w-full mb-6 space-y-2 text-gray-900 dark:text-gray-100 text-[15px]" data-aos="fade-up" data-aos-delay="500">
                   <li data-aos="fade-left" data-aos-delay="600"><b>{t('Edad')}:</b> {userProfile.age}</li>
-                  <li data-aos="fade-left" data-aos-delay="700"><b>{t('Género')}:</b> {userProfile.gender === 'male' ? t('Masculino') : userProfile.gender === 'female' ? t('Femenino') : t('Otro')}</li>
+                  <li data-aos="fade-left" data-aos-delay="700"><b>{t('Género')}:</b> {mapGender(userProfile.gender)}</li>
                   <li data-aos="fade-left" data-aos-delay="800"><b>{t('Peso')}:</b> {userProfile.weight} kg</li>
                   <li data-aos="fade-left" data-aos-delay="900"><b>{t('Altura')}:</b> {userProfile.height} cm</li>
                   <li data-aos="fade-left" data-aos-delay="1000"><b>{t('Objetivo')}:</b> {userProfile.objective}</li>
-                  <li data-aos="fade-left" data-aos-delay="1100"><b>{t('Experiencia')}:</b> {userProfile.experience === 'beginner' ? t('Principiante') : userProfile.experience === 'intermediate' ? t('Intermedio') : t('Avanzado')}</li>
-                  <li data-aos="fade-left" data-aos-delay="1200"><b>{t('Frecuencia de entrenamiento')}:</b> {userProfile.frequency === 'low' ? t('Baja (1-2 veces/semana)') : userProfile.frequency === 'medium' ? t('Media (3-4 veces/semana)') : t('Alta (5+ veces/semana)')}</li>
-                  <li data-aos="fade-left" data-aos-delay="1300"><b>{t('Deporte principal')}:</b> {userProfile.sport}</li>
+                  <li data-aos="fade-left" data-aos-delay="1100"><b>{t('Experiencia')}:</b> {mapExperience(userProfile.experience)}</li>
+                  <li data-aos="fade-left" data-aos-delay="1200"><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(userProfile.frequency)}</li>
+                  <li data-aos="fade-left" data-aos-delay="1300"><b>{t('Deporte principal')}:</b> {t(userProfile.sport)}</li>
                   <li data-aos="fade-left" data-aos-delay="1400"><b>{t('Condiciones médicas')}:</b> {userProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
                   <li data-aos="fade-left" data-aos-delay="1500"><b>{t('Alergias')}:</b> {userProfile.allergies.join(', ') || t('Ninguna')}</li>
                   <li data-aos="fade-left" data-aos-delay="1600"><b>{t('Suplementos actuales')}:</b> {userProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
-                </ul>
-              )}
-              <button
-                onClick={() => signOut(auth)}
-                className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-lg transition-all duration-200"
+              </ul>
+            )}
+            <button
+              onClick={() => signOut(auth)}
+              className="mt-auto w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-lg transition-all duration-200"
                 data-aos="zoom-in"
                 data-aos-delay="1700"
-              >
+            >
                 {t('Cerrar sesión')}
-              </button>
-            </div>
-          )}
+            </button>
+          </div>
+        )}
         </Suspense>
       </main>
       <Footer setNav={setNav} />

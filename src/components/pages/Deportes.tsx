@@ -16,22 +16,22 @@ const DeporteCard = ({ id, title, image, content }: { id: string, title: string,
   return (
     <div id={id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-12 transform hover:-translate-y-2 transition-transform duration-300" data-aos="fade-up">
       <img src={image} alt={t(title)} className="w-full h-56 object-cover" data-aos="zoom-in" data-aos-delay="200" />
-      <div className="p-6">
+    <div className="p-6">
         <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-3" data-aos="fade-right" data-aos-delay="300">{t(title)}</h2>
         <p className="text-gray-700 dark:text-gray-300 mb-6" data-aos="fade-up" data-aos-delay="400">{intro}</p>
         <div data-aos="fade-up" data-aos-delay="500">
           <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b-2 border-red-200 pb-2">{t('Suplementos Clave')}</h3>
-          <ul className="space-y-4 mt-4">
+        <ul className="space-y-4 mt-4">
             {suplementos.map((sup: { nombre: string, desc: string }, index: number) => (
               <li key={sup.nombre} data-aos="fade-left" data-aos-delay={600 + index * 100}>
-                <strong className="font-semibold text-gray-800 dark:text-gray-200">{sup.nombre}:</strong>
-                <p className="text-gray-600 dark:text-gray-400">{sup.desc}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+              <strong className="font-semibold text-gray-800 dark:text-gray-200">{sup.nombre}:</strong>
+              <p className="text-gray-600 dark:text-gray-400">{sup.desc}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
+  </div>
   )
 };
 

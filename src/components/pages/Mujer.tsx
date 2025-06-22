@@ -32,7 +32,7 @@ const MujerCard = ({ id, title, image, content, icon }: { id: string, title: str
         )}
       </div>
     </div>
-  );
+);
 };
 
 const Mujer = () => {
