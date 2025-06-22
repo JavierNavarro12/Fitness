@@ -233,16 +233,13 @@ function App() {
     setGenerating(true);
 
     const lang = i18n.language;
-    // Traducimos el deporte ANTES de pasarlo al prompt
-    const translatedSport = t(customProfile.sport);
-
     const prompt = lang === 'en'
       ? `
 You are an expert in sports supplementation.
 Generate a personalized and professional supplementation report for the following profile:
 
 - Goal: ${customProfile.objective}
-- Main sport: ${translatedSport}
+- Main sport: ${customProfile.sport}
 - Experience level: ${mapExperience(customProfile.experience)}
 - Training frequency: ${mapFrequency(customProfile.frequency)}
 - Weight: ${customProfile.weight} kg
@@ -266,7 +263,7 @@ Provide a detailed and professional report in Spanish, structured with the follo
 **## Suplementos para tu Objetivo (${customProfile.objective})**
 (For each supplement specific to the user's goal, write a paragraph explaining its benefits, recommended dosage, and best time to take it.)
 
-**## Suplementos para tu Deporte (${translatedSport})**
+**## Suplementos para tu Deporte (${customProfile.sport})**
 (For each supplement specific to the user's sport, write a paragraph explaining its benefits, dosage, and timing.)
 
 **## Consideraciones Adicionales**
@@ -283,7 +280,7 @@ Eres un experto en suplementación deportiva.
 Genera un informe de suplementación personalizado y profesional para el siguiente perfil:
 
 - Objetivo: ${customProfile.objective}
-- Deporte Principal: ${translatedSport}
+- Deporte Principal: ${customProfile.sport}
 - Nivel de Experiencia: ${mapExperience(customProfile.experience)}
 - Frecuencia de Entrenamiento: ${mapFrequency(customProfile.frequency)}
 - Peso: ${customProfile.weight} kg
@@ -307,7 +304,7 @@ Proporciona un informe detallado y profesional en español, estructurado con las
 **## Suplementos para tu Objetivo (${customProfile.objective})**
 (Para cada suplemento específico para el objetivo, escribe un párrafo explicando sus beneficios, dosis recomendada y mejor momento del día.)
 
-**## Suplementos para tu Deporte (${translatedSport})**
+**## Suplementos para tu Deporte (${customProfile.sport})**
 (Para cada suplemento específico para el deporte, escribe un párrafo explicando sus beneficios, dosis y momento.)
 
 **## Consideraciones Adicionales**

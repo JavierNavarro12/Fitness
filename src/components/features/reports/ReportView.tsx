@@ -120,9 +120,6 @@ function filterPersonalizationSummary(content: string): string {
   const lines = content.split('\n');
   let filtered: string[] = [];
   let skipBlock = false;
-  // Añadimos una expresión regular para detectar la sección de productos
-  const productsSectionRegex = /###\s*(Productos Recomendados|Recommended Products)/i;
-
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
@@ -145,13 +142,6 @@ function filterPersonalizationSummary(content: string): string {
         continue;
       }
     }
-
-    // Si encontramos la sección de productos, activamos el salto y continuamos
-    if (productsSectionRegex.test(trimmedLine)) {
-        skipBlock = true;
-        continue;
-    }
-
     // Eliminar cualquier línea que contenga una palabra clave
     if (keywords.some(k => line.includes(k))) continue;
     filtered.push(line);
@@ -237,18 +227,18 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
 
         {/* Sección de Enlaces a Productos Recomendados */}
         {supplementsWithLinks.length > 0 && (
-          <div className="mt-8 p-6 bg-gray-50 rounded-lg prose prose-sm max-w-none">
-            <h3 className="text-lg font-semibold mb-4">{t('report.productLinks')}</h3>
-            <ul className="list-disc pl-5 space-y-2">
-              {supplementsWithLinks.map((link, index) => (
-                <li key={index}>
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+            <h3 className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3">{t('report.productLinks')}</h3>
+            <ul className="space-y-2">
+              {supplementsWithLinks.map((supplement, index) => (
+                <li key={index} className="flex items-center">
                   <a
-                    href={link.link}
+                    href={supplement.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-sm sm:text-base text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition"
                   >
-                    {link.name}
+                    {supplement.name}
                   </a>
                 </li>
               ))}
