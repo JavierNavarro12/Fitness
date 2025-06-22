@@ -221,26 +221,28 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
       {/* Contenido del informe */}
       <div className="px-6 py-4">
         <div className="text-xs text-gray-500 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
-        <div className="prose dark:prose-invert max-w-none text-base">
+        <div className="prose prose-sm sm:prose-base max-w-none p-4 sm:p-6 text-gray-800 dark:text-gray-200">
           <ReactMarkdown>{filteredContent}</ReactMarkdown>
         </div>
+
+        {/* Sección de Enlaces a Productos Recomendados */}
         {supplementsWithLinks.length > 0 && (
-          <div className="mt-8 p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-red-200 dark:border-red-700">
-            <div className="font-bold text-red-700 dark:text-red-400 mb-4 text-lg">{t('report.linksTitle')}</div>
-            <ol className="list-decimal pl-6 space-y-2">
-              {supplementsWithLinks.map((supp, idx) => (
-                <li key={idx}>
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+            <h3 className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3">{t('report.productLinks')}</h3>
+            <ul className="space-y-2">
+              {supplementsWithLinks.map((supplement, index) => (
+                <li key={index} className="flex items-center">
                   <a
-                    href={supp.link}
+                    href={supplement.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-lg font-semibold text-blue-700 underline hover:text-blue-900 transition"
+                    className="text-sm sm:text-base text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition"
                   >
-                    {supp.name}
+                    {supplement.name}
                   </a>
                 </li>
               ))}
-            </ol>
+            </ul>
           </div>
         )}
       </div>

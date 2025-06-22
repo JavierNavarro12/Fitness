@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "@netlify/functions": "^4.1.6",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/jspdf": "^2.0.0",
     "@types/styled-components": "^5.1.34",
     "ajv": "^6.12.6",

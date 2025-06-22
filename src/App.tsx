@@ -250,59 +250,71 @@ Generate a personalized and professional supplementation report for the followin
 - Allergies: ${customProfile.allergies.join(', ') || 'None'}
 - Current supplements: ${customProfile.currentSupplements.join(', ') || 'None'}
 
-First, write the personalized report with explanations and advice.
-For each recommended supplement, include the recommended dose (in grams, capsules, etc.) and the best time of day to take it (e.g., after training, with breakfast, etc.).
-Then, add a section titled "Recommended products" with a list of direct links to real products of the recommended supplements in online stores (e.g., Amazon, Decathlon, etc.).
-The format of the list should be:
-- [Supplement name](Product URL)
+Provide a detailed and professional report in Spanish, structured with the following sections using Markdown for formatting. Use bold for supplement names.
 
-Do not repeat the profile summary, only the report and the product list.
-The report must be clear, professional, and easy to read.
+**# Informe de Suplementación Personalizado y Profesional**
 
-Provide a detailed report in Spanish with the following sections in Markdown format:
-1.  **Introducción Personalizada**: Brief and motivating introduction.
-2.  **Suplementos Base (Fundamentales)**: Recommended supplements regardless of the goal (e.g., protein, creatine, Omega-3), explaining why for this user.
-3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Specific supplements for the user's goal.
-4.  **Suplementos para tu Deporte (${customProfile.sport})**: Specific supplements for the user's sport.
-5.  **Consideraciones Adicionales**: Health warnings, importance of diet, etc.
-6.  **Resumen y Siguientes Pasos**: Final summary and recommendations.
+**## Introducción Personalizada**
+(Write a brief and motivating introduction tailored to the user's goal and sport.)
 
-Finally, add a separate section with the title '### Recommended Products' and under it, a bulleted list of 3-5 specific products (e.g., 'Whey Protein - Optimum Nutrition Gold Standard Whey'). Do not add links, just the text.
+**## Suplementos Base (Fundamentales)**
+(For each fundamental supplement like Protein, Creatine, Omega-3, write a paragraph explaining its benefits for this specific user. Include recommended dosage and the best time to take it.)
+
+**## Suplementos para tu Objetivo (${customProfile.objective})**
+(For each supplement specific to the user's goal, write a paragraph explaining its benefits, recommended dosage, and best time to take it.)
+
+**## Suplementos para tu Deporte (${customProfile.sport})**
+(For each supplement specific to the user's sport, write a paragraph explaining its benefits, dosage, and timing.)
+
+**## Consideraciones Adicionales**
+(Provide important health warnings, the importance of a balanced diet, hydration, and consulting a professional.)
+
+**## Resumen y Siguientes Pasos**
+(Write a concluding summary and motivating next steps.)
+
+**### Productos Recomendados**
+(List 3-5 specific, real-world product examples based on the recommendations. Example: 'Proteína en Polvo - Optimum Nutrition Gold Standard Whey'. Do not add links, just the text list.)
 `
       : `
 Eres un experto en suplementación deportiva.
 Genera un informe de suplementación personalizado y profesional para el siguiente perfil:
 
 - Objetivo: ${customProfile.objective}
-- Deporte principal: ${customProfile.sport}
-- Nivel de experiencia: ${mapExperience(customProfile.experience)}
-- Frecuencia de entrenamiento: ${mapFrequency(customProfile.frequency)}
+- Deporte Principal: ${customProfile.sport}
+- Nivel de Experiencia: ${mapExperience(customProfile.experience)}
+- Frecuencia de Entrenamiento: ${mapFrequency(customProfile.frequency)}
 - Peso: ${customProfile.weight} kg
 - Altura: ${customProfile.height} cm
 - Edad: ${customProfile.age}
 - Género: ${mapGender(customProfile.gender)}
-- Condiciones médicas: ${customProfile.medicalConditions.join(', ') || 'Ninguna'}
+- Condiciones Médicas: ${customProfile.medicalConditions.join(', ') || 'Ninguna'}
 - Alergias: ${customProfile.allergies.join(', ') || 'Ninguna'}
-- Suplementos actuales: ${customProfile.currentSupplements.join(', ') || 'Ninguno'}
+- Suplementos Actuales: ${customProfile.currentSupplements.join(', ') || 'Ninguno'}
 
-Primero, escribe el informe personalizado con explicaciones y consejos.
-Para cada suplemento recomendado, incluye la dosis recomendada (en gramos, cápsulas, etc.) y el mejor momento del día para tomarlo (por ejemplo: después de entrenar, con el desayuno, etc.).
-Después, añade una sección titulada "Productos recomendados" con una lista de enlaces directos a productos reales de los suplementos recomendados en tiendas online (por ejemplo, Amazon España, Decathlon, etc.).
-El formato de la lista debe ser:
-- [Nombre del suplemento](URL del producto)
+Proporciona un informe detallado y profesional en español, estructurado con las siguientes secciones usando Markdown para el formato. Usa negrita para los nombres de los suplementos.
 
-No repitas el resumen del perfil, solo el informe y la lista de productos.
-El informe debe ser claro, profesional y fácil de leer.
+**# Informe de Suplementación Personalizado y Profesional**
 
-Proporciona un informe detallado en español con las siguientes secciones en formato Markdown:
-1.  **Introducción Personalizada**: Introducción breve y motivadora.
-2.  **Suplementos Base (Fundamentales)**: Suplementos recomendados independientemente del objetivo (ej. proteína, creatina, Omega-3), explicando el porqué para este usuario.
-3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Suplementos específicos para el objetivo del usuario.
-4.  **Suplementos para tu Deporte (${customProfile.sport})**: Suplementos específicos para el deporte del usuario.
-5.  **Consideraciones Adicionales**: Advertencias de salud, importancia de la dieta, etc.
-6.  **Resumen y Siguientes Pasos**: Resumen final y recomendaciones.
+**## Introducción Personalizada**
+(Escribe una introducción breve y motivadora, personalizada para el objetivo y deporte del usuario.)
 
-Finalmente, añade una sección separada con el título '### Productos Recomendados' y, debajo, una lista de viñetas con 3-5 productos específicos (ej. 'Proteína en Polvo - Optimum Nutrition Gold Standard Whey'). No añadas enlaces, solo el texto.
+**## Suplementos Base (Fundamentales)**
+(Para cada suplemento fundamental como Proteína, Creatina, Omega-3, escribe un párrafo explicando sus beneficios para este usuario en concreto. Incluye dosis recomendada y mejor momento del día para tomarlo.)
+
+**## Suplementos para tu Objetivo (${customProfile.objective})**
+(Para cada suplemento específico para el objetivo, escribe un párrafo explicando sus beneficios, dosis recomendada y mejor momento del día.)
+
+**## Suplementos para tu Deporte (${customProfile.sport})**
+(Para cada suplemento específico para el deporte, escribe un párrafo explicando sus beneficios, dosis y momento.)
+
+**## Consideraciones Adicionales**
+(Proporciona advertencias de salud importantes, la importancia de una dieta equilibrada, hidratación y consultar a un profesional.)
+
+**## Resumen y Siguientes Pasos**
+(Escribe un resumen final y unos siguientes pasos motivadores.)
+
+**### Productos Recomendados**
+(Enumera de 3 a 5 ejemplos de productos específicos y reales basados en las recomendaciones. Ejemplo: 'Proteína en Polvo - Optimum Nutrition Gold Standard Whey'. No añadas enlaces, solo la lista de texto.)
 `;
 
     try {
