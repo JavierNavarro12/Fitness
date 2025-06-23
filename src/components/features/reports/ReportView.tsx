@@ -175,9 +175,9 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const supplementsWithLinks = extractSupplementsWithLinks(report.content);
 
   return (
-    <div ref={reportRef} className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-0 md:p-0 border border-gray-100 dark:border-gray-700 overflow-hidden">
+    <div ref={reportRef} className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-0 md:p-0 border border-gray-100 dark:border-gray-700 overflow-hidden">
       {/* Encabezado profesional */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-700 dark:to-red-500">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600">
         <div className="flex items-center gap-2 sm:gap-3">
           {FaFile({ className: "text-white text-xl sm:text-2xl" })}
           <span className="text-white font-bold text-base sm:text-lg md:text-xl">{t('report.title')}</span>
@@ -226,14 +226,14 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
       </div>
       {/* Contenido del informe */}
       <div className="px-6 py-4">
-        <div className="text-xs text-gray-500 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
-        <div className="prose prose-sm sm:prose-base max-w-none p-4 sm:p-6 text-gray-800 dark:text-gray-200">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
+        <div className="prose prose-sm sm:prose-base max-w-none p-4 sm:p-6 bg-gray-50 dark:bg-gray-900/80 text-gray-800 dark:text-gray-100 rounded-xl dark:prose-strong:text-red-300">
           <ReactMarkdown>{filteredContent}</ReactMarkdown>
         </div>
 
         {/* Sección de Enlaces a Productos Recomendados */}
         {supplementsWithLinks.length > 0 && (
-          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
             <h3 className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3">Productos Recomendados</h3>
             <ul className="space-y-2">
               {supplementsWithLinks.map((supplement, index) => (
