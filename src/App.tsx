@@ -17,6 +17,7 @@ import Switch from './components/shared/Switch';
 import LanguageSwitch from './components/shared/LanguageSwitch';
 import BottomNav from './components/layout/BottomNav';
 import MobileMenu from './components/layout/MobileMenu';
+import PersonalizedChatAI from './components/features/ia/PersonalizedChatAI';
 
 interface SearchResult {
   id: string;
@@ -901,6 +902,9 @@ Proporciona un informe detallado y profesional en español, estructurado con las
       <Footer setNav={setNav} />
       {/* Bottom navigation bar solo visible en móvil */}
       <BottomNav nav={nav} setNav={setNav} user={user} onSignOut={() => signOut(auth)} />
+      
+      {/* Chat IA Personalizado */}
+      <PersonalizedChatAI userProfile={userProfile} />
     </div>
   );
 }

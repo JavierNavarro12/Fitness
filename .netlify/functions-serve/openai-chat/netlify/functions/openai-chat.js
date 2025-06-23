@@ -6292,7 +6292,7 @@ var handler = async (event, context) => {
         { role: "system", content: "Eres un experto en suplementaci\xF3n deportiva." },
         ...messages
       ],
-      max_tokens: 500
+      max_tokens: 1e3
     });
     return {
       statusCode: 200,
