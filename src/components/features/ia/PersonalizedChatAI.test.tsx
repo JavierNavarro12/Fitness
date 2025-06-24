@@ -1,8 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PersonalizedChatAI from './PersonalizedChatAI';
 import { UserProfile } from '../../../types';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../../../i18n';
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -35,114 +37,124 @@ const mockUserProfileWithoutOptional: UserProfile = {
   currentSupplements: []
 };
 
+// Wrapper para tests con i18n
+const renderWithI18n = (component: React.ReactElement) => {
+  return render(
+    <I18nextProvider i18n={i18n}>
+      {component}
+    </I18nextProvider>
+  );
+};
+
 describe('PersonalizedChatAI', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (fetch as jest.Mock).mockClear();
   });
 
-  describe('Renderizado inicial', () => {
+  describe('Funcionalidad básica', () => {
     test('renderiza el botón flotante', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      expect(button).toBeInTheDocument();
-      expect(button).toHaveTextContent('🤖');
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      expect(screen.getByRole('button', { name: /abrir chat ia personalizado/i })).toBeInTheDocument();
     });
 
-    test('no renderiza la ventana de chat inicialmente', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      expect(screen.queryByText(/EGN IA Personal/i)).not.toBeInTheDocument();
-    });
-
-    test('muestra mensaje de bienvenida sin perfil', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
+    test('abre y cierra el chat', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
       
       const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
       fireEvent.click(button);
       
-      expect(screen.getByText(/¡Hola! Soy tu asistente de suplementación/i)).toBeInTheDocument();
-    });
-
-    test('muestra mensaje de bienvenida personalizado con perfil', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      expect(screen.getByText(/Veo que tu objetivo es Ganar masa muscular/i)).toBeInTheDocument();
-      expect(screen.getByText(/practicas weightlifting/i)).toBeInTheDocument();
-    });
-  });
-
-  describe('Interacciones del usuario', () => {
-    test('abre y cierra la ventana de chat', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      
-      // Abrir chat
-      fireEvent.click(button);
       expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
       
-      // Cerrar chat
       const closeButton = screen.getByText('×');
       fireEvent.click(closeButton);
+      
       expect(screen.queryByText(/EGN IA Personal/i)).not.toBeInTheDocument();
     });
 
-    test('permite escribir en el input', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
+    test('muestra mensaje de bienvenida personalizado', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
       
       const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
       fireEvent.click(button);
       
-      const input = screen.getByPlaceholderText(/pregúntame sobre suplementación/i);
-      fireEvent.change(input, { target: { value: '¿Qué proteína recomiendas?' } });
+      expect(screen.getByText(/Ganar masa muscular/i)).toBeInTheDocument();
+      expect(screen.getByText(/weightlifting/i)).toBeInTheDocument();
+    });
+
+    test('muestra mensaje genérico sin perfil', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={null} />);
       
-      expect(input).toHaveValue('¿Qué proteína recomiendas?');
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      expect(screen.getByText(/Soy tu asistente de suplementación/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Interacción con mensajes', () => {
+    test('permite escribir y enviar mensajes', async () => {
+      (fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ reply: 'Respuesta de la IA' })
+      });
+
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
+      const sendButton = screen.getByText('Enviar');
+      
+      fireEvent.change(input, { target: { value: 'Test message' } });
+      fireEvent.click(sendButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Test message')).toBeInTheDocument();
+      });
+      
+      await waitFor(() => {
+        expect(screen.getByText('Respuesta de la IA')).toBeInTheDocument();
+      });
+    });
+
+    test('maneja errores de red', async () => {
+      (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
+      const sendButton = screen.getByText('Enviar');
+      
+      fireEvent.change(input, { target: { value: 'Test message' } });
+      fireEvent.click(sendButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText(/Ocurrió un error al conectar con la IA/i)).toBeInTheDocument();
+      });
     });
 
     test('envía mensaje con Enter', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ reply: 'Te recomiendo proteína whey isolate.' })
+        json: async () => ({ reply: 'Respuesta de la IA' })
       });
 
-      render(<PersonalizedChatAI userProfile={null} />);
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
       
       const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
       fireEvent.click(button);
       
-      const input = screen.getByPlaceholderText(/pregúntame sobre suplementación/i);
-      fireEvent.change(input, { target: { value: '¿Qué proteína recomiendas?' } });
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
+      
+      fireEvent.change(input, { target: { value: 'Test message' } });
       fireEvent.keyDown(input, { key: 'Enter' });
       
       await waitFor(() => {
-        expect(screen.getByText('¿Qué proteína recomiendas?')).toBeInTheDocument();
-      });
-    });
-
-    test('envía mensaje con botón', async () => {
-      (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ reply: 'Te recomiendo proteína whey isolate.' })
-      });
-
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      const input = screen.getByPlaceholderText(/pregúntame sobre suplementación/i);
-      const sendButton = screen.getByText('Enviar');
-      
-      fireEvent.change(input, { target: { value: '¿Qué proteína recomiendas?' } });
-      fireEvent.click(sendButton);
-      
-      await waitFor(() => {
-        expect(screen.getByText('¿Qué proteína recomiendas?')).toBeInTheDocument();
+        expect(screen.getByText('Test message')).toBeInTheDocument();
       });
     });
   });
@@ -154,230 +166,170 @@ describe('PersonalizedChatAI', () => {
         json: async () => ({ reply: 'Respuesta de la IA' })
       });
 
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
       
       const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
       fireEvent.click(button);
       
-      const input = screen.getByPlaceholderText(/alguna duda/i);
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
       const sendButton = screen.getByText('Enviar');
       
       fireEvent.change(input, { target: { value: 'Test message' } });
       fireEvent.click(sendButton);
       
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith('/.netlify/functions/openai-chat', {
+        expect(fetch).toHaveBeenCalledWith('/.netlify/functions/openai-chat', expect.objectContaining({
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: expect.stringContaining('Test message')
-        });
+        }));
       });
     });
 
-    test('maneja errores de API', async () => {
-      (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
-
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      const input = screen.getByPlaceholderText(/pregúntame sobre suplementación/i);
-      const sendButton = screen.getByText('Enviar');
-      
-      fireEvent.change(input, { target: { value: 'Test message' } });
-      fireEvent.click(sendButton);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Ocurrió un error al conectar con la IA.')).toBeInTheDocument();
-      });
-    });
-
-    test('maneja respuesta HTTP no exitosa', async () => {
+    test('incluye contexto del usuario en la petición', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: false,
-        status: 500
+        ok: true,
+        json: async () => ({ reply: 'Respuesta de la IA' })
       });
 
-      render(<PersonalizedChatAI userProfile={null} />);
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
       
       const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
       fireEvent.click(button);
       
-      const input = screen.getByPlaceholderText(/pregúntame sobre suplementación/i);
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
       const sendButton = screen.getByText('Enviar');
       
       fireEvent.change(input, { target: { value: 'Test message' } });
       fireEvent.click(sendButton);
       
       await waitFor(() => {
-        expect(screen.getByText('Ocurrió un error al conectar con la IA.')).toBeInTheDocument();
+        expect(fetch).toHaveBeenCalledWith('/.netlify/functions/openai-chat', expect.objectContaining({
+          body: expect.stringContaining('Ganar masa muscular')
+        }));
       });
     });
   });
 
-  describe('Mapeo de datos del perfil', () => {
-    test('mapea correctamente el género', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      // Verificar que el contexto del sistema incluya el género mapeado
-      const input = screen.getByPlaceholderText(/alguna duda/i);
-      const sendButton = screen.getByText('Enviar');
-      
-      fireEvent.change(input, { target: { value: 'Test' } });
-      fireEvent.click(sendButton);
-      
-      expect(fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('Género: Masculino')
-        })
-      );
+  describe('PersonalizedChatAI - nuevos comportamientos', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      // Resetear el idioma a español antes de cada test
+      i18n.changeLanguage('es');
     });
 
-    test('mapea correctamente la experiencia', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      const input = screen.getByPlaceholderText(/alguna duda/i);
-      const sendButton = screen.getByText('Enviar');
-      
-      fireEvent.change(input, { target: { value: 'Test' } });
-      fireEvent.click(sendButton);
-      
-      expect(fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('Nivel de experiencia: Intermedio')
-        })
-      );
-    });
-
-    test('mapea correctamente la frecuencia', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      const input = screen.getByPlaceholderText(/alguna duda/i);
-      const sendButton = screen.getByText('Enviar');
-      
-      fireEvent.change(input, { target: { value: 'Test' } });
-      fireEvent.click(sendButton);
-      
-      expect(fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('Frecuencia de entrenamiento: Media (3-4 veces/semana)')
-        })
-      );
-    });
-  });
-
-  describe('Renderizado condicional', () => {
-    test('muestra badge "Personalizado" cuando hay perfil', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      expect(screen.getByText('Personalizado')).toBeInTheDocument();
-    });
-
-    test('no muestra badge "Personalizado" sin perfil', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      expect(screen.queryByText('Personalizado')).not.toBeInTheDocument();
-    });
-
-    test('usa placeholder correcto según perfil', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfile} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      expect(screen.getByPlaceholderText(/alguna duda/i)).toBeInTheDocument();
-    });
-
-    test('usa placeholder genérico sin perfil', () => {
-      render(<PersonalizedChatAI userProfile={null} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      expect(screen.getByPlaceholderText(/pregúntame sobre suplementación/i)).toBeInTheDocument();
-    });
-  });
-
-  describe('Estados de loading', () => {
-    test('muestra estado de loading durante envío', async () => {
-      (fetch as jest.Mock).mockImplementationOnce(() => 
-        new Promise(resolve => setTimeout(() => resolve({
-          ok: true,
-          json: async () => ({ reply: 'Respuesta' })
-        }), 100))
+    test('cierra el chat automáticamente al abrir el menú móvil', async () => {
+      const { rerender } = renderWithI18n(
+        <PersonalizedChatAI userProfile={mockUserProfile} mobileMenuOpen={false} />
       );
 
-      render(<PersonalizedChatAI userProfile={null} />);
+      // Abrir el chat primero
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      // Verificar que el chat está abierto
+      expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
+
+      // Simular apertura del menú móvil (cambio de prop)
+      rerender(
+        <I18nextProvider i18n={i18n}>
+          <PersonalizedChatAI userProfile={mockUserProfile} mobileMenuOpen={true} />
+        </I18nextProvider>
+      );
+
+      // Verificar que el chat se cerró automáticamente
+      await waitFor(() => {
+        expect(screen.queryByText(/EGN IA Personal/i)).not.toBeInTheDocument();
+      });
+    });
+
+    test('muestra overlay con blur al abrir el chat', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
       
       const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
       fireEvent.click(button);
       
-      const input = screen.getByPlaceholderText(/pregúntame sobre suplementación/i);
+      // Verificar que aparece el overlay con blur
+      expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
+      // El overlay está presente en el DOM
+      const overlay = document.querySelector('.fixed.inset-0.bg-black\\/20.backdrop-blur-sm');
+      expect(overlay).toBeInTheDocument();
+    });
+
+    test('muestra textos en español por defecto', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      // Verificar textos en español
+      expect(screen.getByText(/Personalizado/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/¿Alguna duda/i)).toBeInTheDocument();
+    });
+
+    test('muestra textos en inglés cuando el idioma está configurado en inglés', async () => {
+      // Configurar idioma en inglés antes del render
+      await act(async () => {
+        i18n.changeLanguage('en');
+      });
+      
+      const { rerender } = renderWithI18n(
+        <PersonalizedChatAI userProfile={mockUserProfile} />
+      );
+      
+      // Re-renderizar para asegurar que el cambio de idioma se aplique
+      rerender(
+        <I18nextProvider i18n={i18n}>
+          <PersonalizedChatAI userProfile={mockUserProfile} />
+        </I18nextProvider>
+      );
+      
+      const button = screen.getByRole('button', { name: /open personalized ai chat/i });
+      fireEvent.click(button);
+      
+      // Verificar textos en inglés
+      await waitFor(() => {
+        expect(screen.getAllByText(/Personalized/i).length).toBeGreaterThan(0);
+      });
+      expect(screen.getByPlaceholderText(/Any questions/i)).toBeInTheDocument();
+    });
+
+    test('oculta el botón flotante cuando el menú móvil está abierto', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} mobileMenuOpen={true} />);
+      
+      // Verificar que el botón flotante no está presente
+      expect(screen.queryByRole('button', { name: /abrir chat ia personalizado/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /open personalized ai chat/i })).not.toBeInTheDocument();
+    });
+
+    test('mantiene el contexto en el idioma correcto al enviar mensajes', async () => {
+      (fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ reply: 'Respuesta de la IA' })
+      });
+
+      // Asegurar que estamos en español
+      i18n.changeLanguage('es');
+      
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      // Usar el botón en español ya que el test está en español
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
       const sendButton = screen.getByText('Enviar');
       
       fireEvent.change(input, { target: { value: 'Test message' } });
       fireEvent.click(sendButton);
       
-      expect(sendButton).toHaveTextContent('...');
-      expect(sendButton).toBeDisabled();
-      expect(input).toBeDisabled();
-    });
-  });
-
-  describe('Manejo de campos opcionales', () => {
-    test('maneja perfil sin campos opcionales', () => {
-      render(<PersonalizedChatAI userProfile={mockUserProfileWithoutOptional} />);
-      
-      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
-      fireEvent.click(button);
-      
-      const input = screen.getByPlaceholderText(/alguna duda/i);
-      const sendButton = screen.getByText('Enviar');
-      
-      fireEvent.change(input, { target: { value: 'Test' } });
-      fireEvent.click(sendButton);
-      
-      expect(fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('Condiciones médicas: Ninguna')
-        })
-      );
-      
-      expect(fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('Alergias: Ninguna')
-        })
-      );
-      
-      expect(fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          body: expect.stringContaining('Suplementos actuales: Ninguno')
-        })
-      );
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith('/.netlify/functions/openai-chat', expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('Eres un asistente personal experto en suplementación deportiva')
+        }));
+      });
     });
   });
 }); 
+

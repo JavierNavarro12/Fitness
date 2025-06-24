@@ -904,7 +904,7 @@ Proporciona un informe detallado y profesional en español, estructurado con las
       <BottomNav nav={nav} setNav={setNav} user={user} onSignOut={() => signOut(auth)} />
       
       {/* Chat IA Personalizado */}
-      <PersonalizedChatAI userProfile={userProfile} />
+      <PersonalizedChatAI userProfile={userProfile} mobileMenuOpen={mobileMenuOpen} />
     </div>
   );
 }

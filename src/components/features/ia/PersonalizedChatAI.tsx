@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UserProfile } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 interface PersonalizedChatAIProps {
   userProfile: UserProfile | null;
+  mobileMenuOpen?: boolean;
 }
 
-const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile }) => {
+const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile, mobileMenuOpen }) => {
+  const { i18n } = useTranslation();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [loading, setLoading] = useState(false);
@@ -18,13 +21,30 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile }) 
     }
   }, [messages, open]);
 
+  useEffect(() => {
+    if (mobileMenuOpen && open) {
+      setOpen(false);
+    }
+  }, [mobileMenuOpen, open]);
+
   const mapGender = (g: string) => {
+    if (i18n.language === 'en') {
+      if (g === 'male') return 'Male';
+      if (g === 'female') return 'Female';
+      return 'Other';
+    }
     if (g === 'male') return 'Masculino';
     if (g === 'female') return 'Femenino';
     return 'Otro';
   };
 
   const mapExperience = (e: string) => {
+    if (i18n.language === 'en') {
+      if (e === 'beginner') return 'Beginner';
+      if (e === 'intermediate') return 'Intermediate';
+      if (e === 'advanced') return 'Advanced';
+      return e;
+    }
     if (e === 'beginner') return 'Principiante';
     if (e === 'intermediate') return 'Intermedio';
     if (e === 'advanced') return 'Avanzado';
@@ -32,6 +52,12 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile }) 
   };
 
   const mapFrequency = (f: string) => {
+    if (i18n.language === 'en') {
+      if (f === 'low') return 'Low (1-2 times/week)';
+      if (f === 'medium') return 'Medium (3-4 times/week)';
+      if (f === 'high') return 'High (5+ times/week)';
+      return f;
+    }
     if (f === 'low') return 'Baja (1-2 veces/semana)';
     if (f === 'medium') return 'Media (3-4 veces/semana)';
     if (f === 'high') return 'Alta (5+ veces/semana)';
@@ -39,10 +65,37 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile }) 
   };
 
   const createUserContext = () => {
+    if (i18n.language === 'en') {
+      if (!userProfile) {
+        return "You are an expert assistant in sports supplementation. Answer questions about supplements, nutrition, and fitness in a professional and educational manner.";
+      }
+      return `You are a personal expert assistant in sports supplementation. You have access to the user's profile:
+
+USER PROFILE:
+- Age: ${userProfile.age} years
+- Gender: ${mapGender(userProfile.gender)}
+- Weight: ${userProfile.weight} kg
+- Height: ${userProfile.height} cm
+- Main goal: ${userProfile.objective}
+- Experience level: ${mapExperience(userProfile.experience)}
+- Training frequency: ${mapFrequency(userProfile.frequency)}
+- Main sport: ${userProfile.sport}
+- Medical conditions: ${userProfile.medicalConditions?.join(', ') || 'None'}
+- Allergies: ${userProfile.allergies?.join(', ') || 'None'}
+- Current supplements: ${userProfile.currentSupplements?.join(', ') || 'None'}
+
+INSTRUCTIONS:
+- Always personalize your answers based on the user's profile
+- Consider their goals, sport, experience, and medical conditions
+- Give specific and practical recommendations
+- If you don't have a user profile, give general but professional advice
+- Keep a motivating and educational tone
+- Answer in clear and concise English`;
+    }
+    // Español
     if (!userProfile) {
       return "Eres un asistente experto en suplementación deportiva. Responde preguntas sobre suplementos, nutrición y fitness de manera profesional y educativa.";
     }
-
     return `Eres un asistente personal experto en suplementación deportiva. Tienes acceso al perfil del usuario:
 
 PERFIL DEL USUARIO:
@@ -101,23 +154,34 @@ INSTRUCCIONES:
       const data = await response.json();
       setMessages([
         ...newMessages,
-        { role: 'assistant', content: data.reply || 'Lo siento, no tengo respuesta en este momento.' },
+        { role: 'assistant', content: data.reply || (i18n.language === 'en' ? 'Sorry, I have no answer at the moment.' : 'Lo siento, no tengo respuesta en este momento.') },
       ]);
     } catch (e) {
       console.error(e);
       setMessages([
         ...newMessages,
-        { role: 'assistant', content: 'Ocurrió un error al conectar con la IA.' },
+        { role: 'assistant', content: i18n.language === 'en' ? 'An error occurred while connecting to the AI.' : 'Ocurrió un error al conectar con la IA.' },
       ]);
     }
     setLoading(false);
   };
 
   const getWelcomeMessage = () => {
+    if (i18n.language === 'en') {
+      if (!userProfile) {
+        return "Hi! I'm your supplementation assistant. Ask me anything about supplements, nutrition, or fitness.";
+      }
+      // Clean sport if it starts with 'sports.'
+      let cleanSport = userProfile.sport;
+      if (cleanSport.startsWith('sports.')) {
+        cleanSport = cleanSport.replace('sports.', '');
+      }
+      return `Hi! I'm your personal supplementation assistant.\n\nI see your goal is ${userProfile.objective} and you practice ${cleanSport}.\n\nHow can I help you today? I can give you personalized recommendations based on your profile.`;
+    }
+    // Español
     if (!userProfile) {
       return "¡Hola! Soy tu asistente de suplementación. Hazme cualquier pregunta sobre suplementos, nutrición o fitness.";
     }
-    // Limpiar el deporte si viene con prefijo 'sports.'
     let cleanSport = userProfile.sport;
     if (cleanSport.startsWith('sports.')) {
       cleanSport = cleanSport.replace('sports.', '');
@@ -129,64 +193,68 @@ INSTRUCCIONES:
   return (
     <div>
       {/* Botón flotante para abrir/cerrar el chat */}
-      <button
-        className="fixed right-6 bottom-10 sm:right-16 sm:bottom-10 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none"
-        onClick={() => setOpen(o => !o)}
-        aria-label="Abrir chat IA personalizado"
-      >
-        🤖
-      </button>
-      
+      {!mobileMenuOpen && (
+        <button
+          className="fixed right-6 bottom-24 sm:right-16 sm:bottom-10 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none"
+          onClick={() => setOpen(o => !o)}
+          aria-label={i18n.language === 'en' ? 'Open personalized AI chat' : 'Abrir chat IA personalizado'}
+        >
+          🤖
+        </button>
+      )}
       {/* Ventana de chat */}
       {open && (
-        <div className="fixed right-6 bottom-28 sm:right-16 sm:bottom-28 z-50 w-80 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in">
-          <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span>EGN IA Personal</span>
-              {userProfile && (
-                <span className="text-xs bg-red-500 px-2 py-1 rounded-full">
-                  Personalizado
-                </span>
-              )}
+        <>
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
+          <div className="fixed right-6 bottom-40 sm:right-16 sm:bottom-28 z-50 w-80 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in">
+            <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span>EGN IA Personal</span>
+                {userProfile && (
+                  <span className="text-xs bg-red-500 px-2 py-1 rounded-full">
+                    {i18n.language === 'en' ? 'Personalized' : 'Personalizado'}
+                  </span>
+                )}
+              </div>
+              <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
             </div>
-            <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
-          </div>
-          
-          <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
-            {messages.length === 0 && (
-              <div className="text-gray-600 text-sm leading-relaxed">
-                {getWelcomeMessage()}
-              </div>
-            )}
             
-            {messages.map((msg, i) => (
-              <div key={i} className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}>
-                  {msg.content}
+            <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
+              {messages.length === 0 && (
+                <div className="text-gray-600 text-sm leading-relaxed">
+                  {getWelcomeMessage()}
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+              )}
+              
+              {messages.map((msg, i) => (
+                <div key={i} className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}>
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+            
+            <div className="p-3 border-t border-red-100 bg-white flex gap-2">
+              <input
+                className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !loading && sendMessage()}
+                placeholder={userProfile ? (i18n.language === 'en' ? 'Any questions?' : '¿Alguna duda?') : (i18n.language === 'en' ? 'Ask me about supplementation...' : 'Pregúntame sobre suplementación...')}
+                disabled={loading}
+              />
+              <button
+                className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50"
+                onClick={sendMessage}
+                disabled={loading}
+              >
+                {loading ? (i18n.language === 'en' ? '...' : '...') : (i18n.language === 'en' ? 'Send' : 'Enviar')}
+              </button>
+            </div>
           </div>
-          
-          <div className="p-3 border-t border-red-100 bg-white flex gap-2">
-            <input
-              className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && !loading && sendMessage()}
-              placeholder={userProfile ? "¿Alguna duda?" : "Pregúntame sobre suplementación..."}
-              disabled={loading}
-            />
-            <button
-              className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50"
-              onClick={sendMessage}
-              disabled={loading}
-            >
-              {loading ? '...' : 'Enviar'}
-            </button>
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
