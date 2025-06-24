@@ -236,7 +236,7 @@ INSTRUCCIONES:
               <div ref={messagesEndRef} />
             </div>
             
-            <div className="p-3 border-t border-red-100 bg-white flex gap-2">
+            <div className="p-3 border-t border-red-100 flex gap-2 rounded-b-2xl">
               <input
                 className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
                 value={input}
