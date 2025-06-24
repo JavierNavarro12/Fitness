@@ -19,6 +19,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const searchPanelRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isResultsVisible, setIsResultsVisible] = useState(false);
 
   useEffect(() => {
@@ -33,9 +34,17 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
     };
   }, []);
 
+  // Focus automático al abrir el panel (cuando se monta el componente)
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
     <form ref={searchPanelRef} className="relative w-full max-w-xs" onSubmit={(e) => e.preventDefault()}>
       <input
+        ref={inputRef}
         type="text"
         placeholder={t('search.placeholder')}
         className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
