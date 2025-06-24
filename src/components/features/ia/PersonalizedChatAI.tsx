@@ -272,7 +272,7 @@ INSTRUCCIONES:
       {open && (
         <>
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
-          <div className="fixed right-6 bottom-40 sm:right-16 sm:bottom-28 z-50 w-96 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden">
+          <div className="fixed left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28 z-50 w-[95vw] max-w-md sm:w-96 bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden -translate-x-1/2 sm:translate-x-0">
             {/* Header con botón historial */}
             <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
               <div className="flex items-center gap-2">
