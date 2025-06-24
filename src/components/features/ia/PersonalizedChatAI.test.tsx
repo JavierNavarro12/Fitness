@@ -263,7 +263,6 @@ describe('PersonalizedChatAI', () => {
       fireEvent.click(button);
       
       // Verificar textos en español
-      expect(screen.getByText(/Personalizado/i)).toBeInTheDocument();
       expect(screen.getByPlaceholderText(/¿Alguna duda/i)).toBeInTheDocument();
     });
 

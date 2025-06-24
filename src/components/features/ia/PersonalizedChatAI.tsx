@@ -1,6 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UserProfile } from '../../../types';
 import { useTranslation } from 'react-i18next';
+import { db, auth } from '../../../firebase';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  deleteDoc,
+  doc,
+  Timestamp
+} from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { FaTrash } from 'react-icons/fa';
 
 interface PersonalizedChatAIProps {
   userProfile: UserProfile | null;
@@ -14,6 +28,11 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile, mo
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [selectedChat, setSelectedChat] = useState<any | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
     if (open && messagesEndRef.current && messagesEndRef.current.scrollIntoView) {
@@ -26,6 +45,48 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile, mo
       setOpen(false);
     }
   }, [mobileMenuOpen, open]);
+
+  // Detectar usuario autenticado
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUserId(user ? user.uid : null);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Cargar historial de Firestore
+  const loadHistory = async () => {
+    if (!userId) return;
+    setHistoryLoading(true);
+    const q = query(
+      collection(db, 'chatHistories'),
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    const history = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setChatHistory(history);
+    setHistoryLoading(false);
+  };
+
+  // Guardar conversación en Firestore
+  const saveChatToHistory = async (msgs: any[]) => {
+    if (!userId || msgs.length === 0) return;
+    // Solo guarda si hay mensajes
+    await addDoc(collection(db, 'chatHistories'), {
+      userId,
+      messages: msgs,
+      createdAt: Timestamp.now(),
+      title: msgs[0]?.content?.slice(0, 40) || 'Chat',
+    });
+    loadHistory();
+  };
+
+  // Borrar chat del historial
+  const deleteChat = async (id: string) => {
+    await deleteDoc(doc(db, 'chatHistories', id));
+    loadHistory();
+  };
 
   const mapGender = (g: string) => {
     if (i18n.language === 'en') {
@@ -152,16 +213,21 @@ INSTRUCCIONES:
       }
 
       const data = await response.json();
-      setMessages([
+      const updatedMessages = [
         ...newMessages,
         { role: 'assistant', content: data.reply || (i18n.language === 'en' ? 'Sorry, I have no answer at the moment.' : 'Lo siento, no tengo respuesta en este momento.') },
-      ]);
+      ];
+      setMessages(updatedMessages);
+      // Guardar historial cada vez que se envía un mensaje
+      saveChatToHistory(updatedMessages);
     } catch (e) {
       console.error(e);
-      setMessages([
+      const updatedMessages = [
         ...newMessages,
         { role: 'assistant', content: i18n.language === 'en' ? 'An error occurred while connecting to the AI.' : 'Ocurrió un error al conectar con la IA.' },
-      ]);
+      ];
+      setMessages(updatedMessages);
+      saveChatToHistory(updatedMessages);
     }
     setLoading(false);
   };
@@ -196,7 +262,7 @@ INSTRUCCIONES:
       {!mobileMenuOpen && (
         <button
           className="fixed right-6 bottom-24 sm:right-16 sm:bottom-10 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none"
-          onClick={() => setOpen(o => !o)}
+          onClick={() => { setOpen(o => !o); if (!open) { setShowHistory(false); setSelectedChat(null); } }}
           aria-label={i18n.language === 'en' ? 'Open personalized AI chat' : 'Abrir chat IA personalizado'}
         >
           🤖
@@ -206,53 +272,111 @@ INSTRUCCIONES:
       {open && (
         <>
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
-          <div className="fixed right-6 bottom-40 sm:right-16 sm:bottom-28 z-50 w-80 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in">
+          <div className="fixed right-6 bottom-40 sm:right-16 sm:bottom-28 z-50 w-96 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden">
+            {/* Header con botón historial */}
             <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span>EGN IA Personal</span>
-                {userProfile && (
-                  <span className="text-xs bg-red-500 px-2 py-1 rounded-full">
-                    {i18n.language === 'en' ? 'Personalized' : 'Personalizado'}
-                  </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (!showHistory) loadHistory();
+                    setShowHistory(h => !h);
+                    setSelectedChat(null);
+                  }}
+                  className="text-white text-xl font-bold hover:text-red-200 focus:outline-none mr-2"
+                  title={i18n.language === 'en' ? 'History' : 'Historial'}
+                  aria-label={i18n.language === 'en' ? 'History' : 'Historial'}
+                >
+                  <img src="/history.png" alt="Historial" className="w-7 h-7 object-contain" />
+                </button>
+                <button
+                  className="text-xs text-blue-100 hover:underline mr-2"
+                  onClick={() => { setMessages([]); setShowHistory(false); setSelectedChat(null); }}
+                >
+                  {i18n.language === 'en' ? 'New chat' : 'Nuevo chat'}
+                </button>
+                <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
+              </div>
+            </div>
+
+            {/* Panel de historial */}
+            {showHistory ? (
+              <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '75vh' }}>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="font-semibold text-gray-700">{i18n.language === 'en' ? 'Chat History' : 'Historial de chats'}</span>
+                  <button className="text-xs text-red-600 hover:underline" onClick={() => setShowHistory(false)}>{i18n.language === 'en' ? 'Back to chat' : 'Volver al chat'}</button>
+                </div>
+                {historyLoading ? (
+                  <div className="text-gray-500 text-sm">{i18n.language === 'en' ? 'Loading...' : 'Cargando...'}</div>
+                ) : chatHistory.length === 0 ? (
+                  <div className="text-gray-500 text-sm">{i18n.language === 'en' ? 'No history yet.' : 'Sin historial aún.'}</div>
+                ) : (
+                  <ul className="space-y-2">
+                    {chatHistory.map(chat => (
+                      <li key={chat.id} className="flex items-center justify-between bg-white border border-red-100 rounded-lg px-3 py-2 hover:bg-red-50 transition cursor-pointer">
+                        <span onClick={() => setSelectedChat(chat)} className="flex-1 truncate">
+                          {chat.title || (i18n.language === 'en' ? 'Chat' : 'Chat')}
+                        </span>
+                        <button onClick={() => deleteChat(chat.id)} className="ml-2 text-red-500 hover:text-red-700 text-lg" title={i18n.language === 'en' ? 'Delete' : 'Borrar'}>
+                          {FaTrash({ className: "w-5 h-5" })}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {/* Mostrar chat seleccionado */}
+                {selectedChat && (
+                  <div className="mt-4 bg-white border border-red-100 rounded-lg p-3 max-h-60 overflow-y-auto">
+                    <div className="mb-2 font-semibold text-gray-700">{i18n.language === 'en' ? 'Conversation' : 'Conversación'}</div>
+                    <div className="space-y-2 text-sm">
+                      {selectedChat.messages.map((msg: any, i: number) => (
+                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`px-3 py-1 rounded-xl max-w-[80%] ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-gray-100 text-gray-800 border border-gray-200'}`}>{msg.content}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition" onClick={() => setSelectedChat(null)}>{i18n.language === 'en' ? 'Back to history' : 'Volver al historial'}</button>
+                  </div>
                 )}
               </div>
-              <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
-            </div>
-            
-            <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
-              {messages.length === 0 && (
-                <div className="text-gray-600 text-sm leading-relaxed">
-                  {getWelcomeMessage()}
+            ) : (
+              <>
+                <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
+                  {messages.length === 0 && (
+                    <div className="text-gray-600 text-sm leading-relaxed">
+                      {getWelcomeMessage()}
+                    </div>
+                  )}
+                  {messages.map((msg, i) => (
+                    <div key={i} className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}>
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
                 </div>
-              )}
-              
-              {messages.map((msg, i) => (
-                <div key={i} className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}>
-                    {msg.content}
-                  </div>
+                <div className="p-3 border-t border-red-100 flex gap-2 rounded-b-2xl">
+                  <input
+                    className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && !loading && sendMessage()}
+                    placeholder={userProfile ? (i18n.language === 'en' ? 'Any questions?' : '¿Alguna duda?') : (i18n.language === 'en' ? 'Ask me about supplementation...' : 'Pregúntame sobre suplementación...')}
+                    disabled={loading}
+                  />
+                  <button
+                    className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50"
+                    onClick={sendMessage}
+                    disabled={loading}
+                  >
+                    {loading ? (i18n.language === 'en' ? '...' : '...') : (i18n.language === 'en' ? 'Send' : 'Enviar')}
+                  </button>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-            
-            <div className="p-3 border-t border-red-100 flex gap-2 rounded-b-2xl">
-              <input
-                className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && !loading && sendMessage()}
-                placeholder={userProfile ? (i18n.language === 'en' ? 'Any questions?' : '¿Alguna duda?') : (i18n.language === 'en' ? 'Ask me about supplementation...' : 'Pregúntame sobre suplementación...')}
-                disabled={loading}
-              />
-              <button
-                className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50"
-                onClick={sendMessage}
-                disabled={loading}
-              >
-                {loading ? (i18n.language === 'en' ? '...' : '...') : (i18n.language === 'en' ? 'Send' : 'Enviar')}
-              </button>
-            </div>
+              </>
+            )}
           </div>
         </>
       )}
