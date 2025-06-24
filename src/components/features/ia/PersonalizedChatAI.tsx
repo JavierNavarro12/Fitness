@@ -13,7 +13,7 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile }) 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (open && messagesEndRef.current) {
+    if (open && messagesEndRef.current && messagesEndRef.current.scrollIntoView) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, open]);
@@ -130,7 +130,7 @@ INSTRUCCIONES:
     <div>
       {/* Botón flotante para abrir/cerrar el chat */}
       <button
-        className="fixed right-6 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none bottom-24 sm:bottom-6"
+        className="fixed right-6 bottom-10 sm:right-16 sm:bottom-10 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none"
         onClick={() => setOpen(o => !o)}
         aria-label="Abrir chat IA personalizado"
       >
@@ -139,7 +139,7 @@ INSTRUCCIONES:
       
       {/* Ventana de chat */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in">
+        <div className="fixed right-6 bottom-28 sm:right-16 sm:bottom-28 z-50 w-80 max-w-full bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in">
           <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span>EGN IA Personal</span>
