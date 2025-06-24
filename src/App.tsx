@@ -18,6 +18,7 @@ import LanguageSwitch from './components/shared/LanguageSwitch';
 import BottomNav from './components/layout/BottomNav';
 import MobileMenu from './components/layout/MobileMenu';
 import PersonalizedChatAI from './components/features/ia/PersonalizedChatAI';
+import { saveUserToFirestore } from './components/features/auth/Auth';
 
 interface SearchResult {
   id: string;
@@ -129,6 +130,7 @@ function App() {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        await saveUserToFirestore(user);
         setUser(user);
         try {
           // Cargar perfil del usuario

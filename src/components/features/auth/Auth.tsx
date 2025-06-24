@@ -1,11 +1,27 @@
 import React, { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { useTranslation } from 'react-i18next';
 
 interface AuthProps {
   onAuthSuccess: () => void;
+}
+
+// Función utilitaria para guardar usuario en Firestore
+export async function saveUserToFirestore(user: any, extraData: any = {}) {
+  if (!user) return;
+  const userRef = doc(db, 'users', user.uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      email: user.email || '',
+      firstName: user.displayName || extraData.firstName || '',
+      lastName: extraData.lastName || '',
+      photo: user.photoURL || '',
+      createdAt: new Date().toISOString(),
+    });
+  }
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
@@ -27,17 +43,13 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
     const auth = getAuth();
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await saveUserToFirestore(userCredential.user); // Guardar usuario tras login
         setMessage(t('¡Sesión iniciada correctamente!'));
         onAuthSuccess();
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
-          firstName,
-          lastName,
-          email,
-          createdAt: new Date().toISOString()
-        });
+        await saveUserToFirestore(userCredential.user, { firstName, lastName }); // Guardar usuario tras registro
         setMessage(t('¡Cuenta creada correctamente!'));
         setIsLogin(true);
       }
@@ -78,7 +90,8 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      await saveUserToFirestore(result.user); // Guardar usuario tras login con Google
       setMessage(t('¡Sesión iniciada con Google!'));
       onAuthSuccess();
     } catch (err) {
