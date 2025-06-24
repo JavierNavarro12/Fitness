@@ -524,8 +524,10 @@ Proporciona un informe detallado y profesional en español, estructurado con las
         <div className="max-w-7xl mx-auto flex items-center py-2 px-4" style={{ minHeight: NAVBAR_HEIGHT }}>
           {/* Izquierda: Logo y Nav */}
           <div className="flex items-center flex-shrink-0">
-            <span className="text-3xl font-bold text-red-700 dark:text-red-300">EGN</span>
-            <nav className="ml-24">
+            <button onClick={() => { setNav('home'); setShowSummary(false); }} className="focus:outline-none">
+              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4" style={{ maxHeight: 96 }} />
+            </button>
+            <nav className="ml-12">
               <ul className="flex gap-8 items-center">
                 <li key="home" className="flex">
                   <button
@@ -673,12 +675,12 @@ Proporciona un informe detallado y profesional en español, estructurado con las
 
       {/* Header móvil fijo */}
       <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-between h-14 sm:hidden px-6">
-        <span
-          className="text-2xl font-bold text-red-700 dark:text-red-300 cursor-pointer"
+        <button
+          className="focus:outline-none"
           onClick={() => setNav('home')}
         >
-          EGN
-        </span>
+          <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} />
+        </button>
         <div className="flex items-center gap-4">
             <button onClick={() => setShowMobileSearch(v => !v)} className="text-gray-600 dark:text-gray-300">
                 <SearchIcon className="h-6 w-6" />
