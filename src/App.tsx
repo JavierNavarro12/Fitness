@@ -3,7 +3,6 @@ import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc } fro
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { UserProfile, Report } from './types';
-import Auth from './components/features/auth/Auth';
 import SplashScreen from './components/layout/SplashScreen';
 import Footer from './components/layout/Footer';
 import SearchPanel from './components/shared/SearchPanel';
@@ -20,6 +19,7 @@ import MobileMenu from './components/layout/MobileMenu';
 import PersonalizedChatAI from './components/features/ia/PersonalizedChatAI';
 import { saveUserToFirestore } from './components/features/auth/Auth';
 import ProfileSummary from './components/layout/ProfileSummary';
+import AuthModal from './components/features/auth/AuthModal';
 
 interface SearchResult {
   id: string;
@@ -680,16 +680,10 @@ function App() {
 
       {/* Modal de login */}
       {showLogin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 overflow-y-auto">
-          <div className="w-full max-w-sm px-2 sm:px-0">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 sm:p-8 relative animate-fade-in">
-              <Auth onAuthSuccess={(isInvitado) => {
-                setShowLogin(false);
-                if (!isInvitado) window.location.reload();
-              }} />
-            </div>
-          </div>
-        </div>
+        <AuthModal onAuthSuccess={(isInvitado) => {
+          setShowLogin(false);
+          if (!isInvitado) window.location.reload();
+        }} />
       )}
     </div>
   );
