@@ -25,7 +25,6 @@ export async function saveUserToFirestore(user: any, extraData: any = {}) {
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
-  console.log('Auth render');
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -44,6 +43,22 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   useEffect(() => {
     if (emailRef.current) emailRef.current.focus();
   }, []);
+
+  // Si autocompleta el email, enfoca la contraseña (con retardo para evitar el menú de autocompletar)
+  useEffect(() => {
+    if (email && passwordRef.current && document.activeElement === emailRef.current && !password) {
+      setTimeout(() => {
+        passwordRef.current && passwordRef.current.focus();
+      }, 100);
+    }
+  }, [email, password]);
+
+  // Si autocompleta la contraseña y ambos campos están completos, envía el formulario SOLO si el foco está en la contraseña
+  useEffect(() => {
+    if (email && password && formRef.current && document.activeElement === passwordRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }, [password, email]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef, Suspense, lazy, useCallback } from 'react';
+import React, { useEffect, useState, useRef, Suspense, lazy } from 'react';
 import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { UserProfile, Report } from './types';
+import Auth from './components/features/auth/Auth';
 import SplashScreen from './components/layout/SplashScreen';
 import Footer from './components/layout/Footer';
 import SearchPanel from './components/shared/SearchPanel';
@@ -19,7 +20,6 @@ import MobileMenu from './components/layout/MobileMenu';
 import PersonalizedChatAI from './components/features/ia/PersonalizedChatAI';
 import { saveUserToFirestore } from './components/features/auth/Auth';
 import ProfileSummary from './components/layout/ProfileSummary';
-import AuthModal from './components/features/auth/AuthModal';
 
 interface SearchResult {
   id: string;
@@ -90,7 +90,6 @@ const LogoutIcon = ({ className = '' }) => (
 );
 
 function App() {
-  console.log('App render');
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userReports, setUserReports] = useState<Report[]>([]);
@@ -121,12 +120,6 @@ function App() {
 
   // Modal de login controlado
   const [showLogin, setShowLogin] = useState(false);
-
-  // Memoiza el callback para evitar remounts del modal
-  const handleAuthSuccess = useCallback((isInvitado?: boolean) => {
-    setShowLogin(false);
-    if (!isInvitado) window.location.reload();
-  }, []);
 
   useEffect(() => {
     // Inicializar AOS
@@ -373,169 +366,167 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col pb-20 sm:pb-0">
       {/* HEADER */}
-      {!showLogin && (
-        <header
-          ref={headerRef}
-          className="bg-white dark:bg-gray-900 sticky top-0 z-50 hidden sm:block"
-        >
-          <div className="max-w-7xl mx-auto flex items-center py-2 px-4" style={{ minHeight: NAVBAR_HEIGHT }}>
-            {/* Izquierda: Logo y Nav */}
-            <div className="flex items-center flex-shrink-0">
-              <button onClick={() => { setNav('home'); setShowSummary(false); }} className="focus:outline-none">
-                <img src="/logo-header.png" alt="EGN Logo" className="hidden sm:block h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} />
-                <img src="/logo-header.png" alt="EGN Logo" className="sm:hidden h-24 w-auto mr-4" style={{ maxHeight: 96 }} />
-              </button>
-              <nav className="ml-16">
-                <ul className="flex gap-8 items-center">
-                  <li key="home" className="flex">
+      <header
+        ref={headerRef}
+        className="bg-white dark:bg-gray-900 sticky top-0 z-50 hidden sm:block"
+      >
+        <div className="max-w-7xl mx-auto flex items-center py-2 px-4" style={{ minHeight: NAVBAR_HEIGHT }}>
+          {/* Izquierda: Logo y Nav */}
+          <div className="flex items-center flex-shrink-0">
+            <button onClick={() => { setNav('home'); setShowSummary(false); }} className="focus:outline-none">
+              <img src="/logo-header.png" alt="EGN Logo" className="hidden sm:block h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} />
+              <img src="/logo-header.png" alt="EGN Logo" className="sm:hidden h-24 w-auto mr-4" style={{ maxHeight: 96 }} />
+            </button>
+            <nav className="ml-16">
+              <ul className="flex gap-8 items-center">
+                <li key="home" className="flex">
+                  <button
+                    className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                    onClick={() => {
+                      setNav('home');
+                      setShowSummary(false);
+                    }}
+                  >
+                    {t('nav.home')}
+                  </button>
+                </li>
+                <li className="static group">
+                  <div
+                    onMouseEnter={() => setMegaMenuOpen(true)}
+                    onMouseLeave={() => setMegaMenuOpen(false)}
+                    style={{ display: 'inline-block' }}
+                  >
                     <button
-                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === 'home' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
+                      ref={inicioBtnRef}
+                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 text-red-700 hover:bg-red-100`}
+                    >
+                      {t('nav.categories')}
+                    </button>
+                    {megaMenuOpen && (
+                      <>
+                        {/* Overlay blur más agresivo */}
+                        <div className="fixed inset-0 z-40" style={{ top: menuPanelTop }}>
+                          <div className="w-full h-full backdrop-blur-[16px] bg-white/70" />
+                        </div>
+                        <div
+                          ref={megaMenuPanelRef}
+                          className="fixed left-0 w-screen bg-white dark:bg-gray-900 animate-fade-in z-50"
+                          style={{ borderRadius: 0, top: menuPanelTop }}
+                        >
+                          <div className="px-4 py-8" style={{ marginLeft: menuContentMargin }}>
+                            {megaMenuItems.map(section => (
+                              <button
+                                key={section.key}
+                                className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-red-600 transition-colors py-2 text-left w-full"
+                                onClick={() => { setNav(section.nav); setMegaMenuOpen(false); }}
+                              >
+                                {t(section.label)}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </li>
+                {NAVS.filter(tab => tab.key !== 'home').map(tab => (
+                  <li key={tab.key} className="flex">
+                    <button
+                      className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
                       onClick={() => {
-                        setNav('home');
+                        setNav(tab.key);
                         setShowSummary(false);
+                        if (tab.key === 'custom') {
+                          setIsEditingProfile(false);
+                        }
                       }}
                     >
-                      {t('nav.home')}
+                      {t(tab.label)}
                     </button>
                   </li>
-                  <li className="static group">
-                    <div
-                      onMouseEnter={() => setMegaMenuOpen(true)}
-                      onMouseLeave={() => setMegaMenuOpen(false)}
-                      style={{ display: 'inline-block' }}
-                    >
-                      <button
-                        ref={inicioBtnRef}
-                        className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 text-red-700 hover:bg-red-100`}
-                      >
-                        {t('nav.categories')}
-                      </button>
-                      {megaMenuOpen && (
-                        <>
-                          {/* Overlay blur más agresivo */}
-                          <div className="fixed inset-0 z-40" style={{ top: menuPanelTop }}>
-                            <div className="w-full h-full backdrop-blur-[16px] bg-white/70" />
-                          </div>
-                          <div
-                            ref={megaMenuPanelRef}
-                            className="fixed left-0 w-screen bg-white dark:bg-gray-900 animate-fade-in z-50"
-                            style={{ borderRadius: 0, top: menuPanelTop }}
-                          >
-                            <div className="px-4 py-8" style={{ marginLeft: menuContentMargin }}>
-                              {megaMenuItems.map(section => (
-                                <button
-                                  key={section.key}
-                                  className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-red-600 transition-colors py-2 text-left w-full"
-                                  onClick={() => { setNav(section.nav); setMegaMenuOpen(false); }}
-                                >
-                                  {t(section.label)}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </li>
-                  {NAVS.filter(tab => tab.key !== 'home').map(tab => (
-                    <li key={tab.key} className="flex">
-                      <button
-                        className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${nav === tab.key ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
-                        onClick={() => {
-                          setNav(tab.key);
-                          setShowSummary(false);
-                          if (tab.key === 'custom') {
-                            setIsEditingProfile(false);
-                          }
-                        }}
-                      >
-                        {t(tab.label)}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+                ))}
+              </ul>
+            </nav>
+          </div>
+          {/* Derecha: Búsqueda y Perfil */}
+          <div className="flex items-center flex-1">
+            <div className="flex-1 flex justify-center mr-8">
+              <SearchPanel
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                results={searchResults}
+                onResultClick={handleResultClick}
+                autoFocus={false}
+              />
             </div>
-            {/* Derecha: Búsqueda y Perfil */}
-            <div className="flex items-center flex-1">
-              <div className="flex-1 flex justify-center mr-8">
-                <SearchPanel
-                  searchQuery={searchQuery}
-                  onSearchChange={handleSearchChange}
-                  results={searchResults}
-                  onResultClick={handleResultClick}
-                  autoFocus={false}
-                />
-              </div>
-              <div className="flex items-center justify-end min-w-[180px] absolute right-0 top-0 h-full pr-12" ref={userMenuRef} style={{ position: 'absolute', right: 0, top: 0, height: '100%', paddingRight: 48 }}>
-                {user ? (
-                  <button
-                    className="flex items-center focus:outline-none"
-                    onClick={() => setShowUserMenu((v) => !v)}
-                    aria-label="Menú de usuario"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-red-200">
-                      {user?.photoURL ? (
-                        <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-gray-400 text-xl">👤</span>
-                      )}
-                    </div>
-                    <span className="ml-2 font-semibold text-gray-800 dark:text-gray-100 text-base hidden md:block">
-                      {user?.displayName || user?.email?.split('@')[0]}
-                    </span>
-                    <FontAwesomeIcon icon={faChevronDown} className="ml-1 text-gray-500 hidden md:block" />
-                  </button>
-                ) : (
-                  <button
-                    className="ml-6 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow transition text-base"
-                    onClick={() => setShowLogin(true)}
-                  >
-                    {t('Iniciar sesión')}
-                  </button>
-                )}
-                {showUserMenu && (
-                  <div className="absolute top-full mt-2 right-0 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 overflow-hidden z-50 animate-fade-in">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                      <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{user?.displayName || user?.email?.split('@')[0]}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
-                    </div>
-                    <div className="py-2">
-                      <button
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
-                      >
-                        <UserCircleIcon className="w-5 h-5" />
-                        <span>{t('userDropdown.viewProfile')}</span>
-                      </button>
-                      <button
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
-                        onClick={handleLogout}
-                      >
-                        <LogoutIcon className="w-5 h-5" />
-                        <span>{t('userDropdown.logout')}</span>
-                      </button>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-900/50 p-2">
-                      <div className="flex justify-center items-center gap-2">
-                        <LanguageSwitch
-                          checked={i18n.language === 'en'}
-                          onChange={() => {
-                            const newLang = i18n.language === 'es' ? 'en' : 'es';
-                            i18n.changeLanguage(newLang);
-                            localStorage.setItem('lang', newLang);
-                          }}
-                        />
-                        <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
-                      </div>
+            <div className="flex items-center justify-end min-w-[180px] absolute right-0 top-0 h-full pr-12" ref={userMenuRef} style={{ position: 'absolute', right: 0, top: 0, height: '100%', paddingRight: 48 }}>
+              {user ? (
+                <button
+                  className="flex items-center focus:outline-none"
+                  onClick={() => setShowUserMenu((v) => !v)}
+                  aria-label="Menú de usuario"
+                >
+                  <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-red-200">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-gray-400 text-xl">👤</span>
+                    )}
+                  </div>
+                  <span className="ml-2 font-semibold text-gray-800 dark:text-gray-100 text-base hidden md:block">
+                    {user?.displayName || user?.email?.split('@')[0]}
+                  </span>
+                  <FontAwesomeIcon icon={faChevronDown} className="ml-1 text-gray-500 hidden md:block" />
+                </button>
+              ) : (
+                <button
+                  className="ml-6 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow transition text-base"
+                  onClick={() => setShowLogin(true)}
+                >
+                  {t('Iniciar sesión')}
+                </button>
+              )}
+              {showUserMenu && (
+                <div className="absolute top-full mt-2 right-0 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 overflow-hidden z-50 animate-fade-in">
+                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{user?.displayName || user?.email?.split('@')[0]}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                  </div>
+                  <div className="py-2">
+                    <button
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
+                    >
+                      <UserCircleIcon className="w-5 h-5" />
+                      <span>{t('userDropdown.viewProfile')}</span>
+                    </button>
+                    <button
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
+                      onClick={handleLogout}
+                    >
+                      <LogoutIcon className="w-5 h-5" />
+                      <span>{t('userDropdown.logout')}</span>
+                    </button>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-900/50 p-2">
+                    <div className="flex justify-center items-center gap-2">
+                      <LanguageSwitch
+                        checked={i18n.language === 'en'}
+                        onChange={() => {
+                          const newLang = i18n.language === 'es' ? 'en' : 'es';
+                          i18n.changeLanguage(newLang);
+                          localStorage.setItem('lang', newLang);
+                        }}
+                      />
+                      <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
-        </header>
-      )}
+        </div>
+      </header>
 
       {/* Header móvil fijo */}
       <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-between h-14 sm:hidden px-6">
@@ -686,7 +677,16 @@ function App() {
 
       {/* Modal de login */}
       {showLogin && (
-        <AuthModal onAuthSuccess={handleAuthSuccess} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 overflow-y-auto">
+          <div className="w-full max-w-sm px-2 sm:px-0">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 sm:p-8 relative animate-fade-in">
+              <Auth onAuthSuccess={(isInvitado) => {
+                setShowLogin(false);
+                if (!isInvitado) window.location.reload();
+              }} />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
