@@ -373,8 +373,14 @@ function App() {
             {/* Izquierda: Logo y Nav */}
             <div className="flex items-center flex-shrink-0">
               <button onClick={() => { navigate('/'); }} className="focus:outline-none">
-                <img src="/logo-header.png" alt="EGN Logo" className="hidden sm:block h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} />
-                <img src="/logo-header.png" alt="EGN Logo" className="sm:hidden h-24 w-auto mr-4" style={{ maxHeight: 96 }} />
+                <picture>
+                  <source srcSet="/logo-header.webp" type="image/webp" />
+                  <img src="/logo-header.png" alt="EGN Logo" className="hidden sm:block h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} />
+                </picture>
+                <picture>
+                  <source srcSet="/logo-header.webp" type="image/webp" />
+                  <img src="/logo-header.png" alt="EGN Logo" className="sm:hidden h-24 w-auto mr-4" style={{ maxHeight: 96 }} />
+                </picture>
               </button>
               <nav className="flex justify-center w-full">
                 <ul className="flex gap-8 items-center">
@@ -458,8 +464,8 @@ function App() {
               </nav>
             </div>
             {/* Derecha: Búsqueda y Perfil */}
-            <div className="flex items-center flex-1">
-              <div className="flex-1 flex justify-center mr-8">
+            <div className="flex items-center flex-1 justify-between gap-4">
+              <div className="flex-1 flex justify-center mr-8 max-lg:hidden">
                 <SearchPanel
                   searchQuery={searchQuery}
                   onSearchChange={handleSearchChange}
@@ -468,7 +474,7 @@ function App() {
                   autoFocus={false}
                 />
               </div>
-              <div className="flex items-center justify-end min-w-[180px] absolute right-0 top-0 h-full pr-12" ref={userMenuRef} style={{ position: 'absolute', right: 0, top: 0, height: '100%', paddingRight: 48 }}>
+              <div className="flex items-center justify-end gap-2">
                 {user ? (
                   <button
                     className="flex items-center focus:outline-none"
@@ -489,7 +495,7 @@ function App() {
                   </button>
                 ) : (
                   <button
-                    className="ml-6 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow transition text-base"
+                    className="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow transition text-base max-lg:px-2 max-lg:py-1 max-lg:text-sm"
                     onClick={() => navigate('/login')}
                   >
                     {t('loginRequired.loginButton')}
@@ -543,7 +549,10 @@ function App() {
             className="focus:outline-none"
             onClick={() => navigate('/')}
           >
-            <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} />
+            <picture>
+              <source srcSet="/logo-header.webp" type="image/webp" />
+              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} />
+            </picture>
           </button>
           <div className="flex items-center gap-4">
               <button onClick={() => setShowMobileSearch(v => !v)} className="text-gray-600 dark:text-gray-300">
