@@ -11,11 +11,12 @@ interface SearchPanelProps {
 
 // Este es un componente de marcador de posición.
 // Deberá ser implementado con la lógica de búsqueda de suplementos.
-const SearchPanel: React.FC<SearchPanelProps> = ({
+const SearchPanel: React.FC<SearchPanelProps & { autoFocus?: boolean }> = ({
   searchQuery,
   onSearchChange,
   results,
   onResultClick,
+  autoFocus = false,
 }) => {
   const { t } = useTranslation();
   const searchPanelRef = useRef<HTMLFormElement>(null);
@@ -36,10 +37,10 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
 
   // Focus automático al abrir el panel (cuando se monta el componente)
   useEffect(() => {
-    if (inputRef.current) {
+    if (autoFocus && inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [autoFocus]);
 
   return (
     <form ref={searchPanelRef} className="relative w-full max-w-xs" onSubmit={(e) => e.preventDefault()}>
@@ -52,6 +53,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
         onFocus={() => setIsResultsVisible(true)}
+        autoFocus={autoFocus}
       />
       <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
         {FaSearch({ className: 'text-gray-400' })}

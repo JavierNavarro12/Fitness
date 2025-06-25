@@ -21,6 +21,8 @@ interface MobileMenuProps {
     language: string;
     changeLanguage: (lang: string) => void;
   };
+  showLoginButton?: boolean;
+  onLoginClick?: () => void;
 }
 
 const CloseIcon = ({ className = '' }) => (
@@ -29,7 +31,7 @@ const CloseIcon = ({ className = '' }) => (
     </svg>
 );
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavigate, menuItems, darkMode, onToggleDarkMode, i18n }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavigate, menuItems, darkMode, onToggleDarkMode, i18n, showLoginButton, onLoginClick }) => {
   const { t } = useTranslation();
 
   if (!isOpen) return null;
@@ -57,6 +59,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onNavigate, me
             </li>
           ))}
         </ul>
+        {showLoginButton && (
+          <button
+            className="mt-8 w-full py-3 rounded-lg bg-red-600 text-white text-xl font-bold shadow hover:bg-red-700 transition-colors"
+            onClick={onLoginClick}
+          >
+            {t('Iniciar sesión')}
+          </button>
+        )}
         <div className="flex flex-row gap-4 justify-end items-center py-4 border-t border-gray-200 dark:border-gray-700">
             <div style={{ transform: 'scale(0.9)' }}>
             <LanguageSwitch
