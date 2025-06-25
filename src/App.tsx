@@ -373,13 +373,13 @@ function App() {
             {/* Izquierda: Logo y Nav */}
             <div className="flex items-center flex-shrink-0">
               <button onClick={() => { navigate('/'); }} className="focus:outline-none">
-                <picture>
+                <picture className="hidden sm:block">
                   <source srcSet="/logo-header.webp" type="image/webp" />
-                  <img src="/logo-header.png" alt="EGN Logo" className="hidden sm:block h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} />
+                  <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} width="96" height="96" />
                 </picture>
-                <picture>
-                  <source srcSet="/logo-header.webp" type="image/webp" />
-                  <img src="/logo-header.png" alt="EGN Logo" className="sm:hidden h-24 w-auto mr-4" style={{ maxHeight: 96 }} />
+                <picture className="sm:hidden">
+                  <source srcSet="/logo-header-96.webp" type="image/webp" />
+                  <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4" style={{ maxHeight: 96 }} width="96" height="96" />
                 </picture>
               </button>
               <nav className="flex justify-center w-full">
@@ -550,8 +550,8 @@ function App() {
             onClick={() => navigate('/')}
           >
             <picture>
-              <source srcSet="/logo-header.webp" type="image/webp" />
-              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} />
+              <source srcSet="/logo-header-96.webp" type="image/webp" />
+              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} width="96" height="96" />
             </picture>
           </button>
           <div className="flex items-center gap-4">
