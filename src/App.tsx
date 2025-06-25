@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Suspense, lazy } from 'react';
+import React, { useEffect, useState, useRef, Suspense, lazy, useCallback } from 'react';
 import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
@@ -121,6 +121,12 @@ function App() {
 
   // Modal de login controlado
   const [showLogin, setShowLogin] = useState(false);
+
+  // Memoiza el callback para evitar remounts del modal
+  const handleAuthSuccess = useCallback((isInvitado?: boolean) => {
+    setShowLogin(false);
+    if (!isInvitado) window.location.reload();
+  }, []);
 
   useEffect(() => {
     // Inicializar AOS
@@ -680,10 +686,7 @@ function App() {
 
       {/* Modal de login */}
       {showLogin && (
-        <AuthModal onAuthSuccess={(isInvitado) => {
-          setShowLogin(false);
-          if (!isInvitado) window.location.reload();
-        }} />
+        <AuthModal onAuthSuccess={handleAuthSuccess} />
       )}
     </div>
   );
