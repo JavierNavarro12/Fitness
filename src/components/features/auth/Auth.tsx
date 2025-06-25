@@ -25,6 +25,7 @@ export async function saveUserToFirestore(user: any, extraData: any = {}) {
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
+  console.log('Auth render');
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
