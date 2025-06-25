@@ -138,7 +138,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li>
                 <button 
-                  onClick={() => handleNavigation('contact')}
+                  onClick={() => navigate('/contact')}
                   className="flex items-center hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">

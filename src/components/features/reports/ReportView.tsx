@@ -16,80 +16,85 @@ interface Supplement {
   link: string;
 }
 
-// Extraer solo los suplementos recomendados por la IA de la sección correspondiente
-function extractSupplementsFromRecommendedSectionOnly(content: string): string[] {
+// Nueva función para extraer suplementos de todo el informe
+function extractAllSupplements(content: string): string[] {
   const lines = content.split('\n');
-  // Buscar posibles títulos de sección
-  const sectionTitles = [
-    'suplementación recomendada',
-    'productos recomendados',
-    'recomendaciones',
-    'suplementos recomendados',
-    'suplementos sugeridos',
-  ];
-  let startIdx = -1;
-  for (const title of sectionTitles) {
-    startIdx = lines.findIndex(line => line.toLowerCase().includes(title));
-    if (startIdx !== -1) break;
-  }
-  if (startIdx === -1) return [];
-  // Buscar el final de la sección (siguiente encabezado o fin)
-  let endIdx = lines.length;
-  for (let i = startIdx + 1; i < lines.length; i++) {
-    if (lines[i].startsWith('###') || lines[i].startsWith('####')) {
-      endIdx = i;
-      break;
-    }
-  }
-  // Extraer nombres de suplementos de la sección
-  const supplementNames: string[] = [];
-  const supplementPattern = /\*\*([^*]+)\*\*/g;
+  const supplements = new Set<string>();
+  const supplementTitleRegex = /^[-*]\s*\*\*(.+?)\*\*/; // - **Nombre**
+  const supplementListRegex = /^\d+\.\s*(.+)/; // 1. Nombre
+  const subtitleRegex = /^###?\s*(.+)/; // ## Nombre o ### Nombre
   const exclude = [
-    'Alimentación', 'Entrenamiento', 'Descanso', 'Suplementos Actuales', 'Objetivo', 'Deporte principal', 'Nivel de experiencia', 'Frecuencia de entrenamiento', 'Peso', 'Altura', 'Edad', 'Género', 'Condiciones médicas', 'Alergias', 'Informe', 'Introducción', 'Recomendaciones', 'Productos recomendados'
+    'Productos Recomendados',
+    'Enlaces a Productos Recomendados',
+    'Recomendaciones',
+    'Consideraciones',
+    'Resumen',
+    'Siguientes Pasos',
+    'Plan Personalizado de Suplementación Deportiva',
+    'Introducción Personalizada',
+    'Suplementos Base (Fundamentales)',
+    'Suplementos para tu Objetivo',
+    'Suplementos para tu Deporte',
+    'Objetivo',
+    'Deporte',
+    'Base',
+    'Fundamentales',
+    'Adicionales',
+    'Pasos',
+    'Productos',
+    'Enlaces',
+    'Recomendados',
+    'Recomendado',
+    'Adicional',
+    'Personalizado',
+    'Informe',
+    'Plan',
+    'Siguiente',
+    'Siguientes',
+    'Consideración',
+    'Consideraciones',
+    'Resumen',
+    'Paso',
+    'Pasos',
   ];
-  // 1. Buscar nombres en negrita
-  for (let i = startIdx + 1; i < endIdx; i++) {
-    let match;
-    while ((match = supplementPattern.exec(lines[i])) !== null) {
-      const name = match[1].replace(/:$/, '').trim();
-      if (name && !supplementNames.includes(name) && name.length > 2 && !exclude.includes(name)) {
-        supplementNames.push(name);
-      }
-    }
-  }
-  // 2. Si no hay nombres en negrita, buscar líneas de lista
-  if (supplementNames.length === 0) {
-    for (let i = startIdx + 1; i < endIdx; i++) {
-      const line = lines[i].trim();
-      // Línea de lista tipo '- Suplemento' o '1. Suplemento'
-      if ((line.startsWith('-') || /^\d+\./.test(line)) && line.length > 2) {
-        // Quitar el guion o número y espacios
-        let name = line.replace(/^(-|\d+\.)\s*/, '').replace(/:$/, '').trim();
-        // Quitar posibles URLs
-        name = name.replace(/\(https?:[^)]+\)/, '').trim();
-        if (name && !supplementNames.includes(name) && name.length > 2 && !exclude.includes(name)) {
-          supplementNames.push(name);
-        }
-      }
-    }
-  }
-  return supplementNames;
-}
 
-function cleanSupplementName(name: string): string {
-  return name
-    .replace(/\[|\]/g, '') // quitar corchetes
-    .replace(/\(URL del producto\)/gi, '') // quitar (URL del producto)
-    .replace(/\(URL\)/gi, '') // quitar (URL) o (url)
-    .replace(/\(https?:[^)]+\)/gi, '') // quitar paréntesis con http...
-    .replace(/\s+/g, ' ') // espacios extra
-    .trim();
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i].trim();
+    // - **Nombre**
+    let match = line.match(supplementTitleRegex);
+    if (match && match[1].length > 2) {
+      const name = match[1].replace(/:$/, '').trim();
+      if (!exclude.some(e => name.toLowerCase().includes(e.toLowerCase()))) {
+        supplements.add(name);
+      }
+      continue;
+    }
+    // 1. Nombre
+    match = line.match(supplementListRegex);
+    if (match && match[1].length > 2) {
+      const name = match[1].replace(/:$/, '').trim();
+      if (!exclude.some(e => name.toLowerCase().includes(e.toLowerCase()))) {
+        supplements.add(name);
+      }
+      continue;
+    }
+    // ## Nombre
+    match = line.match(subtitleRegex);
+    if (match && match[1].length > 2 && !/^suplementos|consideraciones|resumen|introducción|plan|objetivo|deporte|base|fundamentales|adicionales|pasos/i.test(match[1])) {
+      const name = match[1].replace(/:$/, '').trim();
+      if (!exclude.some(e => name.toLowerCase().includes(e.toLowerCase()))) {
+        supplements.add(name);
+      }
+      continue;
+    }
+  }
+  return Array.from(supplements);
 }
 
 function extractSupplementsWithLinks(content: string): Supplement[] {
-  const recommendedSupplements = extractSupplementsFromRecommendedSectionOnly(content);
-  return recommendedSupplements.map(name => {
-    const cleanName = cleanSupplementName(name);
+  const supplementNames = extractAllSupplements(content);
+  return supplementNames.map(name => {
+    const cleanName = name;
     return {
       name: cleanName,
       link: `https://www.amazon.es/s?k=${encodeURIComponent(cleanName)}`
@@ -149,6 +154,16 @@ function filterPersonalizationSummary(content: string): string {
   return filtered.join('\n').replace(/\[([^\]]+)\]\(URL del producto\)/gi, '$1');
 }
 
+function removeRecommendedProductsSection(content: string): string {
+  // Busca el índice donde empieza la sección de productos recomendados
+  const regex = /###\s*(Productos Recomendados|Recommended Products)/i;
+  const lines = content.split('\n');
+  const idx = lines.findIndex(line => regex.test(line));
+  if (idx === -1) return content;
+  // Devuelve solo el contenido antes de esa sección
+  return lines.slice(0, idx).join('\n').trim();
+}
+
 const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -170,7 +185,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const supplements = extractSupplementsWithLinks(report.content);
 
   // Filtrar el contenido para eliminar el resumen del formulario y la sección de productos
-  const filteredContent = filterPersonalizationSummary(report.content);
+  const filteredContent = removeRecommendedProductsSection(filterPersonalizationSummary(report.content));
 
   const supplementsWithLinks = extractSupplementsWithLinks(report.content);
 
@@ -227,7 +242,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
       {/* Contenido del informe */}
       <div className="px-6 py-4">
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
-        <div className="prose prose-sm sm:prose-base max-w-none p-4 sm:p-6 bg-gray-50 dark:bg-gray-900/80 text-gray-800 dark:text-gray-100 rounded-xl dark:prose-strong:text-red-300">
+        <div className="prose max-w-3xl mx-auto bg-white p-6 rounded-xl">
           <ReactMarkdown>{filteredContent}</ReactMarkdown>
         </div>
 
