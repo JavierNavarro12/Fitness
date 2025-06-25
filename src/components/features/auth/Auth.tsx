@@ -34,8 +34,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [emailAutocompleted, setEmailAutocompleted] = useState(false);
-  const [passwordAutocompleted, setPasswordAutocompleted] = useState(false);
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -45,38 +43,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   useEffect(() => {
     if (emailRef.current) emailRef.current.focus();
   }, []);
-
-  // Detectar autocompletado de email
-  useEffect(() => {
-    if (email && emailRef.current && emailRef.current.matches(':-webkit-autofill')) {
-      setEmailAutocompleted(true);
-    }
-  }, [email]);
-
-  // Si autocompleta el email, enfoca la contraseña (solo si fue autocompletado, no al escribir a mano)
-  useEffect(() => {
-    if (emailAutocompleted && passwordRef.current && document.activeElement === emailRef.current && !password) {
-      setTimeout(() => {
-        passwordRef.current && passwordRef.current.focus();
-      }, 100);
-      setEmailAutocompleted(false);
-    }
-  }, [emailAutocompleted, password]);
-
-  // Detectar autocompletado de password
-  useEffect(() => {
-    if (password && passwordRef.current && passwordRef.current.matches(':-webkit-autofill')) {
-      setPasswordAutocompleted(true);
-    }
-  }, [password]);
-
-  // Si autocompleta la contraseña y ambos campos están completos, envía el formulario SOLO si fue autocompletado
-  useEffect(() => {
-    if (email && password && formRef.current && passwordAutocompleted) {
-      formRef.current.requestSubmit();
-      setPasswordAutocompleted(false);
-    }
-  }, [passwordAutocompleted, email, password]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,11 +122,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
         autoComplete={type === 'password' ? 'current-password' : 'on'}
         ref={inputRef}
         onKeyDown={onKeyDown}
-        onAnimationStart={e => {
-          // Detectar autocompletado en Chrome
-          if (e.animationName === 'onAutoFillStart' && type === 'email') setEmailAutocompleted(true);
-          if (e.animationName === 'onAutoFillStart' && type === 'password') setPasswordAutocompleted(true);
-        }}
       />
     </div>
   );
