@@ -10,6 +10,7 @@ export interface UserProfile {
   medicalConditions: string[];
   allergies: string[];
   currentSupplements: string[];
+  photo?: string;
 }
 
 export interface UserAccount {

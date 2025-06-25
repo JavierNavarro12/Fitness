@@ -6,9 +6,10 @@ interface ProfileSummaryProps {
   user: any;
   userProfile: UserProfile | null;
   onLogout: () => void;
+  onClose?: () => void;
 }
 
-const ProfileSummary: React.FC<ProfileSummaryProps> = ({ user, userProfile, onLogout }) => {
+const ProfileSummary: React.FC<ProfileSummaryProps> = ({ user, userProfile, onLogout, onClose }) => {
   const { t } = useTranslation();
 
   const mapGender = (g: string) => {
@@ -45,13 +46,24 @@ const ProfileSummary: React.FC<ProfileSummaryProps> = ({ user, userProfile, onLo
     return translation;
   };
 
+  const avatarUrl = userProfile?.photo || user?.photoURL;
+
   return (
     <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 relative animate-fade-in">
+      {onClose && (
+        <button
+          className="absolute -top-2 right-0 text-gray-300 hover:text-red-600 text-4xl font-bold z-10 p-2 focus:outline-none focus:ring-2 focus:ring-red-400 rounded-full transition-all"
+          onClick={onClose}
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+      )}
       <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 text-center">{t('profileSummary.title')}</h2>
       <div className="flex flex-col items-center mb-6">
         <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex items-center justify-center mb-2">
-          {user?.photoURL ? (
-            <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
           ) : (
             <span className="text-gray-400 text-4xl">{user?.displayName?.[0]?.toUpperCase() || '👤'}</span>
           )}

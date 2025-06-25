@@ -75,7 +75,7 @@ const resources = {
       "salud.antioxidantes.content": "Omega-3: Reduces inflammation and improves cardiovascular health. Coenzyme Q10: Vital for cellular energy. Curcumin: Powerful anti-inflammatory.",
       "deportes.pesas.content": "Creatine: Improves strength and power. BCAAs: Reduces muscle fatigue. Beta-Alanine: Increases endurance during short and intense efforts.",
       "deportes.crossfit.content": "HMB: Prevents muscle breakdown. Citrulline Malate: Improves blood flow and reduces fatigue. Taurine: Supports cell hydration and metabolism.",
-      "deportes.resistencia.content": "Electrolytes: For proper hydration. Carbohydrates: Quick energy source during exercise. Caffeine: Improves focus and reduces perception of effort.",
+      "deportes.resistencia.content": "Electrolytes: For proper hydration. Beta-Alanine: Helps delay muscle fatigue during prolonged efforts. Caffeine: Improves focus and reduces perception of effort.",
       "deportes.equipo.content": "Glutamine: Supports recovery and the immune system. Arginine: Improves blood flow. Nitrates (from beet): Enhance efficiency in oxygen use.",
       "grasa.termogenicos.content": "Green Tea Extract: Boosts metabolism. Cayenne Pepper: Increases body temperature and calorie burning. Synephrine: Stimulant that can increase fat burning.",
       "grasa.apetito.content": "Glucomannan: Soluble fiber that promotes satiety. Garcinia Cambogia: May block fat production. 5-HTP: Helps regulate appetite and mood.",
@@ -397,6 +397,19 @@ const resources = {
           text: 'At EGN Fitness, your privacy is fundamental. We are committed to protecting your personal information and being transparent about how we use it. If you have any concerns, please do not hesitate to contact us.',
         },
       },
+      "loginRequired": {
+        "title": "Restricted Access",
+        "message": "You must log in to access <1>{{section}}</1>.",
+        "subtext": "This section contains personalized content that requires authentication.",
+        "loginButton": "Log In",
+        "whyTitle": "Why do I need to log in?",
+        "whyText": "To access personalized content, save your reports, and get recommendations specific to you."
+      },
+      "sections": {
+        "personalización": "Personalization",
+        "informes": "Reports",
+        "perfil": "Profile"
+      },
     },
   },
   es: {
@@ -470,9 +483,9 @@ const resources = {
       "salud.vitaminas.content": "Vitamina D: Para la salud ósea y la inmunidad. Vitaminas del complejo B: Esenciales para la energía y el metabolismo. Vitamina C: Potente antioxidante.",
       "salud.minerales.content": "Magnesio: Para la recuperación muscular y el sueño. Zinc: Clave para la testosterona y la inmunidad. Hierro: Fundamental para el transporte de oxígeno, especialmente en mujeres.",
       "salud.antioxidantes.content": "Omega-3: Reduce la inflamación y mejora la salud cardiovascular. Coenzima Q10: Vital para la energía celular. Cúrcuma: Potente antiinflamatorio.",
-      "deportes.pesas.content": "Creatina: Mejora la fuerza y la potencia. BCAAs: Reduce la fatiga muscular. Beta-Alanina: Aumenta la resistencia en esfuerzos cortos e intensos.",
+      "deportes.pesas.content": "Creatina: Mejora la fuerza y la potencia. BCAAs: Reduce la fatiga muscular. Beta-Alanine: Aumenta la resistencia en esfuerzos cortos e intensos.",
       "deportes.crossfit.content": "HMB: Evita el catabolismo muscular. Citrulina Malato: Mejora el flujo sanguíneo y reduce la fatiga. Taurina: Apoya la hidratación celular y el metabolismo.",
-      "deportes.resistencia.content": "Electrolitos: Para una correcta hidratación. Carbohidratos: Fuente de energía rápida durante el ejercicio. Cafeína: Mejora el enfoque y reduce la percepción de esfuerzo.",
+      "deportes.resistencia.content": "Electrolitos: Para una correcta hidratación. Beta-Alanine: Ayuda a retrasar la fatiga muscular en esfuerzos prolongados. Cafeína: Mejora el enfoque y reduce la percepción de esfuerzo.",
       "deportes.equipo.content": "Glutamina: Apoya la recuperación y el sistema inmune. Arginina: Mejora el flujo sanguíneo. Nitratos (de remolacha): Mejoran la eficiencia en el uso del oxígeno.",
       "grasa.termogenicos.content": "Extracto de Té Verde: Boosts metabolism. Cayenne Pepper: Increases body temperature and calorie burning. Synephrine: Stimulant that can increase fat burning.",
       "grasa.apetito.content": "Glucomanano: Fibra soluble que promueve la saciedad. Garcinia Cambogia: Puede bloquear la producción de grasa. 5-HTP: Ayuda a regular el apetito y el estado de ánimo.",
@@ -793,6 +806,19 @@ const resources = {
           title: 'Compromiso con tu Privacidad',
           text: 'En EGN Fitness, tu privacidad es fundamental. Nos comprometemos a proteger tu información personal y a ser transparentes sobre cómo la utilizamos. Si tienes alguna preocupación, no dudes en contactarnos.',
         },
+      },
+      "loginRequired": {
+        "title": "Acceso Restringido",
+        "message": "Debes iniciar sesión para acceder a <1>{{section}}</1>.",
+        "subtext": "Esta sección contiene contenido personalizado que requiere autenticación.",
+        "loginButton": "Iniciar Sesión",
+        "whyTitle": "¿Por qué necesito iniciar sesión?",
+        "whyText": "Para acceder a contenido personalizado, guardar tus informes y obtener recomendaciones específicas para ti."
+      },
+      "sections": {
+        "personalización": "Personalización",
+        "informes": "Informes",
+        "perfil": "Perfil"
       },
     },
   },

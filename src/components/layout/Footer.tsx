@@ -1,16 +1,21 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-interface FooterProps {
-  setNav: (nav: string) => void;
-}
-
-const Footer: React.FC<FooterProps> = ({ setNav }) => {
+const Footer: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const handleNavigation = (navKey: string) => {
-    setNav(navKey);
-    // Scroll to top when navigating
+    const routes: Record<string, string> = {
+      home: '/',
+      deportes: '/deportes',
+      salud: '/salud',
+      grasa: '/grasa',
+      mujer: '/mujer',
+      cognitivo: '/cognitivo',
+    };
+    navigate(routes[navKey] || '/');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

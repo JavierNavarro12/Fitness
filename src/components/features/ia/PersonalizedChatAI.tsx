@@ -260,13 +260,13 @@ INSTRUCCIONES:
     <div>
       {/* Botón flotante para abrir/cerrar el chat */}
       {!mobileMenuOpen && (
-        <button
+      <button
           className="fixed right-6 bottom-24 sm:right-16 sm:bottom-10 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none"
           onClick={() => { setOpen(o => !o); if (!open) { setShowHistory(false); setSelectedChat(null); } }}
           aria-label={i18n.language === 'en' ? 'Open personalized AI chat' : 'Abrir chat IA personalizado'}
-        >
-          🤖
-        </button>
+      >
+        🤖
+      </button>
       )}
       {/* Ventana de chat */}
       {open && (
@@ -274,10 +274,10 @@ INSTRUCCIONES:
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
           <div className="fixed left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28 z-50 w-[95vw] max-w-md sm:w-96 bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden -translate-x-1/2 sm:translate-x-0">
             {/* Header con botón historial */}
-            <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span>EGN IA Personal</span>
-              </div>
+          <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span>EGN IA Personal</span>
+            </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
@@ -297,10 +297,10 @@ INSTRUCCIONES:
                 >
                   {i18n.language === 'en' ? 'New chat' : 'Nuevo chat'}
                 </button>
-                <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
+            <button onClick={() => setOpen(false)} className="text-white text-xl font-bold hover:text-red-200">×</button>
               </div>
-            </div>
-
+          </div>
+          
             {/* Panel de historial */}
             {showHistory ? (
               <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '75vh' }}>
@@ -343,37 +343,37 @@ INSTRUCCIONES:
               </div>
             ) : (
               <>
-                <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
-                  {messages.length === 0 && (
-                    <div className="text-gray-600 text-sm leading-relaxed">
-                      {getWelcomeMessage()}
-                    </div>
-                  )}
-                  {messages.map((msg, i) => (
-                    <div key={i} className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}>
-                        {msg.content}
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={messagesEndRef} />
+          <div className="flex-1 p-4 overflow-y-auto bg-gray-50" style={{ minHeight: '320px', maxHeight: '60vh' }}>
+            {messages.length === 0 && (
+              <div className="text-gray-600 text-sm leading-relaxed">
+                {getWelcomeMessage()}
+              </div>
+            )}
+            {messages.map((msg, i) => (
+              <div key={i} className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}>
+                  {msg.content}
                 </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
                 <div className="p-3 border-t border-red-100 flex gap-2 rounded-b-2xl">
-                  <input
-                    className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && !loading && sendMessage()}
+            <input
+              className="flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && !loading && sendMessage()}
                     placeholder={userProfile ? (i18n.language === 'en' ? 'Any questions?' : '¿Alguna duda?') : (i18n.language === 'en' ? 'Ask me about supplementation...' : 'Pregúntame sobre suplementación...')}
-                    disabled={loading}
-                  />
-                  <button
-                    className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50"
-                    onClick={sendMessage}
-                    disabled={loading}
-                  >
+              disabled={loading}
+            />
+            <button
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50"
+              onClick={sendMessage}
+              disabled={loading}
+            >
                     {loading ? (i18n.language === 'en' ? '...' : '...') : (i18n.language === 'en' ? 'Send' : 'Enviar')}
-                  </button>
+            </button>
                 </div>
               </>
             )}
