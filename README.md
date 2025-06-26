@@ -81,6 +81,9 @@ REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
 REACT_APP_FIREBASE_APP_ID=tu_app_id
 OPENAI_API_KEY=tu_openai_key
 ```
+**Nota:**  
+Por motivos de seguridad, las credenciales **no están incluidas** en el repositorio.  
+Debes crear tu propio proyecto en [Firebase](https://firebase.google.com/) y obtener una API key de [OpenAI](https://platform.openai.com/).
 
 
 ## 🔧 Scripts Disponibles
