@@ -40,6 +40,9 @@ jest.mock('react-i18next', () => ({
         'frequency.low': 'Baja',
         'frequency.medium': 'Media',
         'frequency.high': 'Alta',
+        'running': 'Running',
+        'cycling': 'Cycling',
+        'swimming': 'Swimming',
       };
       return translations[key] || key;
     },
@@ -86,15 +89,23 @@ jest.mock('../../../data/formData', () => ({
   ],
 }));
 
+// Mock de LoginRequired para evitar el problema de react-router-dom
+jest.mock('../../shared/LoginRequired', () => {
+  return function MockLoginRequired({ children }: any) {
+    return <div data-testid="login-required">{children}</div>;
+  };
+});
+
 describe('StepForm Component', () => {
   const mockOnComplete = jest.fn();
+  const mockUser = { uid: 'test-user-id', email: 'test@example.com' };
 
   beforeEach(() => {
     mockOnComplete.mockClear();
   });
 
   test('renders first step with age and gender fields', () => {
-    render(<StepForm onComplete={mockOnComplete} />);
+    render(<StepForm onComplete={mockOnComplete} user={mockUser} />);
     
     // Verificar que los campos del primer paso están presentes
     expect(screen.getByLabelText(/edad/i)).toBeInTheDocument();
@@ -102,7 +113,7 @@ describe('StepForm Component', () => {
   });
 
   test('shows error when trying to proceed without required fields', async () => {
-    render(<StepForm onComplete={mockOnComplete} />);
+    render(<StepForm onComplete={mockOnComplete} user={mockUser} />);
     
     // Intentar avanzar sin llenar campos requeridos
     const nextButton = screen.getByText(/siguiente/i);
@@ -115,7 +126,7 @@ describe('StepForm Component', () => {
   });
 
   test('validates age range correctly', async () => {
-    render(<StepForm onComplete={mockOnComplete} />);
+    render(<StepForm onComplete={mockOnComplete} user={mockUser} />);
     
     // Ingresar edad inválida
     const ageInput = screen.getByLabelText(/edad/i);
@@ -136,7 +147,7 @@ describe('StepForm Component', () => {
   });
 
   test('allows valid age input', async () => {
-    render(<StepForm onComplete={mockOnComplete} />);
+    render(<StepForm onComplete={mockOnComplete} user={mockUser} />);
     
     // Ingresar edad válida
     const ageInput = screen.getByLabelText(/edad/i);
@@ -147,7 +158,7 @@ describe('StepForm Component', () => {
   });
 
   test('can select gender option', async () => {
-    render(<StepForm onComplete={mockOnComplete} />);
+    render(<StepForm onComplete={mockOnComplete} user={mockUser} />);
     
     // Seleccionar género
     const genderSelect = screen.getByTestId('select');
@@ -158,7 +169,7 @@ describe('StepForm Component', () => {
   });
 
   test('can navigate to next step with valid data', async () => {
-    render(<StepForm onComplete={mockOnComplete} />);
+    render(<StepForm onComplete={mockOnComplete} user={mockUser} />);
     
     // Llenar campos requeridos del primer paso
     const ageInput = screen.getByLabelText(/edad/i);

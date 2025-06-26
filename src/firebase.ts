@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -18,5 +18,12 @@ const app = initializeApp(firebaseConfig);
 // Obtener instancias de Auth y Firestore
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+// Configuración para mejorar la entrega de emails
+// Nota: Estas configuraciones se aplican automáticamente en producción
+// Para desarrollo, puedes usar el emulador si es necesario
+if (process.env.NODE_ENV === 'development' && process.env.REACT_APP_USE_AUTH_EMULATOR === 'true') {
+  connectAuthEmulator(auth, 'http://localhost:9099');
+}
 
 export default app; 

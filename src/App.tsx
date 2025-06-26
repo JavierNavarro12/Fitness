@@ -327,11 +327,8 @@ function App() {
 
   // Nueva función para requerir login y redirigir a /login
   const requireLogin = (navTarget: string) => {
-    if (!user) {
-      navigate(`/login?redirect=${navTarget}`);
-    } else {
-      navigate(navTarget);
-    }
+    // Navegar directamente a la sección, el componente LoginRequired se encargará de mostrar el mensaje de login
+    navigate(`/${navTarget}`);
   };
 
   // Restaurar función para eliminar informes

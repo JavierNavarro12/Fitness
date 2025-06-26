@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
@@ -25,6 +25,7 @@ async function saveUserToFirestore(user: any, extraData: any = {}) {
 
 const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -64,6 +65,35 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      setError('Por favor, ingresa tu correo electrónico.');
+      return;
+    }
+    
+    setLoading(true);
+    setMessage('');
+    setError('');
+    
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      setMessage('¡Email de recuperación enviado! Revisa tu bandeja de entrada y carpeta de spam. Si no lo encuentras, espera unos minutos y revisa nuevamente.');
+      setShowForgotPassword(false);
+    } catch (err: any) {
+      if (err.code === 'auth/user-not-found') {
+        setError('No existe una cuenta con este correo electrónico.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('El correo electrónico no es válido.');
+      } else {
+        setError('Error al enviar el email de recuperación. Inténtalo de nuevo.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     setError('');
     setMessage('');
@@ -85,6 +115,67 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   const handleGuest = () => {
     if (onAuthSuccess) onAuthSuccess(true);
   };
+
+  const resetForm = () => {
+    setShowForgotPassword(false);
+    setError('');
+    setMessage('');
+    setEmail('');
+    setPassword('');
+    setFirstName('');
+    setLastName('');
+  };
+
+  // Si estamos en modo recuperación de contraseña
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <img
+          src="/logo-header.png"
+          alt="EGN Logo"
+          className="block mx-auto w-full max-w-[340px] h-auto mb-0 mt-[-120px] sm:hidden"
+        />
+        <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 flex flex-col items-center mt-[-48px] sm:mt-0">
+          <h1 className="text-3xl font-extrabold text-red-700 mb-6 text-center">
+            Recuperar Contraseña
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+            Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+          </p>
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>💡 Consejo:</strong> Si no recibes el email, revisa tu carpeta de spam y asegúrate de que el correo esté correctamente escrito.
+            </p>
+          </div>
+          <form className="w-full space-y-6" onSubmit={handleForgotPassword}>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Correo electrónico"
+              className="w-full bg-[#f9fafb] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-3 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all shadow-sm"
+              ref={emailRef}
+            />
+            {message && <div className="text-green-600 dark:text-green-400 text-center font-medium w-full">{message}</div>}
+            {error && <div className="text-red-600 dark:text-red-400 text-center font-medium w-full">{error}</div>}
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Enviando...' : 'Enviar Email de Recuperación'}
+            </button>
+          </form>
+          <button
+            onClick={resetForm}
+            className="w-full text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors"
+          >
+            ← Volver al inicio de sesión
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -132,6 +223,17 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             placeholder="Contraseña"
             className="w-full bg-[#f9fafb] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-3 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all shadow-sm"
           />
+          {isLogin && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors mx-auto"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+          )}
           {message && <div className="text-green-600 dark:text-green-400 text-center font-medium w-full">{message}</div>}
           {error && <div className="text-red-600 dark:text-red-400 text-center font-medium w-full">{error}</div>}
           <button type="submit" disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed">
