@@ -22,6 +22,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import LoginPage from './components/features/pages/LoginPage';
 import ScrollToTop from './components/layout/ScrollToTop';
 import LoginRequired from './components/shared/LoginRequired';
+import ReportAccordionList from './components/features/reports/ReportAccordionList';
 
 interface SearchResult {
   id: string;
@@ -42,7 +43,6 @@ const Terms = lazy(() => import('./components/features/pages/Terms'));
 const Privacy = lazy(() => import('./components/features/pages/Privacy'));
 const Contact = lazy(() => import('./components/features/pages/Contact'));
 const StepForm = lazy(() => import('./components/features/reports/StepForm'));
-const ReportView = lazy(() => import('./components/features/reports/ReportView'));
 
 const NAVS = [
   { key: 'home', label: 'nav.home' },
@@ -505,6 +505,8 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       
       const docRef = await addDoc(collection(db, 'reports'), newReport);
       setUserReports(prev => [{ id: docRef.id, ...newReport }, ...prev]);
+      setGenerating(false);
+      navigate('/reports', { state: { expandId: docRef.id } });
 
     } catch (error) {
       console.error("Error generating report:", error);
@@ -520,7 +522,6 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
     }
 
     setGenerating(false);
-    navigate('/reports');
   };
 
   // Funciones de mapeo para mostrar los valores traducidos
@@ -579,7 +580,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                   <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4" style={{ maxHeight: 96 }} width="96" height="96" />
                 </picture>
               </button>
-              <nav className="flex justify-center w-full">
+              <nav className="flex justify-center w-full ml-20">
               <ul className="flex gap-8 items-center">
                 <li key="home" className="flex">
                   <button
@@ -662,7 +663,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
           </div>
           {/* Derecha: Búsqueda y Perfil */}
             <div className="flex items-center flex-1 justify-between gap-4">
-              <div className="flex-1 flex justify-center mr-8 max-lg:hidden">
+              <div className="flex-1 flex justify-center ml-2 mr-8 max-lg:hidden">
             <SearchPanel
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
@@ -897,11 +898,11 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                 {t('No tienes informes generados aún.')}
               </div>
             ) : (
-              <div className="space-y-6">
-                {userReports.map((report, index) => (
-                  <ReportView key={index} report={report} onDelete={handleDeleteReport} />
-                ))}
-              </div>
+              <ReportAccordionList
+                reports={userReports}
+                onDelete={handleDeleteReport}
+                initialExpandedId={location.state?.expandId}
+              />
             )}
           </div>
               ) : (
