@@ -577,7 +577,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                 </picture>
                 <picture className="sm:hidden">
                   <source srcSet="/logo-header-96.webp" type="image/webp" />
-                  <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4" style={{ maxHeight: 96 }} width="96" height="96" />
+                  <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4" style={{ maxHeight: 96 }} width="96" height="96" loading="eager" />
                 </picture>
               </button>
               <nav className="flex justify-center w-full ml-20">
@@ -749,7 +749,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         >
             <picture>
               <source srcSet="/logo-header-96.webp" type="image/webp" />
-              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} width="96" height="96" />
+              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} width="96" height="96" loading="eager" />
             </picture>
           </button>
         <div className="flex items-center gap-4">
