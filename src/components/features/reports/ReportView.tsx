@@ -2,10 +2,11 @@ import React, { useState, useRef, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
 import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash } from 'react-icons/fa6';
-// Lazy load PDFDownloadLink y ReportPDF
+import ReactMarkdown from 'react-markdown';
+
+// Lazy load PDFDownloadLink y ReportPDF (debe ir aquí, después de todos los imports)
 const PDFDownloadLink = React.lazy(() => import('@react-pdf/renderer').then(mod => ({ default: mod.PDFDownloadLink })));
 const ReportPDF = React.lazy(() => import('./ReportPDF'));
-import ReactMarkdown from 'react-markdown';
 
 interface ReportViewProps {
   report: Report;
