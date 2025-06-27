@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
 import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash, FaChevronDown, FaChevronUp } from 'react-icons/fa6';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import ReportPDF from './ReportPDF';
+// Lazy load PDFDownloadLink y ReportPDF
+const PDFDownloadLink = React.lazy(() => import('@react-pdf/renderer').then(mod => ({ default: mod.PDFDownloadLink })));
+const ReportPDF = React.lazy(() => import('./ReportPDF'));
 import ReactMarkdown from 'react-markdown';
 import ReportView from './ReportView';
 
@@ -249,23 +250,25 @@ const ReportAccordionList: React.FC<ReportAccordionListProps> = ({ reports, onDe
                       >
                         {isCopied ? FaCircleCheck({ className: "text-green-500" }) : FaRegCopy({})}
                       </button>
-                      <PDFDownloadLink
-                        document={
-                          <ReportPDF
-                            title="Informe personalizado"
-                            content={filteredContent}
-                            supplements={supplements}
-                            date={new Date(report.createdAt).toLocaleDateString()}
-                          />
-                        }
-                        fileName={`informe-${new Date(report.createdAt).toLocaleDateString()}.pdf`}
-                        className="flex items-center justify-center w-7 h-7 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition"
-                        style={{ textDecoration: 'none' }}
-                      >
-                        {({ loading }) => (
-                          <>{loading ? <span className="text-xs">...</span> : FaDownload({ className: "text-lg" })}</>
-                        )}
-                      </PDFDownloadLink>
+                      <Suspense fallback={<span className="text-xs">Cargando PDF...</span>}>
+                        <PDFDownloadLink
+                          document={
+                            <ReportPDF
+                              title="Informe personalizado"
+                              content={filteredContent}
+                              supplements={supplements}
+                              date={new Date(report.createdAt).toLocaleDateString()}
+                            />
+                          }
+                          fileName={`informe-${new Date(report.createdAt).toLocaleDateString()}.pdf`}
+                          className="flex items-center justify-center w-7 h-7 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          {({ loading }) => (
+                            <>{loading ? <span className="text-xs">...</span> : FaDownload({ className: "text-lg" })}</>
+                          )}
+                        </PDFDownloadLink>
+                      </Suspense>
                       {onDelete && report.id && (
                         <button
                           onClick={(e) => {
