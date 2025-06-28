@@ -4,10 +4,8 @@ import { Report } from '../../../types';
 import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash, FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import ReportView from './ReportView';
-
-// Lazy load PDFDownloadLink y ReportPDF (debe ir aquí, después de todos los imports)
-const PDFDownloadLink = React.lazy(() => import('@react-pdf/renderer').then(mod => ({ default: mod.PDFDownloadLink })));
-const ReportPDF = React.lazy(() => import('./ReportPDF'));
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import ReportPDF from './ReportPDF';
 
 interface ReportAccordionListProps {
   reports: Report[];
@@ -190,143 +188,167 @@ const ReportAccordionList: React.FC<ReportAccordionListProps> = ({ reports, onDe
     }
   };
 
+  // Filtrar informes válidos
+  const validReports = reports.filter(report => {
+    const filteredContent = removeRecommendedProductsSection(filterPersonalizationSummary(report.content));
+    const supplements = extractSupplementsWithLinks(report.content);
+    return (
+      filteredContent &&
+      typeof filteredContent === 'string' &&
+      Array.isArray(supplements) &&
+      supplements.length > 0
+    );
+  });
+
   // Vista móvil: Tarjetas-resumen compactas y expansión sin corte
   const MobileView = () => (
     <div className="space-y-3 sm:hidden">
-      {reports.map((report, index) => {
-        const isExpanded = expandedReports.has(report.id || '');
-        const isCopied = copiedStates.has(report.id || '');
-        const excerpt = generateExcerpt(report.content);
-        const supplements = extractSupplementsWithLinks(report.content);
-        const filteredContent = removeRecommendedProductsSection(filterPersonalizationSummary(report.content));
-        const reportId = report.id || String(index);
+      {validReports.length === 0 ? (
+        <div className="text-red-600 text-center font-bold">No hay informes válidos para mostrar.</div>
+      ) : (
+        validReports.map((report, index) => {
+          const isExpanded = expandedReports.has(report.id || '');
+          const isCopied = copiedStates.has(report.id || '');
+          const excerpt = generateExcerpt(report.content);
+          const supplements = extractSupplementsWithLinks(report.content);
+          const filteredContent = removeRecommendedProductsSection(filterPersonalizationSummary(report.content));
+          const reportId = report.id || String(index);
 
-        return (
-          <div
-            key={index}
-            ref={el => (reportRefs.current[reportId] = el)}
-            className={`transition-shadow duration-200 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden ${isExpanded ? 'shadow-2xl' : ''}`}
-          >
-            {/* Header de la tarjeta */}
+          return (
             <div
-              className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600 cursor-pointer min-h-[56px]"
-              onClick={() => toggleReport(report.id || '')}
+              key={report.id || index}
+              ref={el => (reportRefs.current[reportId] = el)}
+              className={`transition-shadow duration-200 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden ${isExpanded ? 'shadow-2xl' : ''}`}
             >
-              <div className="flex items-center gap-3 min-w-0">
-                {FaFile({ className: "text-white text-lg flex-shrink-0" })}
-                <div className="min-w-0">
-                  <h3 className="text-white font-bold text-sm truncate max-w-[180px]">{t('report.title')}</h3>
-                  <p className="text-red-100 text-xs truncate">{new Date(report.createdAt).toLocaleDateString()}</p>
+              {/* Header de la tarjeta */}
+              <div
+                className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600 cursor-pointer min-h-[56px]"
+                onClick={() => toggleReport(report.id || '')}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {FaFile({ className: "text-white text-lg flex-shrink-0" })}
+                  <div className="min-w-0">
+                    <h3 className="text-white font-bold text-sm truncate max-w-[180px]">{t('report.title')}</h3>
+                    <p className="text-red-100 text-xs truncate">{new Date(report.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {isExpanded ? FaChevronUp({ className: "text-white text-lg" }) : FaChevronDown({ className: "text-white text-lg" })}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {isExpanded ? FaChevronUp({ className: "text-white text-lg" }) : FaChevronDown({ className: "text-white text-lg" })}
-              </div>
-            </div>
 
-            {/* Extracto cuando está colapsado */}
-            {!isExpanded && (
-              <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800">
-                <p className="text-gray-600 dark:text-gray-300 text-xs leading-snug line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{excerpt}</p>
-              </div>
-            )}
-
-            {/* Contenido completo cuando está expandido */}
-            <div
-              className={`transition-all duration-300 ease-in-out ${isExpanded ? 'opacity-100 py-2' : 'opacity-0 max-h-0 p-0 pointer-events-none'}`}
-              style={isExpanded ? { maxHeight: '2000px' } : { maxHeight: 0 }}
-            >
-              {isExpanded && (
-                <div className="px-3 pt-1 pb-2">
-                  {/* Botones de acción */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(report.createdAt).toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleCopy(report); }}
-                        className="flex items-center justify-center w-7 h-7 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 transition"
-                        title={t('report.copy')}
-                      >
-                        {isCopied ? FaCircleCheck({ className: "text-green-500" }) : FaRegCopy({})}
-                      </button>
-                      <Suspense fallback={<span className="text-xs">Cargando PDF...</span>}>
-                        <PDFDownloadLink
-                          document={
-                            <ReportPDF
-                              title="Informe personalizado"
-                              content={filteredContent}
-                              supplements={supplements}
-                              date={new Date(report.createdAt).toLocaleDateString()}
-                            />
-                          }
-                          fileName={`informe-${new Date(report.createdAt).toLocaleDateString()}.pdf`}
-                          className="flex items-center justify-center w-7 h-7 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition"
-                          style={{ textDecoration: 'none' }}
-                        >
-                          {({ loading }) => (
-                            <>{loading ? <span className="text-xs">...</span> : FaDownload({ className: "text-lg" })}</>
-                          )}
-                        </PDFDownloadLink>
-                      </Suspense>
-                      {onDelete && report.id && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (window.confirm('¿Seguro que quieres eliminar este informe?') && report.id) {
-                              onDelete(report.id);
-                            }
-                          }}
-                          className="flex items-center justify-center w-7 h-7 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition"
-                          title={t('report.delete')}
-                        >
-                          {FaTrash({ className: "text-lg" })}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Contenido del informe */}
-                  <div className="prose max-w-none bg-white p-2 rounded-xl mb-2 text-xs">
-                    <ReactMarkdown>{filteredContent}</ReactMarkdown>
-                  </div>
-
-                  {/* Sección de Productos Recomendados */}
-                  {supplements.length > 0 && (
-                    <div className="px-2 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
-                      <h3 className="text-xs font-bold text-red-600 dark:text-red-400 mb-2">Productos Recomendados</h3>
-                      <ul className="space-y-1">
-                        {supplements.map((supplement, idx) => (
-                          <li key={idx} className="flex items-center">
-                            <a
-                              href={supplement.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition"
-                            >
-                              {supplement.name}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+              {/* Extracto cuando está colapsado */}
+              {!isExpanded && (
+                <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800">
+                  <p className="text-gray-600 dark:text-gray-300 text-xs leading-snug line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{excerpt}</p>
                 </div>
               )}
+
+              {/* Contenido completo cuando está expandido */}
+              <div
+                className={`transition-all duration-300 ease-in-out ${isExpanded ? 'opacity-100 py-2' : 'opacity-0 max-h-0 p-0 pointer-events-none'}`}
+                style={isExpanded ? { maxHeight: '2000px' } : { maxHeight: 0 }}
+              >
+                {isExpanded && (
+                  <div className="px-3 pt-1 pb-2">
+                    {/* Botones de acción */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {new Date(report.createdAt).toLocaleString()}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleCopy(report); }}
+                          className="flex items-center justify-center w-7 h-7 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 transition"
+                          title={t('report.copy')}
+                        >
+                          {isCopied ? FaCircleCheck({ className: "text-green-500" }) : FaRegCopy({})}
+                        </button>
+                        {filteredContent && Array.isArray(supplements) && supplements.length > 0 ? (
+                          <Suspense fallback={<span className="text-xs">Cargando PDF...</span>}>
+                            <PDFDownloadLink
+                              document={
+                                <ReportPDF
+                                  title={filteredContent ? "Informe personalizado" : ""}
+                                  content={filteredContent || ''}
+                                  supplements={supplements || []}
+                                  date={report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : ''}
+                                />
+                              }
+                              fileName={`informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`}
+                              className="flex items-center justify-center w-7 h-7 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition"
+                              style={{ textDecoration: 'none' }}
+                            >
+                              {({ loading }) => (
+                                <>{loading ? <span className="text-xs">...</span> : FaDownload({ className: "text-lg" })}</>
+                              )}
+                            </PDFDownloadLink>
+                          </Suspense>
+                        ) : (
+                          <div className="text-red-600 text-center font-bold">No hay datos suficientes para generar el PDF.</div>
+                        )}
+                        {onDelete && report.id && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm('¿Seguro que quieres eliminar este informe?') && report.id) {
+                                onDelete(report.id);
+                              }
+                            }}
+                            className="flex items-center justify-center w-7 h-7 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition"
+                            title={t('report.delete')}
+                          >
+                            {FaTrash({ className: "text-lg" })}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Contenido del informe */}
+                    <div className="prose max-w-none bg-white p-2 rounded-xl mb-2 text-xs">
+                      <ReactMarkdown>{filteredContent}</ReactMarkdown>
+                    </div>
+
+                    {/* Sección de Productos Recomendados */}
+                    {supplements.length > 0 && (
+                      <div className="px-2 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+                        <h3 className="text-xs font-bold text-red-600 dark:text-red-400 mb-2">Productos Recomendados</h3>
+                        <ul className="space-y-1">
+                          {supplements.map((supplement, idx) => (
+                            <li key={supplement.name + '-' + supplement.link} className="flex items-center">
+                              <a
+                                href={supplement.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition"
+                              >
+                                {supplement.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      )}
     </div>
   );
 
   // Vista escritorio: Lista completa (delegar a ReportView)
   const DesktopView = () => (
     <div className="hidden sm:block space-y-6">
-      {reports.map((report, index) => (
-        <ReportView key={index} report={report} onDelete={onDelete} />
-      ))}
+      {validReports.length === 0 ? (
+        <div className="text-red-600 text-center font-bold">No hay informes válidos para mostrar.</div>
+      ) : (
+        validReports.map((report, index) => (
+          <ReportView key={report.id || index} report={report} onDelete={onDelete} />
+        ))
+      )}
     </div>
   );
 

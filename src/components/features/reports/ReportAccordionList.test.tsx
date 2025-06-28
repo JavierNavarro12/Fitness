@@ -104,6 +104,9 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
 ## Nutrición:
 Mantener una dieta equilibrada con proteínas, carbohidratos y grasas saludables.
 
+## Suplementación Recomendada:
+- **Beta-Alanina**: Para mejorar el rendimiento
+
 ## Consejos:
 Descansar adecuadamente entre entrenamientos.`,
       createdAt: '2024-01-16T10:30:00Z',
@@ -233,8 +236,8 @@ Descansar adecuadamente entre entrenamientos.`,
 
     render(<ReportAccordionList reports={reportsWithoutId} onDelete={mockOnDelete} />);
 
-    // Verificar que se renderiza sin errores
-    expect(screen.getByText('Informe Personalizado')).toBeInTheDocument();
+    // Verificar que se muestra el mensaje global de no válidos en ambas vistas
+    expect(screen.getAllByText('No hay informes válidos para mostrar.')).toHaveLength(2);
   });
 
   test('handles empty reports array', () => {

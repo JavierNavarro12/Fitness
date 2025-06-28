@@ -241,7 +241,7 @@ var safeJSON = (text) => {
 var sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // node_modules/openai/version.mjs
-var VERSION = "5.8.1";
+var VERSION = "5.8.2";
 
 // node_modules/openai/internal/detect-platform.mjs
 var isRunningInBrowser = () => {

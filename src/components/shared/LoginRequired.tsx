@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { startTransition } from 'react';
 import { FaLock, FaSignInAlt } from 'react-icons/fa';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -14,7 +15,7 @@ const LoginRequired: React.FC<LoginRequiredProps> = ({ sectionName, className = 
   const location = useLocation();
 
   const handleLogin = () => {
-    navigate(`/login?redirect=${location.pathname.substring(1)}&msg=protected`);
+    startTransition(() => navigate('/login', { state: { from: location } }));
   };
 
   // Traducción del nombre de la sección si existe clave

@@ -318,7 +318,7 @@ function App() {
 
   const handleResultClick = (result: { category: string; id: string; }) => {
     navChangedBySearch.current = true;
-    navigate(result.category);
+    startTransition(() => navigate(result.category));
     setSearchResultToHighlight({ page: result.category, id: result.id });
     setSearchQuery('');
     setSearchResults([]);
@@ -328,7 +328,7 @@ function App() {
   // Nueva función para requerir login y redirigir a /login
   const requireLogin = (navTarget: string) => {
     // Navegar directamente a la sección, el componente LoginRequired se encargará de mostrar el mensaje de login
-    navigate(`/${navTarget}`);
+    startTransition(() => navigate(`/${navTarget}`));
   };
 
   // Restaurar función para eliminar informes
@@ -506,7 +506,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       const docRef = await addDoc(collection(db, 'reports'), newReport);
       setUserReports(prev => [{ id: docRef.id, ...newReport }, ...prev]);
       setGenerating(false);
-      navigate('/reports', { state: { expandId: docRef.id } });
+      startTransition(() => navigate('/reports', { state: { expandId: docRef.id } }));
 
     } catch (error) {
       console.error("Error generating report:", error);
@@ -570,7 +570,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         <div className="max-w-7xl mx-auto flex items-center py-2 px-4" style={{ minHeight: NAVBAR_HEIGHT }}>
           {/* Izquierda: Logo y Nav */}
           <div className="flex items-center flex-shrink-0">
-              <button onClick={() => { navigate('/'); }} className="focus:outline-none">
+              <button onClick={() => { startTransition(() => navigate('/')); }} className="focus:outline-none">
                 <picture className="hidden sm:block">
                   <source srcSet="/logo-header.webp" type="image/webp" />
                   <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto mr-4 -my-5" style={{ maxHeight: 96 }} width="96" height="96" />
@@ -586,7 +586,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                   <button
                       className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${location.pathname === '/' ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
                     onClick={() => {
-                        navigate('/');
+                        startTransition(() => navigate('/'));
                     }}
                   >
                     {t('nav.home')}
@@ -627,7 +627,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                               <button
                                 key={section.key}
                                 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-red-600 transition-colors py-2 text-left w-full"
-                                  onClick={() => { navigate(section.nav); setMegaMenuOpen(false); }}
+                                  onClick={() => { startTransition(() => navigate(section.nav)); setMegaMenuOpen(false); }}
                               >
                                 {t(section.label)}
                               </button>
@@ -647,7 +647,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                     <button
                           className={`whitespace-nowrap text-sm md:text-lg font-semibold px-4 py-2 rounded transition-all duration-200 ${isActive ? 'bg-red-600 text-white shadow' : 'text-red-700 hover:bg-red-100'}`}
                       onClick={() => {
-                            navigate(path);
+                            startTransition(() => navigate(path));
                         if (tab.key === 'custom') {
                               setShowProfileModal(false);
                         }
@@ -694,7 +694,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                 ) : (
                   <button
                     className="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow transition text-base max-lg:px-2 max-lg:py-1 max-lg:text-sm"
-                    onClick={() => navigate('/login')}
+                    onClick={() => startTransition(() => navigate('/login'))}
                   >
                     {t('loginRequired.loginButton')}
                   </button>
@@ -745,7 +745,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-between h-14 sm:hidden px-6">
           <button
             className="focus:outline-none"
-            onClick={() => navigate('/')}
+            onClick={() => startTransition(() => navigate('/'))}
         >
             <picture>
               <source srcSet="/logo-header-96.webp" type="image/webp" />
@@ -782,7 +782,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
           onNavigate={(navKey) => {
-            navigate(navKey);
+            startTransition(() => navigate(navKey));
             setShowProfileModal(false);
             setMobileMenuOpen(false);
           }}
@@ -791,7 +791,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         onToggleDarkMode={() => setDarkMode(v => !v)}
         i18n={i18n}
           showLoginButton={!user}
-          onLoginClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
+          onLoginClick={() => { startTransition(() => navigate('/login')); setMobileMenuOpen(false); }}
       />
 
       {/* MODAL PERFIL */}
@@ -911,7 +911,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             } />
             <Route path="/profile" element={
               user ? (
-                <ProfileSummary user={user} userProfile={userProfile} onLogout={handleLogout} onClose={() => navigate('/')} />
+                <ProfileSummary user={user} userProfile={userProfile} onLogout={handleLogout} onClose={() => startTransition(() => navigate('/'))} />
               ) : (
                 <LoginRequired sectionName="Perfil" />
               )

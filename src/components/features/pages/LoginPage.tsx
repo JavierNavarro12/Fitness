@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { startTransition } from 'react';
 import Auth from '../auth/Auth';
 
 const LoginPage: React.FC = () => {
@@ -12,10 +13,10 @@ const LoginPage: React.FC = () => {
   const handleAuthSuccess = (isInvitado?: boolean) => {
     if (isInvitado) {
       // Si es invitado, devolver a la home en vez de a la sección protegida
-      navigate('/', { replace: true });
+      startTransition(() => navigate('/', { replace: true }));
     } else {
       // Si se autentica, ir a la sección que estaba intentando acceder
-      navigate(redirect, { replace: true });
+      startTransition(() => navigate(redirect, { replace: true }));
     }
   };
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { startTransition } from 'react';
 
 // SVG Icons as components
 const HomeIcon = ({ className = '' }) => (
@@ -46,7 +47,7 @@ const BottomNav: React.FC<{ user?: any; onSignOut?: () => void; }> = ({ user, on
         return (
           <button
             key={item.key}
-            onClick={() => navigate(item.path)}
+            onClick={() => startTransition(() => navigate(item.path))}
             className={`flex flex-col items-center justify-center flex-1 py-2 px-2 focus:outline-none transition text-base ${isActive ? 'text-red-600 font-bold' : 'text-gray-500 dark:text-gray-300'}`}
           >
             <Icon className={`h-7 w-7 mb-1 transition-colors ${isActive ? 'text-red-600' : 'text-gray-400 dark:text-gray-400'}`} />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { startTransition } from 'react';
 
 const Footer: React.FC = () => {
   const { t } = useTranslation();
@@ -15,7 +16,7 @@ const Footer: React.FC = () => {
       mujer: '/mujer',
       cognitivo: '/cognitivo',
     };
-    navigate(routes[navKey] || '/');
+    startTransition(() => navigate(routes[navKey] || '/'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -138,7 +139,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li>
                 <button 
-                  onClick={() => navigate('/contact')}
+                  onClick={() => startTransition(() => navigate('/contact'))}
                   className="flex items-center hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">

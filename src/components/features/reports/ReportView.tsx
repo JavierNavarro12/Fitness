@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
 import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
-
-// Lazy load PDFDownloadLink y ReportPDF (debe ir aquí, después de todos los imports)
-const PDFDownloadLink = React.lazy(() => import('@react-pdf/renderer').then(mod => ({ default: mod.PDFDownloadLink })));
-const ReportPDF = React.lazy(() => import('./ReportPDF'));
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import ReportPDF from './ReportPDF';
 
 interface ReportViewProps {
   report: Report;
@@ -234,6 +232,14 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   // Filtrar el contenido para eliminar el resumen del formulario y la sección de productos
   const filteredContent = removeRecommendedProductsSection(filterPersonalizationSummary(report.content));
 
+  // Asegura que filteredContent y supplements siempre tengan un valor válido
+  const safeFilteredContent = filteredContent || '';
+  const safeSupplements = Array.isArray(supplements) ? supplements : [];
+
+  if (!safeFilteredContent || safeSupplements.length === 0 || typeof safeFilteredContent !== 'string') {
+    return <div className="text-red-600 text-center font-bold">Error: Datos insuficientes o inválidos para generar el PDF.</div>;
+  }
+
   const supplementsWithLinks = extractSupplementsWithLinks(report.content);
 
   return (
@@ -257,13 +263,13 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
             <PDFDownloadLink
               document={
                 <ReportPDF
-                  title="Informe personalizado"
-                  content={filteredContent}
-                  supplements={supplements}
-                  date={new Date(report.createdAt).toLocaleDateString()}
+                  title={safeFilteredContent ? "Informe personalizado" : ""}
+                  content={safeFilteredContent}
+                  supplements={safeSupplements}
+                  date={report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : ''}
                 />
               }
-              fileName={`informe-${new Date(report.createdAt).toLocaleDateString()}.pdf`}
+              fileName={`informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`}
               className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition"
               style={{ textDecoration: 'none' }}
             >
@@ -292,7 +298,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
       <div className="px-6 py-4">
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
         <div className="prose max-w-3xl mx-auto bg-white p-6 rounded-xl">
-          <ReactMarkdown>{filteredContent}</ReactMarkdown>
+          <ReactMarkdown>{safeFilteredContent}</ReactMarkdown>
         </div>
 
         {/* Sección de Enlaces a Productos Recomendados */}
