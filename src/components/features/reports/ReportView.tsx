@@ -1,4 +1,4 @@
-import React, { useState, useRef, Suspense } from 'react';
+import React, { useState, useRef, Suspense, ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
 import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash } from 'react-icons/fa6';
@@ -139,7 +139,8 @@ function extractAllSupplements(content: string): string[] {
 function extractSupplementsWithLinks(content: string): Supplement[] {
   const supplementNames = extractAllSupplements(content);
   return supplementNames.map(name => {
-    const cleanName = name;
+    // Elimina los asteriscos del nombre para los enlaces
+    const cleanName = name.replace(/\*+/g, '').trim();
     return {
       name: cleanName,
       link: `https://www.amazon.es/s?k=${encodeURIComponent(cleanName)}`
@@ -209,6 +210,17 @@ function removeRecommendedProductsSection(content: string): string {
   return lines.slice(0, idx).join('\n').trim();
 }
 
+const markdownComponents = {
+  h1: (props: ComponentPropsWithoutRef<'h1'>) => <h1 className="text-3xl font-bold mt-6 mb-4 text-gray-900" {...props} />,
+  h2: (props: ComponentPropsWithoutRef<'h2'>) => <h2 className="text-2xl font-bold mt-4 mb-3 text-gray-900" {...props} />,
+  h3: (props: ComponentPropsWithoutRef<'h3'>) => <h3 className="text-xl font-semibold mt-3 mb-2 text-gray-800" {...props} />,
+  ul: (props: ComponentPropsWithoutRef<'ul'>) => <ul className="list-disc pl-6 mb-2" {...props} />,
+  ol: (props: ComponentPropsWithoutRef<'ol'>) => <ol className="list-decimal pl-6 mb-2" {...props} />,
+  li: (props: ComponentPropsWithoutRef<'li'>) => <li className="mb-1" {...props} />,
+  strong: (props: ComponentPropsWithoutRef<'strong'>) => <strong className="font-semibold text-gray-900" {...props} />,
+  p: (props: ComponentPropsWithoutRef<'p'>) => <p className="mb-2 text-gray-800" {...props} />,
+};
+
 const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -235,6 +247,14 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   // Asegura que filteredContent y supplements siempre tengan un valor válido
   const safeFilteredContent = filteredContent || '';
   const safeSupplements = Array.isArray(supplements) ? supplements : [];
+
+  // Limpia el contenido para evitar que ReactMarkdown lo interprete como bloque de código
+  let cleanMarkdown = safeFilteredContent
+    .replace(/^```[a-z]*\n?/i, '') // elimina ``` al inicio
+    .replace(/```$/i, '')           // elimina ``` al final
+    .split('\n')
+    .map(line => line.replace(/^\s+/, ''))
+    .join('\n');
 
   if (!safeFilteredContent || safeSupplements.length === 0 || typeof safeFilteredContent !== 'string') {
     return <div className="text-red-600 text-center font-bold">Error: Datos insuficientes o inválidos para generar el PDF.</div>;
@@ -298,7 +318,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
       <div className="px-6 py-4">
         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
         <div className="prose max-w-3xl mx-auto bg-white p-6 rounded-xl">
-          <ReactMarkdown>{safeFilteredContent}</ReactMarkdown>
+          <ReactMarkdown components={markdownComponents}>{cleanMarkdown}</ReactMarkdown>
         </div>
 
         {/* Sección de Enlaces a Productos Recomendados */}

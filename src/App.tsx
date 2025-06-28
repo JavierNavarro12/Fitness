@@ -23,6 +23,7 @@ import LoginPage from './components/features/pages/LoginPage';
 import ScrollToTop from './components/layout/ScrollToTop';
 import LoginRequired from './components/shared/LoginRequired';
 import ReportAccordionList from './components/features/reports/ReportAccordionList';
+import Loader from './components/shared/Loader';
 
 interface SearchResult {
   id: string;
@@ -852,6 +853,11 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                           <li><b>{t('profileSummary.allergies')}:</b> {customProfile.allergies.length ? customProfile.allergies.join(', ') : t('profileSummary.none')}</li>
                           <li><b>{t('profileSummary.currentSupplements')}:</b> {customProfile.currentSupplements.length ? customProfile.currentSupplements.join(', ') : t('profileSummary.none')}</li>
                         </ul>
+                        {generating && (
+                          <div className="flex justify-center items-center py-8">
+                            <Loader />
+                          </div>
+                        )}
                         <button
                           onClick={handleGenerateReport}
                           className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed"
