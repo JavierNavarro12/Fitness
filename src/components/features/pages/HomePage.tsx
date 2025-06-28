@@ -7,9 +7,9 @@ interface HomeProps {
 }
 
 const fitnessImages = [
-  '/fitness-2.webp',
-  '/fitness-1.webp',
-  '/fitness-3.webp',
+  { src: '/fitness-3.webp', alt: 'Fitness 3', order: 'md:order-2' },
+  { src: '/fitness-1.webp', alt: 'Fitness 1', order: 'md:order-1' },
+  { src: '/fitness-2.webp', alt: 'Fitness 2', order: 'md:order-3' },
 ];
 
 const Home: React.FC<HomeProps> = ({ onStart }) => {
@@ -37,13 +37,13 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
           {t('home.description')}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 w-full" data-aos="zoom-in" data-aos-delay="600">
-          {fitnessImages.map((src, i) => (
+          {fitnessImages.map((img, i) => (
             <img
               key={i}
               ref={i === 0 ? lcpImgRef : undefined}
-              src={src}
-              alt={`Fitness ${i+1}`}
-              className="rounded-xl shadow-md object-cover w-full h-48"
+              src={img.src}
+              alt={img.alt}
+              className={`rounded-xl shadow-md object-cover w-full h-48 ${img.order}`}
               width={600}
               height={400}
               loading={i === 0 ? "eager" : "lazy"}
