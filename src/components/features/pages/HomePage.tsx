@@ -7,9 +7,9 @@ interface HomeProps {
 }
 
 const fitnessImages = [
-  { src: '/fitness-3.webp', alt: 'Fitness 3', order: 'md:order-2' },
+  { src: '/fitness-2.webp', alt: 'Fitness 2', order: 'md:order-2' },
   { src: '/fitness-1.webp', alt: 'Fitness 1', order: 'md:order-1' },
-  { src: '/fitness-2.webp', alt: 'Fitness 2', order: 'md:order-3' },
+  { src: '/fitness-3.webp', alt: 'Fitness 3', order: 'md:order-3' },
 ];
 
 const Home: React.FC<HomeProps> = ({ onStart }) => {
