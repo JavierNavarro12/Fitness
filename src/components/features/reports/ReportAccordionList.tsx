@@ -306,7 +306,15 @@ const ReportAccordionList: React.FC<ReportAccordionListProps> = ({ reports, onDe
 
                     {/* Contenido del informe */}
                     <div className="prose max-w-none bg-white p-2 rounded-xl mb-2 text-xs">
-                      <ReactMarkdown>{filteredContent}</ReactMarkdown>
+                      {(() => {
+                        let cleanMarkdown = filteredContent
+                          .replace(/^```[a-z]*\n?/i, '') // elimina ``` al inicio
+                          .replace(/```$/i, '')           // elimina ``` al final
+                          .split('\n')
+                          .map(line => line.replace(/^\s+/, ''))
+                          .join('\n');
+                        return <ReactMarkdown>{cleanMarkdown}</ReactMarkdown>;
+                      })()}
                     </div>
 
                     {/* Sección de Productos Recomendados */}
