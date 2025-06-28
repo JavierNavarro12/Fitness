@@ -240,7 +240,7 @@ const ReportAccordionList: React.FC<ReportAccordionListProps> = ({ reports, onDe
               {/* Extracto cuando está colapsado */}
               {!isExpanded && (
                 <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800">
-                  <p className="text-gray-600 dark:text-gray-300 text-xs leading-snug line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{excerpt}</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-xs leading-snug line-clamp-8" style={{ display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{excerpt}</p>
                 </div>
               )}
 
