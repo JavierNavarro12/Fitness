@@ -46,7 +46,7 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
               className={`rounded-xl shadow-md object-cover w-full h-48 ${img.order}`}
               width={600}
               height={400}
-              loading={i === 0 ? "eager" : "lazy"}
+              loading="eager"
               decoding="async"
               data-aos="fade-up"
               data-aos-delay={800 + i * 200}
