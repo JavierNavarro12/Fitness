@@ -81,9 +81,9 @@ const ProfileSummary: React.FC<ProfileSummaryProps> = ({ user, userProfile, onLo
           <p><strong>{t('profile.experience')}:</strong> {mapExperience(userProfile.experience)}</p>
           <p><strong>{t('profile.trainingFrequency')}:</strong> {mapFrequency(userProfile.frequency)}</p>
           <p><strong>{t('profile.mainSport')}:</strong> {t(userProfile.sport)}</p>
-          <p className="md:col-span-2"><strong>{t('profile.medicalConditions')}:</strong> {userProfile.medicalConditions?.join(', ') || t('profile.none')}</p>
-          <p className="md:col-span-2"><strong>{t('profile.allergies')}:</strong> {userProfile.allergies?.join(', ') || t('profile.none')}</p>
-          <p className="md:col-span-2"><strong>{t('profile.currentSupplements')}:</strong> {userProfile.currentSupplements?.join(', ') || t('profile.none')}</p>
+          <p className="md:col-span-2"><strong>{t('profile.medicalConditions')}:</strong> {userProfile.medicalConditions?.join(', ') || t('profileSummary.none')}</p>
+          <p className="md:col-span-2"><strong>{t('profile.allergies')}:</strong> {userProfile.allergies?.join(', ') || t('profileSummary.none')}</p>
+          <p className="md:col-span-2"><strong>{t('profile.currentSupplements')}:</strong> {userProfile.currentSupplements?.join(', ') || t('profileSummary.none')}</p>
         </div>
       )}
       <button

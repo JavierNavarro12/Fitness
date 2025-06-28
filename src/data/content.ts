@@ -24,10 +24,10 @@ export const searchableContent = [
 
   // Deportes
   {
-    id: 'levantamiento-pesas',
+    id: 'fitness',
     category: 'deportes',
-    title: 'deportes.pesas.title',
-    content: 'deportes.pesas.content',
+    title: 'deportes.fitness.title',
+    content: 'deportes.fitness.content',
     image: 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   },
   {

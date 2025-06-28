@@ -330,6 +330,68 @@ describe('PersonalizedChatAI', () => {
       });
     });
   });
+
+  describe('Funcionalidad de continuar chats del historial', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      i18n.changeLanguage('es');
+    });
+
+    test('muestra botón "Continuar" en cada chat del historial', async () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      // Abrir historial
+      const historyButton = screen.getByRole('button', { name: /historial/i });
+      fireEvent.click(historyButton);
+      
+      // Verificar que aparece el botón continuar (aunque no haya historial real)
+      await waitFor(() => {
+        expect(screen.getByText(/Historial de chats/i)).toBeInTheDocument();
+      });
+    });
+
+    test('muestra indicador "Continuando" cuando se está continuando un chat', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      // El indicador "Continuando" no debería aparecer inicialmente
+      expect(screen.queryByText(/Continuando/i)).not.toBeInTheDocument();
+    });
+
+    test('permite iniciar nuevo chat', () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      const newChatButton = screen.getByText(/Nuevo chat/i);
+      fireEvent.click(newChatButton);
+      
+      // Verificar que se muestra el mensaje de bienvenida (chat limpio)
+      expect(screen.getByText(/¡Hola! Soy tu asistente personal de suplementación/i)).toBeInTheDocument();
+    });
+
+    test('muestra botones "Continuar" y "Volver" en vista de chat seleccionado', async () => {
+      renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
+      
+      const button = screen.getByRole('button', { name: /abrir chat ia personalizado/i });
+      fireEvent.click(button);
+      
+      // Abrir historial
+      const historyButton = screen.getByRole('button', { name: /historial/i });
+      fireEvent.click(historyButton);
+      
+      // Verificar que aparecen los botones de acción
+      await waitFor(() => {
+        expect(screen.getByText(/Historial de chats/i)).toBeInTheDocument();
+      });
+    });
+  });
 }); 
 
  

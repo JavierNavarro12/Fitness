@@ -164,20 +164,15 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Cerrar el menú si se hace clic fuera
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (showMobileSearch) return;
-
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      // Si el menú está abierto y el click es fuera del menú, ciérralo
+      if (showUserMenu && userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setShowUserMenu(false);
       }
     }
-    if (showUserMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu, showMobileSearch]);
 
@@ -524,26 +519,6 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
     setGenerating(false);
   };
 
-  // Funciones de mapeo para mostrar los valores traducidos
-  const mapGender = (g: string) => {
-    if (g === 'male') return t('Masculino');
-    if (g === 'female') return t('Femenino');
-    if (g === 'other') return t('Otro');
-    return g;
-  };
-  const mapExperience = (e: string) => {
-    if (e === 'beginner') return t('Principiante');
-    if (e === 'intermediate') return t('Intermedio');
-    if (e === 'advanced') return t('Avanzado');
-    return e;
-  };
-  const mapFrequency = (f: string) => {
-    if (f === 'low') return t('Baja (1-2 veces/semana)');
-    if (f === 'medium') return t('Media (3-4 veces/semana)');
-    if (f === 'high') return t('Alta (5+ veces/semana)');
-    return f;
-  };
-
   useEffect(() => {
     if (location.pathname === '/custom') {
       setCustomProfile(null);
@@ -700,41 +675,47 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                   </button>
                 )}
               {showUserMenu && (
-                  <div className="absolute top-full mt-2 right-0 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 overflow-hidden z-50 animate-fade-in">
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{user?.displayName || user?.email?.split('@')[0]}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
-                  </div>
-                  <div className="py-2">
-                  <button
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
-                  >
-                      <UserCircleIcon className="w-5 h-5" />
-                      <span>{t('userDropdown.viewProfile')}</span>
-                  </button>
-                  <button
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
-                    onClick={handleLogout}
-                  >
-                      <LogoutIcon className="w-5 h-5" />
-                      <span>{t('userDropdown.logout')}</span>
-                  </button>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-900/50 p-2">
-                    <div className="flex justify-center items-center gap-2">
-                      <LanguageSwitch
-                        checked={i18n.language === 'en'}
-                        onChange={() => {
-                          const newLang = i18n.language === 'es' ? 'en' : 'es';
-                          i18n.changeLanguage(newLang);
-                          localStorage.setItem('lang', newLang);
-                        }}
-                      />
-                      <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
+                <>
+                  {/* Overlay visual, pero el cierre lo gestiona el event listener global */}
+                  <div
+                    className="fixed inset-0 bg-black bg-opacity-30 z-40 pointer-events-none"
+                  ></div>
+                  <div ref={userMenuRef} className="absolute top-full mt-0 right-0 mr-4 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 overflow-hidden z-50 animate-fade-in">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                      <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{user?.displayName || user?.email?.split('@')[0]}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                    </div>
+                    <div className="py-2">
+                    <button
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => { setShowProfileModal(true); setShowUserMenu(false); }}
+                    >
+                        <UserCircleIcon className="w-5 h-5" />
+                        <span>{t('userDropdown.viewProfile')}</span>
+                    </button>
+                    <button
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
+                      onClick={handleLogout}
+                    >
+                        <LogoutIcon className="w-5 h-5" />
+                        <span>{t('userDropdown.logout')}</span>
+                    </button>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-900/50 p-2">
+                      <div className="flex justify-center items-center gap-2">
+                        <LanguageSwitch
+                          checked={i18n.language === 'en'}
+                          onChange={() => {
+                            const newLang = i18n.language === 'es' ? 'en' : 'es';
+                            i18n.changeLanguage(newLang);
+                            localStorage.setItem('lang', newLang);
+                          }}
+                        />
+                        <Switch checked={darkMode} onChange={() => setDarkMode(v => !v)} />
+                      </div>
                     </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
           </div>
@@ -822,7 +803,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                 <>
                   {(isEditingProfile || (!showSummary && !isEditingProfile)) && (
                     <div className="flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -mt-16">
-              <div className="mt-2 w-full flex justify-center">
+                      <div className="mt-2 w-full flex justify-center">
                         <StepForm
                           onComplete={isEditingProfile ? (profile) => {
                             setCustomProfile(profile);
@@ -833,8 +814,8 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                           isEditing={isEditingProfile}
                           user={user}
                         />
-              </div>
-            </div>
+                      </div>
+                    </div>
                   )}
                   {(isEditingProfile || (!showSummary && !isEditingProfile)) && (
                     <div className="hidden sm:flex items-center justify-center min-h-[calc(100vh-8rem)] -mt-16">
@@ -848,43 +829,42 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                         isEditing={isEditingProfile}
                         user={user}
                       />
-            </div>
-        )}
+                    </div>
+                  )}
                   {showSummary && customProfile && !isEditingProfile && (
-          <div className="flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-8rem)]">
-            <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 relative">
-              <button
-                className="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl"
-                title={t('Editar perfil')}
-                onClick={() => startTransition(() => setIsEditingProfile(true))}
-              >
-                <span className="-scale-x-100 inline-block">✏️</span>
-              </button>
-                        <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-6">{t('Resumen del Perfil')}</h2>
+                    <div className="flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-8rem)]">
+                      <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 relative">
+                        <button
+                          className="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl"
+                          title={t('profileSummary.title')}
+                          onClick={() => startTransition(() => setIsEditingProfile(true))}
+                        >
+                          <span className="-scale-x-100 inline-block">✏️</span>
+                        </button>
+                        <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-6">{t('profileSummary.title')}</h2>
                         <ul className="space-y-2 mb-8 text-gray-700 dark:text-gray-300">
-                          <li><b>{t('Edad')}:</b> {customProfile.age} años</li>
-                          <li><b>{t('Género')}:</b> {mapGender(customProfile.gender)}</li>
-                          <li><b>{t('Peso')}:</b> {customProfile.weight} kg</li>
-                          <li><b>{t('Altura')}:</b> {customProfile.height} cm</li>
-                          <li><b>{t('Objetivo')}:</b> {customProfile.objective}</li>
-                          <li><b>{t('Experiencia')}:</b> {mapExperience(customProfile.experience)}</li>
-                          <li><b>{t('Frecuencia de entrenamiento')}:</b> {mapFrequency(customProfile.frequency)}</li>
-                          <li><b>{t('Deporte principal')}:</b> {t(customProfile.sport)}</li>
-                          <li><b>{t('Condiciones médicas')}:</b> {customProfile.medicalConditions.join(', ') || t('Ninguna')}</li>
-                          <li><b>{t('Alergias')}:</b> {customProfile.allergies.join(', ') || t('Ninguna')}</li>
-                          <li><b>{t('Suplementos actuales')}:</b> {customProfile.currentSupplements.join(', ') || t('Ninguno')}</li>
-              </ul>
-              <button
-                onClick={handleGenerateReport}
-                disabled={generating}
-                          className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                          {generating && <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>}
-                          {generating ? t('Generando informe...') : t('Generar informe')}
-              </button>
-            </div>
-          </div>
-        )}
+                          <li><b>{t('profileSummary.age')}:</b> {customProfile.age} {t('profileSummary.years')}</li>
+                          <li><b>{t('profileSummary.gender')}:</b> {t('gender.' + customProfile.gender)}</li>
+                          <li><b>{t('profileSummary.weight')}:</b> {customProfile.weight} {t('profileSummary.kg')}</li>
+                          <li><b>{t('profileSummary.height')}:</b> {customProfile.height} cm</li>
+                          <li><b>{t('profileSummary.objective')}:</b> {customProfile.objective}</li>
+                          <li><b>{t('profileSummary.experience')}:</b> {t('experience.' + customProfile.experience)}</li>
+                          <li><b>{t('profileSummary.trainingFrequency')}:</b> {t('frequency.' + customProfile.frequency)}</li>
+                          <li><b>{t('profileSummary.mainSport')}:</b> {t(customProfile.sport)}</li>
+                          <li><b>{t('profileSummary.medicalConditions')}:</b> {customProfile.medicalConditions.length ? customProfile.medicalConditions.join(', ') : t('profileSummary.none')}</li>
+                          <li><b>{t('profileSummary.allergies')}:</b> {customProfile.allergies.length ? customProfile.allergies.join(', ') : t('profileSummary.none')}</li>
+                          <li><b>{t('profileSummary.currentSupplements')}:</b> {customProfile.currentSupplements.length ? customProfile.currentSupplements.join(', ') : t('profileSummary.none')}</li>
+                        </ul>
+                        <button
+                          onClick={handleGenerateReport}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed"
+                          disabled={generating}
+                        >
+                          {generating ? t('profileSummary.generatingButton') : t('profileSummary.generateButton')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <LoginRequired sectionName="Personalización" />

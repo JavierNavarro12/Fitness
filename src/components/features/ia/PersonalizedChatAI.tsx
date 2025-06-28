@@ -11,7 +11,8 @@ import {
   orderBy,
   deleteDoc,
   doc,
-  Timestamp
+  Timestamp,
+  updateDoc
 } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FaTrash } from 'react-icons/fa';
@@ -33,6 +34,7 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile, mo
   const [selectedChat, setSelectedChat] = useState<any | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && messagesEndRef.current && messagesEndRef.current.scrollIntoView) {
@@ -72,20 +74,52 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({ userProfile, mo
   // Guardar conversación en Firestore
   const saveChatToHistory = async (msgs: any[]) => {
     if (!userId || msgs.length === 0) return;
-    // Solo guarda si hay mensajes
-    await addDoc(collection(db, 'chatHistories'), {
-      userId,
-      messages: msgs,
-      createdAt: Timestamp.now(),
-      title: msgs[0]?.content?.slice(0, 40) || 'Chat',
-    });
+    
+    if (currentChatId) {
+      // Actualizar chat existente
+      await updateDoc(doc(db, 'chatHistories', currentChatId), {
+        messages: msgs,
+        updatedAt: Timestamp.now(),
+      });
+    } else {
+      // Crear nuevo chat
+      const docRef = await addDoc(collection(db, 'chatHistories'), {
+        userId,
+        messages: msgs,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+        title: msgs[0]?.content?.slice(0, 40) || 'Chat',
+      });
+      setCurrentChatId(docRef.id);
+    }
     loadHistory();
   };
 
   // Borrar chat del historial
   const deleteChat = async (id: string) => {
     await deleteDoc(doc(db, 'chatHistories', id));
+    // Si borramos el chat actual, limpiar el estado
+    if (id === currentChatId) {
+      setCurrentChatId(null);
+      setMessages([]);
+    }
     loadHistory();
+  };
+
+  // Continuar conversación del historial
+  const continueChat = (chat: any) => {
+    setMessages(chat.messages);
+    setCurrentChatId(chat.id);
+    setShowHistory(false);
+    setSelectedChat(null);
+  };
+
+  // Iniciar nuevo chat
+  const startNewChat = () => {
+    setMessages([]);
+    setCurrentChatId(null);
+    setShowHistory(false);
+    setSelectedChat(null);
   };
 
   const mapGender = (g: string) => {
@@ -272,11 +306,16 @@ INSTRUCCIONES:
       {open && (
         <>
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
-          <div className="fixed left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28 z-50 w-[95vw] max-w-md sm:w-96 bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden -translate-x-1/2 sm:translate-x-0">
+          <div className="fixed left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28 z-50 w-[98vw] max-w-lg sm:w-[32rem] bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden -translate-x-1/2 sm:translate-x-0">
             {/* Header con botón historial */}
           <div className="p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span>EGN IA Personal</span>
+              {currentChatId && (
+                <span className="text-xs bg-red-500 px-2 py-1 rounded-full">
+                  {i18n.language === 'en' ? 'Continuing' : 'Continuando'}
+                </span>
+              )}
             </div>
               <div className="flex items-center gap-2">
                 <button
@@ -293,7 +332,7 @@ INSTRUCCIONES:
                 </button>
                 <button
                   className="text-xs text-blue-100 hover:underline mr-2"
-                  onClick={() => { setMessages([]); setShowHistory(false); setSelectedChat(null); }}
+                  onClick={startNewChat}
                 >
                   {i18n.language === 'en' ? 'New chat' : 'Nuevo chat'}
                 </button>
@@ -315,13 +354,29 @@ INSTRUCCIONES:
                 ) : (
                   <ul className="space-y-2">
                     {chatHistory.map(chat => (
-                      <li key={chat.id} className="flex items-center justify-between bg-white border border-red-100 rounded-lg px-3 py-2 hover:bg-red-50 transition cursor-pointer">
-                        <span onClick={() => setSelectedChat(chat)} className="flex-1 truncate">
+                      <li key={chat.id} className="flex flex-row items-center bg-white border border-red-100 rounded-lg px-3 py-2 hover:bg-red-50 transition">
+                        <span 
+                          onClick={() => setSelectedChat(chat)} 
+                          className="flex-1 truncate cursor-pointer"
+                        >
                           {chat.title || (i18n.language === 'en' ? 'Chat' : 'Chat')}
                         </span>
-                        <button onClick={() => deleteChat(chat.id)} className="ml-2 text-red-500 hover:text-red-700 text-lg" title={i18n.language === 'en' ? 'Delete' : 'Borrar'}>
-                          {FaTrash({ className: "w-5 h-5" })}
-                        </button>
+                        <div className="flex gap-2 ml-2">
+                          <button 
+                            onClick={() => continueChat(chat)}
+                            className="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition"
+                            title={i18n.language === 'en' ? 'Continue this chat' : 'Continuar este chat'}
+                          >
+                            {i18n.language === 'en' ? 'Continue' : 'Continuar'}
+                          </button>
+                          <button 
+                            onClick={() => deleteChat(chat.id)} 
+                            className="text-red-500 hover:text-red-700 text-lg px-2" 
+                            title={i18n.language === 'en' ? 'Delete' : 'Borrar'}
+                          >
+                            {FaTrash({ className: "w-5 h-5" })}
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -337,7 +392,20 @@ INSTRUCCIONES:
                         </div>
                       ))}
                     </div>
-                    <button className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition" onClick={() => setSelectedChat(null)}>{i18n.language === 'en' ? 'Back to history' : 'Volver al historial'}</button>
+                    <div className="mt-3 flex gap-2">
+                      <button 
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition" 
+                        onClick={() => continueChat(selectedChat)}
+                      >
+                        {i18n.language === 'en' ? 'Continue' : 'Continuar'}
+                      </button>
+                      <button 
+                        className="flex-1 bg-gray-500 hover:bg-gray-600 text-white rounded-xl px-4 py-2 font-bold transition" 
+                        onClick={() => setSelectedChat(null)}
+                      >
+                        {i18n.language === 'en' ? 'Back' : 'Volver'}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
