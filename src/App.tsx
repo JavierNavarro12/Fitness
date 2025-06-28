@@ -120,12 +120,29 @@ function App() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   useEffect(() => {
-    // Inicializar AOS
+    // Inicializar AOS con configuración optimizada para LCP
     AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
+      duration: 600,
+      easing: 'ease-out',
       once: true,
-      offset: 100
+      offset: 50,
+      disable: 'mobile', // Deshabilitar en móvil para mejor rendimiento
+      startEvent: 'DOMContentLoaded', // Esperar a que el DOM esté listo
+      initClassName: 'aos-init',
+      animatedClassName: 'aos-animate',
+      useClassNames: true,
+      disableMutationObserver: false,
+      debounceDelay: 50,
+      throttleDelay: 99,
+    });
+
+    // Asegurar que el LCP no se vea afectado por AOS
+    const lcpElements = document.querySelectorAll('[data-aos]');
+    lcpElements.forEach(el => {
+      if (el.textContent?.includes('EGN') || el.classList.contains('text-3xl')) {
+        el.removeAttribute('data-aos');
+        el.classList.remove('aos-init', 'aos-animate');
+      }
     });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -729,7 +746,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             className="focus:outline-none"
             onClick={() => startTransition(() => navigate('/'))}
         >
-            <span className="text-3xl font-extrabold text-red-600 tracking-tight">EGN</span>
+            <span className="text-3xl font-bold text-red-600 tracking-tight">EGN</span>
           </button>
         <div className="flex items-center gap-4">
             <button onClick={() => setShowMobileSearch(v => !v)} className="text-gray-600 dark:text-gray-300">
