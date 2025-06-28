@@ -120,29 +120,12 @@ function App() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   useEffect(() => {
-    // Inicializar AOS con configuración optimizada para LCP
+    // Inicializar AOS
     AOS.init({
-      duration: 600,
-      easing: 'ease-out',
+      duration: 800,
+      easing: 'ease-in-out',
       once: true,
-      offset: 50,
-      disable: 'mobile', // Deshabilitar en móvil para mejor rendimiento
-      startEvent: 'DOMContentLoaded', // Esperar a que el DOM esté listo
-      initClassName: 'aos-init',
-      animatedClassName: 'aos-animate',
-      useClassNames: true,
-      disableMutationObserver: false,
-      debounceDelay: 50,
-      throttleDelay: 99,
-    });
-
-    // Asegurar que el LCP no se vea afectado por AOS
-    const lcpElements = document.querySelectorAll('[data-aos]');
-    lcpElements.forEach(el => {
-      if (el.textContent?.includes('EGN') || el.classList.contains('text-3xl')) {
-        el.removeAttribute('data-aos');
-        el.classList.remove('aos-init', 'aos-animate');
-      }
+      offset: 100
     });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
