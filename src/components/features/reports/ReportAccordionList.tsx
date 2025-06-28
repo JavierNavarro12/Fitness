@@ -162,6 +162,13 @@ const ReportAccordionList: React.FC<ReportAccordionListProps> = ({ reports, onDe
     }
   }, [initialExpandedId]);
 
+  // Además, cuando cambia initialExpandedId, forzar la expansión aunque el usuario haya minimizado antes
+  useEffect(() => {
+    if (initialExpandedId) {
+      setExpandedReports(new Set([initialExpandedId]));
+    }
+  }, [initialExpandedId, reports.length]);
+
   const toggleReport = (reportId: string) => {
     const newExpanded = new Set(expandedReports);
     if (newExpanded.has(reportId)) {
