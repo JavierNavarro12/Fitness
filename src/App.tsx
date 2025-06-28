@@ -728,10 +728,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             className="focus:outline-none"
             onClick={() => startTransition(() => navigate('/'))}
         >
-            <picture>
-              <source srcSet="/logo-header-96.webp" type="image/webp" />
-              <img src="/logo-header.png" alt="EGN Logo" className="h-24 w-auto" style={{ maxHeight: 96 }} width="96" height="96" loading="eager" />
-            </picture>
+            <span className="text-3xl font-extrabold text-red-600 tracking-tight">EGN</span>
           </button>
         <div className="flex items-center gap-4">
             <button onClick={() => setShowMobileSearch(v => !v)} className="text-gray-600 dark:text-gray-300">
