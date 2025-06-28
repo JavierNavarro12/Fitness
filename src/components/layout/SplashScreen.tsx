@@ -8,7 +8,16 @@ const SplashScreen: React.FC = () => (
   >
     <picture data-aos="zoom-in" data-aos-delay="200">
       <source srcSet="/logo-app.webp" type="image/webp" />
-      <img src="/logo-app.png" alt="EGN" className="w-full h-full max-w-xs sm:max-w-sm object-contain" loading="eager" />
+      <img 
+        src="/logo-app.png" 
+        alt="EGN" 
+        className="w-full h-full max-w-xs sm:max-w-sm object-contain" 
+        width={240}
+        height={120}
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+      />
     </picture>
   </div>
 );
