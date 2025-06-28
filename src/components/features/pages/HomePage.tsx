@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 
@@ -7,13 +7,20 @@ interface HomeProps {
 }
 
 const fitnessImages = [
-  'https://images.unsplash.com/photo-1554284126-aa88f22d8b74?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80',
+  '/fitness-1.webp',
+  '/fitness-2.webp',
+  '/fitness-3.webp',
 ];
 
 const Home: React.FC<HomeProps> = ({ onStart }) => {
   const { t } = useTranslation();
+  const lcpImgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (lcpImgRef.current) {
+      lcpImgRef.current.setAttribute('fetchpriority', 'high');
+    }
+  }, []);
 
   return (
     <>
@@ -33,9 +40,14 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
           {fitnessImages.map((src, i) => (
             <img
               key={i}
+              ref={i === 0 ? lcpImgRef : undefined}
               src={src}
               alt={`Fitness ${i+1}`}
               className="rounded-xl shadow-md object-cover w-full h-48"
+              width={600}
+              height={400}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
               data-aos="fade-up"
               data-aos-delay={800 + i * 200}
             />
