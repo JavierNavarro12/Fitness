@@ -28,7 +28,7 @@ const CognitivoCard = ({
     .split('.')
     .map((s: string) => {
       const parts = s.trim().split(':');
-      const cleanName = parts[0].replace(/[*_\-]/g, '').trim();
+      const cleanName = parts[0].replace(/[*_-]/g, '').trim();
       return { nombre: cleanName, desc: parts.slice(1).join(':').trim() };
     })
     .filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
