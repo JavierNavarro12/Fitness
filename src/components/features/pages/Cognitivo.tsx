@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
 import { Helmet } from 'react-helmet-async';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const cognitivoData = searchableContent.filter(
   item => item.category === 'cognitivo'
@@ -26,7 +28,8 @@ const CognitivoCard = ({
     .split('.')
     .map((s: string) => {
       const parts = s.trim().split(':');
-      return { nombre: parts[0], desc: parts.slice(1).join(':').trim() };
+      const cleanName = parts[0].replace(/[*_\-]/g, '').trim();
+      return { nombre: cleanName, desc: parts.slice(1).join(':').trim() };
     })
     .filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
 
@@ -97,6 +100,11 @@ const Cognitivo: React.FC<PageProps> = ({
   onHighlightComplete,
 }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    AOS.init({ once: true });
+    AOS.refresh();
+  }, []);
 
   useEffect(() => {
     if (itemToHighlight && itemToHighlight.page === 'cognitivo') {
@@ -180,130 +188,143 @@ const Cognitivo: React.FC<PageProps> = ({
       </Helmet>
       <div className='p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen'>
         <div className='max-w-7xl mx-auto'>
-          <div className='text-center mb-16' data-aos='fade-in'>
-            <h1 className='text-4xl sm:text-5xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight'>
-              {t('cognitivo.title')}
-            </h1>
-            <p
-              className='mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300'
+          <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 md:p-10'>
+            <div
+              className='relative rounded-2xl overflow-hidden mb-6 shadow-lg'
+              data-aos='fade-in'
+            >
+              <img
+                src='https://images.pexels.com/photos/7615458/pexels-photo-7615458.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                alt={t('cognitivo.title')}
+                className='w-full h-64 sm:h-80 object-cover'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20'></div>
+              <div className='absolute bottom-0 left-0 p-6 sm:p-8'>
+                <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight'>
+                  {t('cognitivo.title')}
+                </h1>
+              </div>
+            </div>
+            <div
+              className='max-w-4xl mx-auto text-center mb-4'
               data-aos='fade-up'
               data-aos-delay='200'
             >
-              {t('cognitivo.description')}
-            </p>
-          </div>
-
-          {/* Estadísticas del Cerebro */}
-          <div
-            className='max-w-6xl mx-auto mb-16'
-            data-aos='fade-up'
-            data-aos-delay='300'
-          >
-            <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-8'>
-              {t('cognitivo.stats.title')}
-            </h2>
-            <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
-              <div
-                className='bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-purple-100/80 dark:hover:bg-purple-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='400'
-              >
-                <div className='text-purple-600 dark:text-purple-400 text-2xl font-bold mb-2'>
-                  15-25%
+              <p className='text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300'>
+                {t('cognitivo.description')}
+              </p>
+            </div>
+            <div
+              className='max-w-6xl mx-auto mb-8'
+              data-aos='fade-up'
+              data-aos-delay='300'
+            >
+              <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-8'>
+                {t('cognitivo.stats.title')}
+              </h2>
+              <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
+                <div
+                  className='bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-purple-100/80 dark:hover:bg-purple-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='400'
+                >
+                  <div className='text-purple-600 dark:text-purple-400 text-2xl font-bold mb-2'>
+                    15-25%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('cognitivo.stats.nootropicos')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('cognitivo.stats.nootropicos')}
-                </p>
-              </div>
-              <div
-                className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='500'
-              >
-                <div className='text-blue-600 dark:text-blue-400 text-2xl font-bold mb-2'>
-                  80%
+                <div
+                  className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='500'
+                >
+                  <div className='text-blue-600 dark:text-blue-400 text-2xl font-bold mb-2'>
+                    80%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('cognitivo.stats.adaptogenos')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('cognitivo.stats.adaptogenos')}
-                </p>
-              </div>
-              <div
-                className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='600'
-              >
-                <div className='text-green-600 dark:text-green-400 text-2xl font-bold mb-2'>
-                  30%
+                <div
+                  className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='600'
+                >
+                  <div className='text-green-600 dark:text-green-400 text-2xl font-bold mb-2'>
+                    30%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('cognitivo.stats.salud')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('cognitivo.stats.salud')}
-                </p>
-              </div>
-              <div
-                className='bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 p-6 rounded-xl border border-indigo-200 dark:border-indigo-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-indigo-100/80 dark:hover:bg-indigo-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='700'
-              >
-                <div className='text-indigo-600 dark:text-indigo-400 text-2xl font-bold mb-2'>
-                  40%
+                <div
+                  className='bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 p-6 rounded-xl border border-indigo-200 dark:border-indigo-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-indigo-100/80 dark:hover:bg-indigo-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='700'
+                >
+                  <div className='text-indigo-600 dark:text-indigo-400 text-2xl font-bold mb-2'>
+                    40%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('cognitivo.stats.estrategias')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('cognitivo.stats.estrategias')}
-                </p>
               </div>
             </div>
-          </div>
 
-          {/* Suplementos Clave para el Rendimiento Cognitivo */}
-          <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-lg py-10 px-4 md:px-10 mb-8 max-w-7xl mx-auto'>
-            <h2
-              className='text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-8 mt-8 text-center'
-              data-aos='fade-in'
-            >
-              {t('cognitivo.suplementosClave.title')}
-            </h2>
-            <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
-              {cognitivoData
-                .filter(
-                  item =>
-                    ![
+            {/* Suplementos Clave para el Rendimiento Cognitivo */}
+            <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-lg py-10 px-4 md:px-10 mb-8 max-w-7xl mx-auto'>
+              <h2
+                className='text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-8 mt-8 text-center'
+                data-aos='fade-in'
+              >
+                {t('cognitivo.suplementosClave.title')}
+              </h2>
+              <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
+                {cognitivoData
+                  .filter(
+                    item =>
+                      ![
+                        'cognitivo.memoria.title',
+                        'cognitivo.energia.title',
+                      ].includes(item.title)
+                  )
+                  .map((item, index) => (
+                    <CognitivoCard
+                      {...item}
+                      icon={cardIcons[index]}
+                      key={item.id}
+                    />
+                  ))}
+              </div>
+            </div>
+
+            {/* Áreas de Mejora Cognitiva */}
+            <div className='bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-32'>
+              <h2
+                className='text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-10 text-center'
+                data-aos='fade-in'
+              >
+                {t('cognitivo.areasMejora.title')}
+              </h2>
+              <div className='grid md:grid-cols-2 gap-10'>
+                {cognitivoData
+                  .filter(item =>
+                    [
                       'cognitivo.memoria.title',
                       'cognitivo.energia.title',
                     ].includes(item.title)
-                )
-                .map((item, index) => (
-                  <CognitivoCard
-                    {...item}
-                    icon={cardIcons[index]}
-                    key={item.id}
-                  />
-                ))}
-            </div>
-          </div>
-
-          {/* Áreas de Mejora Cognitiva */}
-          <div className='bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-32'>
-            <h2
-              className='text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-10 text-center'
-              data-aos='fade-in'
-            >
-              {t('cognitivo.areasMejora.title')}
-            </h2>
-            <div className='grid md:grid-cols-2 gap-10'>
-              {cognitivoData
-                .filter(item =>
-                  [
-                    'cognitivo.memoria.title',
-                    'cognitivo.energia.title',
-                  ].includes(item.title)
-                )
-                .map((item, index) => (
-                  <CognitivoCard
-                    {...item}
-                    icon={cardIcons[index]}
-                    key={item.id}
-                  />
-                ))}
+                  )
+                  .map((item, index) => (
+                    <CognitivoCard
+                      {...item}
+                      icon={cardIcons[index]}
+                      key={item.id}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
         </div>

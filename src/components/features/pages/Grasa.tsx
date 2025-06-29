@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
 import { Helmet } from 'react-helmet-async';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const grasaData = searchableContent.filter(item => item.category === 'grasa');
 
@@ -20,13 +22,18 @@ const GrasaCard = ({
 }) => {
   const { t } = useTranslation();
   const translatedContent = t(content);
-  const puntosClave = translatedContent
-    .split('.')
-    .map((s: string) => {
-      const parts = s.trim().split(':');
-      return { nombre: parts[0], desc: parts.slice(1).join(':').trim() };
-    })
-    .filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
+  const isHtml = /<b>|<br\s*\/?\s*>/i.test(translatedContent);
+  const puntosClave =
+    !isHtml &&
+    translatedContent
+      .split('.')
+      .map((s: string) => {
+        const parts = s.trim().split(':');
+        return { nombre: parts[0], desc: parts.slice(1).join(':').trim() };
+      })
+      .filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
+
+  const puntosClaveArr = Array.isArray(puntosClave) ? puntosClave : [];
 
   return (
     <div
@@ -47,15 +54,16 @@ const GrasaCard = ({
         <div className='text-red-500 mb-4' data-aos='zoom-in'>
           {icon}
         </div>
-        <h3
-          className='text-xl font-bold text-gray-900 dark:text-white mb-3 flex-grow'
-          data-aos='fade-right'
-        >
-          {t(title)}
-        </h3>
-        {puntosClave.length > 0 ? (
+        {isHtml ? (
+          <div
+            className='text-gray-600 dark:text-gray-300 text-left w-full'
+            data-aos='fade-up'
+            data-aos-delay='100'
+            dangerouslySetInnerHTML={{ __html: translatedContent }}
+          />
+        ) : puntosClaveArr.length > 0 ? (
           <ul className='space-y-3 text-gray-600 dark:text-gray-300 text-left'>
-            {puntosClave.map(
+            {puntosClaveArr.map(
               (punto: { nombre: string; desc: string }, index: number) => (
                 <li
                   key={index}
@@ -95,6 +103,11 @@ const Grasa: React.FC<PageProps> = ({
   onHighlightComplete,
 }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    AOS.init({ once: true });
+    AOS.refresh();
+  }, []);
 
   useEffect(() => {
     if (itemToHighlight && itemToHighlight.page === 'grasa') {
@@ -167,64 +180,77 @@ const Grasa: React.FC<PageProps> = ({
       </Helmet>
       <div className='p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen'>
         <div className='max-w-7xl mx-auto'>
-          <div className='text-center mb-16' data-aos='fade-in'>
-            <h1 className='text-4xl sm:text-5xl font-extrabold text-red-600 dark:text-red-400 tracking-tight'>
-              {t('grasa.title')}
-            </h1>
-            <p
-              className='mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300'
+          <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 md:p-10'>
+            <div
+              className='relative rounded-2xl overflow-hidden mb-6 shadow-lg'
+              data-aos='fade-in'
+            >
+              <img
+                src='https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                alt={t('grasa.title')}
+                className='w-full h-64 sm:h-80 object-cover'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20'></div>
+              <div className='absolute bottom-0 left-0 p-6 sm:p-8'>
+                <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight'>
+                  {t('grasa.title')}
+                </h1>
+              </div>
+            </div>
+            <div
+              className='max-w-4xl mx-auto text-center mb-4'
               data-aos='fade-up'
               data-aos-delay='200'
             >
-              {t('grasa.description')}
-            </p>
-          </div>
-
-          {/* Estadísticas de Pérdida de Grasa */}
-          <div
-            className='max-w-6xl mx-auto mb-16'
-            data-aos='fade-up'
-            data-aos-delay='300'
-          >
-            <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-8'>
-              {t('grasa.stats.title')}
-            </h2>
-            <div className='grid md:grid-cols-3 gap-6'>
-              <div
-                className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-red-100/80 dark:hover:bg-red-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='400'
-              >
-                <div className='text-red-600 dark:text-red-400 text-2xl font-bold mb-2'>
-                  3-10%
+              <p className='text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300'>
+                {t('grasa.description')}
+              </p>
+            </div>
+            <div
+              className='max-w-6xl mx-auto mb-8'
+              data-aos='fade-up'
+              data-aos-delay='300'
+            >
+              <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-8'>
+                {t('grasa.stats.title')}
+              </h2>
+              <div className='grid md:grid-cols-3 gap-6'>
+                <div
+                  className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-red-100/80 dark:hover:bg-red-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='400'
+                >
+                  <div className='text-red-600 dark:text-red-400 text-2xl font-bold mb-2'>
+                    3-10%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('grasa.stats.termogenicos')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('grasa.stats.termogenicos')}
-                </p>
-              </div>
-              <div
-                className='bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='500'
-              >
-                <div className='text-orange-600 dark:text-orange-400 text-2xl font-bold mb-2'>
-                  78%
+                <div
+                  className='bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='500'
+                >
+                  <div className='text-orange-600 dark:text-orange-400 text-2xl font-bold mb-2'>
+                    78%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('grasa.stats.apetito')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('grasa.stats.apetito')}
-                </p>
-              </div>
-              <div
-                className='bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-yellow-100/80 dark:hover:bg-yellow-900/40 cursor-pointer'
-                data-aos='fade-up'
-                data-aos-delay='600'
-              >
-                <div className='text-yellow-600 dark:text-yellow-400 text-2xl font-bold mb-2'>
-                  35%
+                <div
+                  className='bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-yellow-100/80 dark:hover:bg-yellow-900/40 cursor-pointer'
+                  data-aos='fade-up'
+                  data-aos-delay='600'
+                >
+                  <div className='text-yellow-600 dark:text-yellow-400 text-2xl font-bold mb-2'>
+                    35%
+                  </div>
+                  <p className='text-sm text-gray-700 dark:text-gray-300'>
+                    {t('grasa.stats.fundamentos')}
+                  </p>
                 </div>
-                <p className='text-sm text-gray-700 dark:text-gray-300'>
-                  {t('grasa.stats.fundamentos')}
-                </p>
               </div>
             </div>
           </div>
@@ -235,14 +261,14 @@ const Grasa: React.FC<PageProps> = ({
               className='text-2xl font-semibold text-red-700 dark:text-red-300 mb-8 mt-8 text-center'
               data-aos='fade-in'
             >
-              Termogénicos y Metabolismo
+              {t('grasa.termogenicos.title')}
             </h2>
             <div className='grid md:grid-cols-2 gap-8'>
               {grasaData
                 .filter(item =>
                   [
                     'grasa.termogenicos.title',
-                    'grasa.metabolismo.title',
+                    'grasa.metabolismo-energetico.title',
                   ].includes(item.title)
                 )
                 .map((item, index) => (
@@ -253,11 +279,8 @@ const Grasa: React.FC<PageProps> = ({
 
           {/* Bloque: Control del Apetito */}
           <div className='bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-24'>
-            <h2
-              className='text-2xl font-semibold text-red-800 dark:text-red-200 mb-10 text-center'
-              data-aos='fade-in'
-            >
-              Control del Apetito
+            <h2 className='text-2xl font-bold text-center text-red-600 dark:text-red-400 mb-8'>
+              {t('grasa.apetito.title')}
             </h2>
             <div className='grid md:grid-cols-1 gap-10'>
               {grasaData
@@ -270,11 +293,8 @@ const Grasa: React.FC<PageProps> = ({
 
           {/* Bloque: Fundamentos de la Quema de Grasa */}
           <div className='bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-24'>
-            <h2
-              className='text-2xl font-semibold text-yellow-800 dark:text-yellow-200 mb-10 text-center'
-              data-aos='fade-in'
-            >
-              Fundamentos de la Quema de Grasa
+            <h2 className='text-2xl font-bold text-center text-yellow-700 dark:text-yellow-300 mb-8'>
+              {t('grasa.fundamentos.title')}
             </h2>
             <div className='grid md:grid-cols-1 gap-10'>
               {grasaData

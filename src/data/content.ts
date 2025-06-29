@@ -38,7 +38,7 @@ export const searchableContent = [
     title: 'salud.probioticos.title',
     content: 'salud.probioticos.content',
     image:
-      'https://images.pexels.com/photos/5946728/pexels-photo-5946728.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+      'https://images.pexels.com/photos/5938360/pexels-photo-5938360.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },
 
   // Deportes
@@ -119,8 +119,8 @@ export const searchableContent = [
   {
     id: 'metabolismo-energia',
     category: 'grasa',
-    title: 'grasa.metabolismo.title',
-    content: 'grasa.metabolismo.content',
+    title: 'grasa.metabolismo-energetico.title',
+    content: 'grasa.metabolismo-energetico.content',
     image:
       'https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },

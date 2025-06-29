@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
 import { Helmet } from 'react-helmet-async';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const mujerData = searchableContent.filter(item => item.category === 'mujer');
 
@@ -89,6 +91,11 @@ const Mujer: React.FC<PageProps> = ({
   onHighlightComplete,
 }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    AOS.init({ once: true });
+    AOS.refresh();
+  }, []);
 
   useEffect(() => {
     if (itemToHighlight && itemToHighlight.page === 'mujer') {
@@ -185,26 +192,34 @@ const Mujer: React.FC<PageProps> = ({
       </Helmet>
       <div className='p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen'>
         <div className='max-w-7xl mx-auto'>
-          <div
-            className='relative rounded-2xl overflow-hidden mb-12 shadow-lg'
-            data-aos='fade-in'
-          >
-            <div className='text-center mb-16' data-aos='fade-in'>
-              <h1 className='text-4xl sm:text-5xl font-extrabold text-pink-600 dark:text-pink-400 tracking-tight'>
-                {t('mujer.title')}
-              </h1>
-              <p
-                className='mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300'
-                data-aos='fade-up'
-                data-aos-delay='200'
-              >
+          <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 md:p-10'>
+            <div
+              className='relative rounded-2xl overflow-hidden mb-6 shadow-lg'
+              data-aos='fade-in'
+            >
+              <img
+                src='https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                alt={t('mujer.title')}
+                className='w-full h-64 sm:h-80 object-cover'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20'></div>
+              <div className='absolute bottom-0 left-0 p-6 sm:p-8'>
+                <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight'>
+                  {t('mujer.title')}
+                </h1>
+              </div>
+            </div>
+            <div
+              className='max-w-4xl mx-auto text-center mb-4'
+              data-aos='fade-up'
+              data-aos-delay='200'
+            >
+              <p className='text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300'>
                 {t('mujer.description')}
               </p>
             </div>
-
-            {/* Estadísticas de Salud Femenina */}
             <div
-              className='max-w-6xl mx-auto mb-16'
+              className='max-w-6xl mx-auto mb-8'
               data-aos='fade-up'
               data-aos-delay='300'
             >
@@ -257,7 +272,7 @@ const Mujer: React.FC<PageProps> = ({
                 className='text-2xl font-semibold text-pink-700 dark:text-pink-300 mb-8 mt-8 text-center'
                 data-aos='fade-in'
               >
-                Salud Integral Femenina
+                {t('mujer.integral.title')}
               </h2>
               <div className='grid md:grid-cols-3 gap-8'>
                 {mujerData
@@ -284,7 +299,7 @@ const Mujer: React.FC<PageProps> = ({
                 className='text-2xl font-semibold text-pink-800 dark:text-pink-200 mb-10 text-center'
                 data-aos='fade-in'
               >
-                Salud Ósea y Belleza
+                {t('mujer.osea-belleza.title')}
               </h2>
               <div className='grid md:grid-cols-2 gap-10'>
                 {mujerData

@@ -18,62 +18,69 @@ const resources = {
       'home.cta.getRecommendations':
         'section to create your profile and get personalized recommendations.',
       'home.cta.button': 'Start Now',
-      'deportes.title': 'Rendimiento por Deporte',
+      'deportes.title': 'Performance by Sport',
       'deportes.description':
-        'Cada disciplina tiene sus propias demandas. Descubre qué suplementos son los más efectivos para tu deporte, ya sea que busques fuerza, resistencia o una recuperación más rápida.',
-      'deportes.card.suplementos': 'Suplementos Clave',
-      'deportes.stats.title': 'Estadísticas del Deporte',
+        'Each discipline has its own demands. Discover which supplements are most effective for your sport, whether you seek strength, endurance, or faster recovery.',
+      'deportes.card.suplementos': 'Key Supplements',
+      'deportes.stats.title': 'Sport Statistics',
       'deportes.stats.fitness':
-        'El 67% de los practicantes de fitness reportan mejoras significativas en fuerza con suplementación adecuada',
+        '67% of fitness practitioners report significant strength improvements with proper supplementation',
       'deportes.stats.crossfit':
-        'Los atletas de CrossFit que usan suplementos específicos mejoran su rendimiento en un 23%',
+        'CrossFit athletes using specific supplements improve their performance by 23%',
       'deportes.stats.resistencia':
-        'El 89% de corredores de maratón utilizan suplementos para optimizar su rendimiento',
+        '89% of marathon runners use supplements to optimize their performance',
       'deportes.stats.equipo':
-        'Los deportistas de equipo que suplementan correctamente reducen su tiempo de recuperación en un 40%',
-      'salud.title': 'Salud y Bienestar',
+        'Team athletes who supplement correctly reduce their recovery time by 40%',
+      'salud.title': 'Health & Wellness',
       'salud.description':
-        'Una base sólida de salud es esencial para cualquier objetivo de fitness. Aquí encontrarás suplementos que apoyan tu bienestar general, desde vitaminas hasta antioxidantes.',
-      'salud.card.puntosClave': 'Puntos Clave',
-      'salud.stats.title': 'Datos de Salud Global',
+        'A solid foundation of health is essential for any fitness goal. Here you will find supplements that support your overall well-being, from vitamins to antioxidants.',
+      'salud.card.puntosClave': 'Key Points',
+      'salud.stats.title': 'Global Health Data',
       'salud.stats.vitaminas':
-        'El 42% de la población mundial tiene deficiencia de vitamina D',
+        '42% of the world population is deficient in vitamin D',
       'salud.stats.minerales':
-        'El 75% de las personas no consume suficiente magnesio diariamente',
+        '75% of people do not consume enough magnesium daily',
       'salud.stats.omega3':
-        'Solo el 10% de la población consume la cantidad recomendada de Omega-3',
-      'grasa.title': 'Quema de Grasa Inteligente',
+        'Only 10% of the population consumes the recommended amount of Omega-3',
+      'grasa.title': 'Smart Fat Burning',
       'grasa.description':
-        'La pérdida de grasa es un objetivo común, pero requiere un enfoque estratégico. Descubre los suplementos que pueden optimizar tus esfuerzos, siempre como complemento a una dieta y entrenamiento adecuados.',
-      'grasa.stats.title': 'Estadísticas de Pérdida de Grasa',
-      'grasa.stats.termogenicos':
-        'Los termogénicos pueden aumentar el gasto calórico en un 3-10%',
-      'grasa.stats.apetito':
-        'El 78% de las personas que controlan su apetito logran mantener su peso objetivo',
-      'grasa.stats.fundamentos':
-        'La combinación de dieta, ejercicio y suplementos aumenta la pérdida de grasa en un 35%',
-      'mujer.title': 'Salud y Bienestar para la Mujer',
+        'Discover the most effective supplements and strategies to optimize fat loss in a healthy and sustainable way.',
+      'grasa.card.suplementos': 'Key Supplements',
+      'grasa.l-carnitina.title': 'L-Carnitine',
+      'grasa.l-carnitina.content':
+        'Facilitates the transport of fatty acids to the mitochondria for energy production. Especially useful in endurance training and fat loss phases.',
+      'grasa.cla.title': 'CLA (Conjugated Linoleic Acid)',
+      'grasa.cla.content':
+        'Helps reduce body fat and maintain muscle mass during weight loss. Its effect is greater when combined with exercise and a healthy diet.',
+      'grasa.te-verde.title': 'Green Tea Extract',
+      'grasa.te-verde.content':
+        'Rich in catechins and caffeine, it increases metabolism and fat oxidation. Also provides antioxidant benefits.',
+      'grasa.cafeina.title': 'Caffeine',
+      'grasa.cafeina.content':
+        'Stimulates metabolism, increases energy expenditure, and improves performance during exercise. Helps mobilize fat for use as energy.',
+      'grasa.puntos-clave': 'Key Points',
+      'mujer.title': "Women's Health & Wellness",
       'mujer.description':
-        'Las necesidades nutricionales y fisiológicas de las mujeres son únicas. Esta sección se enfoca en suplementos clave para apoyar la salud hormonal, ósea y el bienestar general femenino.',
-      'mujer.stats.title': 'Salud Femenina en Números',
+        'Women have unique nutritional and physiological needs. This section focuses on key supplements to support hormonal, bone, and overall female wellness.',
+      'mujer.stats.title': "Women's Health in Numbers",
       'mujer.stats.fundamentos':
-        'El 85% de las mujeres no consume suficiente calcio para prevenir osteoporosis',
+        '85% of women do not consume enough calcium to prevent osteoporosis',
       'mujer.stats.equilibrio':
-        'El 70% de las mujeres experimentan desequilibrios hormonales en algún momento de su vida',
+        '70% of women experience hormonal imbalances at some point in their lives',
       'mujer.stats.escucha':
-        'El 60% de las mujeres que escuchan las señales de su cuerpo mejoran su bienestar general',
-      'cognitivo.title': 'Rendimiento Cognitivo',
+        '60% of women who listen to their bodies improve their overall well-being',
+      'cognitivo.title': 'Cognitive Performance',
       'cognitivo.description':
-        'Tu cerebro es tu activo más importante. Descubre cómo la suplementación puede potenciar tu enfoque, memoria y resistencia al estrés para un máximo rendimiento mental.',
-      'cognitivo.stats.title': 'Datos del Cerebro',
+        'Your brain is your most important asset. Discover how supplementation can enhance your focus, memory, and stress resistance for maximum mental performance.',
+      'cognitivo.stats.title': 'Brain Data',
       'cognitivo.stats.nootropicos':
-        'Los nootrópicos pueden mejorar la memoria de trabajo en un 15-25%',
+        'Nootropics can improve working memory by 15-25%',
       'cognitivo.stats.adaptogenos':
-        'El 80% de las personas que usan adaptógenos reportan mejor manejo del estrés',
+        '80% of people who use adaptogens report better stress management',
       'cognitivo.stats.salud':
-        'La suplementación cerebral puede reducir el deterioro cognitivo en un 30%',
+        'Brain supplementation can reduce cognitive decline by 30%',
       'cognitivo.stats.estrategias':
-        'Las estrategias de optimización cognitiva mejoran la productividad en un 40%',
+        'Cognitive optimization strategies improve productivity by 40%',
       'footer.nav.title': 'Navigation',
       'footer.nav.home': 'Home',
       'footer.nav.deportes': 'Sports',
@@ -105,7 +112,10 @@ const resources = {
       'deportes.crossfit.title': 'Crossfit / HIIT',
       'deportes.resistencia.title': 'Cycling / Running / Endurance Sports',
       'deportes.equipo.title': 'Team Sports',
-      'grasa.termogenicos.title': 'Thermogenics: Accelerate your Metabolism',
+      'grasa.termogenicos.title': 'Thermogenics and Metabolism',
+      'grasa.metabolismo-energetico.title': 'Energetic Metabolism',
+      'grasa.metabolismo-energetico.content':
+        'L-Carnitine: Facilitates the transport of fatty acids to the mitochondria for energy use. Magnesium: Essential for over 300 metabolic reactions, including energy production. Omega-3: Improves insulin sensitivity and supports fat metabolism. Vitamin D: Linked to better body composition and active metabolism. Regular exercise: Increases caloric expenditure and metabolic efficiency.',
       'grasa.apetito.title': 'Appetite Control',
       'grasa.fundamentos.title': 'Fundamentals of Fat Burning',
       'mujer.fundamentos.title': 'Fundamentals for Women',
@@ -117,15 +127,17 @@ const resources = {
       'cognitivo.estrategias.title': 'Cognitive Optimization Strategies',
       'bottomNav.profile': 'Profile',
       'salud.vitaminas.content':
-        'Vitamina D: Para la salud ósea y la inmunidad. Vitaminas del complejo B: Esenciales para la energía y el metabolismo. Vitamina C: Potente antioxidante. Vitamina A: Para la salud visual y cutánea. Vitamina E: Protege las células del daño oxidativo. Vitamina K: Esencial para la coagulación sanguínea y salud ósea.',
+        'Vitamin D: For bone health and immunity. B-complex vitamins: Essential for energy and metabolism. Vitamin C: Powerful antioxidant. Vitamin A: For visual and skin health. Vitamin E: Protects cells from oxidative damage. Vitamin K: Essential for blood clotting and bone health.',
       'salud.minerales.content':
-        'Magnesio: Para la recuperación muscular y el sueño. Zinc: Clave para la testosterona y la inmunidad. Hierro: Fundamental para el transporte de oxígeno, especialmente en mujeres. Calcio: Para la salud ósea y contracción muscular. Selenio: Antioxidante y apoyo tiroideo. Potasio: Para el equilibrio electrolítico y función muscular.',
+        'Magnesium: For muscle recovery and sleep. Zinc: Key for testosterone and immunity. Iron: Essential for oxygen transport, especially in women. Calcium: For bone health and muscle contraction. Selenium: Antioxidant and thyroid support. Potassium: For electrolyte balance and muscle function.',
       'salud.antioxidantes.content':
-        'Omega-3: Reduce la inflamación y mejora la salud cardiovascular. Coenzima Q10: Vital para la energía celular. Cúrcuma: Potente antiinflamatorio. Resveratrol: Protege contra el envejecimiento celular. Astaxantina: Antioxidante más potente que la vitamina E. Glutatión: El antioxidante maestro del cuerpo.',
+        "Omega-3: Reduces inflammation and improves cardiovascular health. Coenzyme Q10: Vital for cellular energy. Turmeric: Powerful anti-inflammatory. Resveratrol: Protects against cellular aging. Astaxanthin: Antioxidant more potent than vitamin E. Glutathione: The body's master antioxidant.",
+      'salud.proteina.title': 'Essential Proteins',
       'salud.proteina.content':
-        'Proteína Whey: Fundamental para la síntesis muscular y recuperación. Colágeno: Para la salud de articulaciones, piel y tejido conectivo. Proteína de Caseína: Liberación lenta para recuperación nocturna. Proteína de Huevo: Alta biodisponibilidad y perfil aminoacídico completo. Proteína Vegetal: Opción para dietas veganas y vegetarianas.',
+        'Whey Protein: Fundamental for muscle synthesis and recovery. Collagen: For joint, skin, and connective tissue health. Casein Protein: Slow release for overnight recovery. Egg Protein: High bioavailability and complete amino acid profile. Plant Protein: Option for vegan and vegetarian diets.',
+      'salud.probioticos.title': 'Probiotics and Digestive Health',
       'salud.probioticos.content':
-        'Lactobacillus: Para la salud digestiva y sistema inmune. Bifidobacterium: Mejora la absorción de nutrientes. Saccharomyces Boulardii: Protege contra infecciones digestivas. Prebióticos: Alimentan las bacterias beneficiosas del intestino. Enzimas Digestivas: Mejoran la digestión y absorción de nutrientes.',
+        'Lactobacillus: For digestive and immune health. Bifidobacterium: Improves nutrient absorption. Saccharomyces Boulardii: Protects against digestive infections. Prebiotics: Feed beneficial gut bacteria. Digestive Enzymes: Improve digestion and nutrient absorption.',
       'deportes.pesas.content':
         'Creatine: Improves strength and power. BCAAs: Reduces muscle fatigue. Beta-Alanine: Increases endurance during short and intense efforts.',
       'deportes.crossfit.content':
@@ -135,7 +147,7 @@ const resources = {
       'deportes.equipo.content':
         'Glutamine: Supports recovery and the immune system. Arginine: Improves blood flow. Nitrates (from beet): Enhance efficiency in oxygen use.',
       'grasa.termogenicos.content':
-        'Green Tea Extract: Boosts metabolism. Cayenne Pepper: Increases body temperature and calorie burning. Synephrine: Stimulant that can increase fat burning.',
+        'Green Tea Extract: Increases metabolism by 3-4%. Cayenne Pepper: Increases body temperature and calorie burning. Synephrine: Stimulant that can increase fat burning. Caffeine: Speeds up metabolism and improves performance. L-Carnitine: Transports fatty acids to be used as energy. CLA: May reduce body fat and preserve muscle mass.',
       'grasa.apetito.content':
         'Glucomannan: Soluble fiber that promotes satiety. Garcinia Cambogia: May block fat production. 5-HTP: Helps regulate appetite and mood.',
       'grasa.fundamentos.content':
@@ -519,8 +531,8 @@ const resources = {
           text: 'If you have questions about this privacy policy or how we handle your data, you can contact us at:',
         },
         commitment: {
-          title: 'Commitment to Your Privacy',
-          text: 'At EGN Fitness, your privacy is fundamental. We are committed to protecting your personal information and being transparent about how we use it. If you have any concerns, please do not hesitate to contact us.',
+          title: 'Compromiso con tu Privacidad',
+          text: 'En EGN Fitness, tu privacidad es fundamental. Nos comprometemos a proteger tu información personal y a ser transparentes sobre cómo la utilizamos. Si tienes alguna preocupación, no dudes en contactarnos.',
         },
       },
       loginRequired: {
@@ -551,17 +563,32 @@ const resources = {
       'cognitivo.energia.content':
         '- **L-Theanine + Caffeine:** Boost mental energy and sustained concentration.\n- **Rhodiola Rosea:** Reduces fatigue and improves stress resilience.\n- High brain energy levels enhance productivity and well-being.',
       'cognitivo.suplementosClave.title':
-        'Suplementos Clave para el Rendimiento Cognitivo',
-      'cognitivo.areasMejora.title': 'Áreas de Mejora Cognitiva',
-      'mujer.osea.title': 'Salud Ósea y Menopausia',
+        'Key Supplements for Cognitive Performance',
+      'cognitivo.areasMejora.title': 'Cognitive Improvement Areas',
+      'mujer.osea.title': 'Bone Health & Menopause',
       'mujer.osea.content':
-        'Calcio: Fundamental para la densidad ósea y prevención de osteoporosis, especialmente tras la menopausia. Vitamina D: Esencial para la absorción de calcio y salud ósea. Magnesio: Ayuda a mantener huesos fuertes y reduce calambres. Vitamina K2: Contribuye a la mineralización ósea y previene la calcificación arterial. Colágeno: Apoya la estructura ósea y articular. Ejercicio de resistencia: Clave para mantener la masa ósea en la mujer adulta.',
-      'mujer.belleza.title': 'Belleza Natural y Salud de la Piel',
+        'Calcium: Essential for bone density and osteoporosis prevention, especially after menopause. Vitamin D: Key for calcium absorption and bone health. Magnesium: Maintains strong bones and reduces cramps. Vitamin K2: Supports bone mineralization and prevents arterial calcification. Collagen: Supports bone and joint structure. Resistance exercise: Key to maintaining bone mass in adult women.',
+      'mujer.belleza.title': 'Natural Beauty & Skin Health',
       'mujer.belleza.content':
-        'Colágeno: Mejora la elasticidad y firmeza de la piel, cabello y uñas. Ácido hialurónico: Hidrata y protege la piel desde el interior. Vitamina C: Potente antioxidante que estimula la síntesis de colágeno y protege contra el envejecimiento. Omega-3: Reduce la inflamación y favorece una piel luminosa. Probióticos: Contribuyen al equilibrio de la microbiota y mejoran la salud cutánea. Protección solar y hábitos saludables: Indispensables para una belleza duradera.',
+        'Collagen: Improves elasticity and firmness of skin, hair, and nails. Hyaluronic acid: Hydrates and protects the skin from within. Vitamin C: Powerful antioxidant that stimulates collagen synthesis and protects against aging. Omega-3: Reduces inflammation and promotes radiant skin. Probiotics: Contribute to microbiota balance and improve skin health. Sun protection and healthy habits: Essential for lasting beauty.',
       'grasa.metabolismo.title': 'Metabolismo Energético',
       'grasa.metabolismo.content':
         'El metabolismo energético es el conjunto de procesos que convierten los nutrientes en energía utilizable. L-Carnitina: Facilita el transporte de ácidos grasos a la mitocondria para su uso como energía. Magnesio: Esencial para más de 300 reacciones metabólicas, incluyendo la producción de energía. Omega-3: Mejora la sensibilidad a la insulina y favorece el metabolismo de las grasas. Vitamina D: Relacionada con una mejor composición corporal y metabolismo activo. Ejercicio regular: Aumenta el gasto calórico y la eficiencia metabólica.',
+      'deportes.yoga.title': 'Yoga',
+      'deportes.yoga.content':
+        'Ashwagandha: Reduces stress and improves flexibility. Magnesium: Helps with muscle relaxation. Omega-3: Supports recovery and joint health.',
+      'deportes.natacion.title': 'Swimming',
+      'deportes.natacion.content':
+        'Electrolytes: Maintain hydration during exercise. Protein: For muscle recovery. Magnesium: Prevents cramps and improves aquatic performance.',
+      'grasa.stats.title': 'Fat Loss Statistics',
+      'grasa.stats.termogenicos':
+        'Thermogenics can increase calorie expenditure by 3-10%',
+      'grasa.stats.apetito':
+        '78% of people who control their appetite manage to maintain their target weight',
+      'grasa.stats.fundamentos':
+        'Combining diet, exercise, and supplements increases fat loss by 35%',
+      'mujer.integral.title': "Comprehensive Women's Health",
+      'mujer.osea-belleza.title': 'Bone Health & Beauty',
     },
   },
   es: {
@@ -606,24 +633,31 @@ const resources = {
         'Solo el 10% de la población consume la cantidad recomendada de Omega-3',
       'grasa.title': 'Quema de Grasa Inteligente',
       'grasa.description':
-        'La pérdida de grasa es un objetivo común, pero requiere un enfoque estratégico. Descubre los suplementos que pueden optimizar tus esfuerzos, siempre como complemento a una dieta y entrenamiento adecuados.',
-      'grasa.stats.title': 'Estadísticas de Pérdida de Grasa',
-      'grasa.stats.termogenicos':
-        'Los termogénicos pueden aumentar el gasto calórico en un 3-10%',
-      'grasa.stats.apetito':
-        'El 78% de las personas que controlan su apetito logran mantener su peso objetivo',
-      'grasa.stats.fundamentos':
-        'La combinación de dieta, ejercicio y suplementos aumenta la pérdida de grasa en un 35%',
-      'mujer.title': 'Salud y Bienestar para la Mujer',
+        'Descubre los suplementos y estrategias más efectivos para optimizar la pérdida de grasa de forma saludable y sostenible.',
+      'grasa.card.suplementos': 'Suplementos Clave',
+      'grasa.l-carnitina.title': 'L-Carnitina',
+      'grasa.l-carnitina.content':
+        'Facilita el transporte de ácidos grasos a la mitocondria para la producción de energía. Especialmente útil en entrenamientos de resistencia y fases de pérdida de grasa.',
+      'grasa.cla.title': 'CLA (Ácido Linoleico Conjugado)',
+      'grasa.cla.content':
+        'Ayuda a reducir la grasa corporal y mantener la masa muscular durante la pérdida de peso. Su efecto es mayor si se combina con ejercicio y una dieta saludable.',
+      'grasa.te-verde.title': 'Extracto de Té Verde',
+      'grasa.te-verde.content':
+        'Rico en catequinas y cafeína, aumenta el metabolismo y la oxidación de grasas. Además, aporta beneficios antioxidantes.',
+      'grasa.cafeina.title': 'Cafeína',
+      'grasa.cafeina.content':
+        'Estimula el metabolismo, incrementa el gasto energético y mejora el rendimiento durante el ejercicio. Ayuda a movilizar la grasa para su uso como energía.',
+      'grasa.puntos-clave': 'Puntos Clave',
+      'mujer.title': "Women's Health & Wellness",
       'mujer.description':
-        'Las necesidades nutricionales y fisiológicas de las mujeres son únicas. Esta sección se enfoca en suplementos clave para apoyar la salud hormonal, ósea y el bienestar general femenino.',
-      'mujer.stats.title': 'Salud Femenina en Números',
+        'Women have unique nutritional and physiological needs. This section focuses on key supplements to support hormonal, bone, and overall female wellness.',
+      'mujer.stats.title': "Women's Health in Numbers",
       'mujer.stats.fundamentos':
-        'El 85% de las mujeres no consume suficiente calcio para prevenir osteoporosis',
+        '85% of women do not consume enough calcium to prevent osteoporosis',
       'mujer.stats.equilibrio':
-        'El 70% de las mujeres experimentan desequilibrios hormonales en algún momento de su vida',
+        '70% of women experience hormonal imbalances at some point in their lives',
       'mujer.stats.escucha':
-        'El 60% de las mujeres que escuchan las señales de su cuerpo mejoran su bienestar general',
+        '60% of women who listen to their bodies improve their overall well-being',
       'cognitivo.title': 'Rendimiento Cognitivo',
       'cognitivo.description':
         'Tu cerebro es tu activo más importante. Descubre cómo la suplementación puede potenciar tu enfoque, memoria y resistencia al estrés para un máximo rendimiento mental.',
@@ -668,7 +702,10 @@ const resources = {
       'deportes.resistencia.title':
         'Ciclismo / Running / Deportes de Resistencia',
       'deportes.equipo.title': 'Deportes de Equipo',
-      'grasa.termogenicos.title': 'Termogénicos: Acelera tu Metabolismo',
+      'grasa.termogenicos.title': 'Termogénicos y Metabolismo',
+      'grasa.metabolismo-energetico.title': 'Metabolismo Energético',
+      'grasa.metabolismo-energetico.content':
+        'L-Carnitina: Facilita el transporte de ácidos grasos a la mitocondria para su uso como energía. Magnesio: Esencial para más de 300 reacciones metabólicas, incluyendo la producción de energía. Omega-3: Mejora la sensibilidad a la insulina y favorece el metabolismo de las grasas. Vitamina D: Relacionada con una mejor composición corporal y metabolismo activo. Ejercicio regular: Aumenta el gasto calórico y la eficiencia metabólica.',
       'grasa.apetito.title': 'Control del Apetito',
       'grasa.fundamentos.title': 'Fundamentos de la Quema de Grasa',
       'mujer.fundamentos.title': 'Fundamentos para la Mujer',
@@ -680,13 +717,15 @@ const resources = {
       'cognitivo.estrategias.title': 'Estrategias de Optimización Cognitiva',
       'bottomNav.profile': 'Perfil',
       'salud.vitaminas.content':
-        'Vitamina D: Para la salud ósea y la inmunidad. Vitaminas del complejo B: Esenciales para la energía y el metabolismo. Vitamina C: Potente antioxidante. Vitamina A: Para la salud visual y cutánea. Vitamina E: Protege las células del daño oxidativo. Vitamina K: Esencial para la coagulación sanguínea y salud ósea.',
+        'Vitamina D: Para la salud ósea e inmunidad. Vitaminas del grupo B: Esenciales para la energía y el metabolismo. Vitamina C: Potente antioxidante. Vitamina A: Para la salud visual y de la piel. Vitamina E: Protege las células del daño oxidativo. Vitamina K: Esencial para la coagulación sanguínea y la salud ósea.',
       'salud.minerales.content':
-        'Magnesio: Para la recuperación muscular y el sueño. Zinc: Clave para la testosterona y la inmunidad. Hierro: Fundamental para el transporte de oxígeno, especialmente en mujeres. Calcio: Para la salud ósea y contracción muscular. Selenio: Antioxidante y apoyo tiroideo. Potasio: Para el equilibrio electrolítico y función muscular.',
+        'Magnesio: Para la recuperación muscular y el sueño. Zinc: Clave para la testosterona y la inmunidad. Hierro: Esencial para el transporte de oxígeno, especialmente en mujeres. Calcio: Para la salud ósea y la contracción muscular. Selenio: Antioxidante y apoyo tiroideo. Potasio: Para el equilibrio electrolítico y la función muscular.',
       'salud.antioxidantes.content':
         'Omega-3: Reduce la inflamación y mejora la salud cardiovascular. Coenzima Q10: Vital para la energía celular. Cúrcuma: Potente antiinflamatorio. Resveratrol: Protege contra el envejecimiento celular. Astaxantina: Antioxidante más potente que la vitamina E. Glutatión: El antioxidante maestro del cuerpo.',
+      'salud.proteina.title': 'Proteínas Esenciales',
       'salud.proteina.content':
         'Proteína Whey: Fundamental para la síntesis muscular y recuperación. Colágeno: Para la salud de articulaciones, piel y tejido conectivo. Proteína de Caseína: Liberación lenta para recuperación nocturna. Proteína de Huevo: Alta biodisponibilidad y perfil aminoacídico completo. Proteína Vegetal: Opción para dietas veganas y vegetarianas.',
+      'salud.probioticos.title': 'Probióticos y Salud Digestiva',
       'salud.probioticos.content':
         'Lactobacillus: Para la salud digestiva y sistema inmune. Bifidobacterium: Mejora la absorción de nutrientes. Saccharomyces Boulardii: Protege contra infecciones digestivas. Prebióticos: Alimentan las bacterias beneficiosas del intestino. Enzimas Digestivas: Mejoran la digestión y absorción de nutrientes.',
       'deportes.pesas.content':
@@ -698,25 +737,25 @@ const resources = {
       'deportes.equipo.content':
         'Glutamina: Apoya la recuperación y el sistema inmune entre partidos. Arginina: Mejora el flujo sanguíneo y la entrega de nutrientes. Nitratos (de remolacha): Mejoran la eficiencia en el uso del oxígeno. Creatina: Para explosividad en sprints y saltos. BCAAs: Para recuperación entre sesiones de entrenamiento. Proteína: Fundamental para la reparación muscular post-competición.',
       'grasa.termogenicos.content':
-        'Extracto de Té Verde: Aumenta el metabolismo en un 3-4%. Cayenne Pepper: Incrementa la temperatura corporal y quema de calorías. Synephrine: Estimulante que puede aumentar la quema de grasa. Cafeína: Acelera el metabolismo y mejora el rendimiento. L-Carnitina: Transporta ácidos grasos para ser usados como energía. CLA: Puede reducir la grasa corporal y preservar masa muscular.',
+        'Extracto de Té Verde: Aumenta el metabolismo en un 3-4%. Pimienta de Cayena: Incrementa la temperatura corporal y quema de calorías. Sinefrina: Estimulante que puede aumentar la quema de grasa. Cafeína: Acelera el metabolismo y mejora el rendimiento. L-Carnitina: Transporta ácidos grasos para ser usados como energía. CLA: Puede reducir la grasa corporal y preservar masa muscular.',
       'grasa.apetito.content':
-        'Glucomanano: Fibra soluble que promueve la saciedad y reduce el apetito. Garcinia Cambogia: Puede bloquear la producción de grasa y suprimir el apetito. 5-HTP: Ayuda a regular el apetito y el estado de ánimo. Cromo: Mejora la sensibilidad a la insulina y control del apetito. Fibra soluble: Ralentiza la digestión y promueve la saciedad. Proteína: El macronutriente más saciante.',
+        'Glucomanano: Fibra soluble que promueve la saciedad. Garcinia Cambogia: Puede bloquear la producción de grasa. 5-HTP: Ayuda a regular el apetito y el estado de ánimo.',
       'grasa.fundamentos.content':
-        'L-Carnitina: Ayuda a transportar los ácidos grasos para ser usados como energía. CLA (Ácido Linoleico Conjugado): Puede reducir la grasa corporal y preservar masa muscular. Extracto de Té Verde: Contiene catequinas que ayudan a acelerar el metabolismo. Omega-3: Reduce la inflamación y mejora la sensibilidad a la insulina. Vitamina D: Mejora la composición corporal y el metabolismo. Magnesio: Esencial para el metabolismo energético.',
+        'L-Carnitina: Ayuda a transportar los ácidos grasos para ser usados como energía. CLA (Ácido Linoleico Conjugado): Puede reducir la grasa corporal. Extracto de Té Verde: Contiene catequinas que ayudan a acelerar el metabolismo y aumentar la oxidación de grasas.',
       'mujer.fundamentos.content':
-        'Ácido fólico: Imprescindible para la salud celular y prevención de defectos congénitos. Calcio: Clave para la salud ósea, sobre todo tras la menopausia. Hierro: Para prevenir la anemia, frecuente en mujeres en edad fértil. Vitamina D: Esencial para la absorción de calcio y salud ósea. Magnesio: Para la salud hormonal y reducción de calambres menstruales. Omega-3: Para la salud cardiovascular y reducción de inflamación.',
+        'Ácido fólico: Esencial para la salud celular. Calcio: Clave para la salud ósea, especialmente tras la menopausia. Hierro: Para prevenir la anemia, común en mujeres.',
       'mujer.equilibrio.content':
-        'DIM (Diindolilmetano): Ayuda a balancear los estrógenos y reducir síntomas hormonales. Vitex Agnus-Castus: Puede regular los ciclos menstruales y reducir síntomas del SPM. Colágeno: Para una piel, pelo y uñas saludables. Probióticos: Para la salud digestiva y vaginal. Magnesio: Para reducir calambres menstruales y mejorar el sueño. Vitamina E: Para la salud de la piel y reducción de síntomas menopáusicos.',
+        'DIM (Diindolilmetano): Ayuda a equilibrar los estrógenos. Vitex Agnus-Castus: Puede regular los ciclos menstruales. Colágeno: Para la salud de la piel, cabello y uñas.',
       'mujer.escucha.content':
-        'Aceite de Onagra: Puede aliviar los síntomas premenstruales y mejorar la salud de la piel. Probióticos: Para la salud digestiva y vaginal. Ashwagandha: Adaptógeno para gestionar el estrés y equilibrar hormonas. Rhodiola Rosea: Para mejorar la energía y reducir la fatiga. Vitamina B6: Para reducir síntomas del SPM y mejorar el estado de ánimo. Calcio: Para reducir calambres menstruales y mantener salud ósea.',
+        'Aceite de onagra: Puede aliviar síntomas premenstruales. Probióticos: Para la salud digestiva y vaginal. Ashwagandha: Adaptógeno para manejar el estrés.',
       'cognitivo.nootropicos.content':
-        'L-Teanina y Cafeína: La combinación sinérgica para un enfoque calmado y sin nerviosismo. Bacopa Monnieri: Una hierba adaptogénica que mejora la memoria y reduce la ansiedad con el uso continuado. Ginkgo Biloba: Conocido por mejorar la circulación y la función cognitiva. Fosfatidilserina: Clave para la función cognitiva y memoria. Rhodiola Rosea: Mejora la concentración y reduce la fatiga mental. Panax Ginseng: Potencia la memoria y el estado de ánimo.',
+        'L-Teanina y Cafeína: Combinación sinérgica para un enfoque calmado y sin nerviosismo. Bacopa Monnieri: Hierba adaptogénica que mejora la memoria y reduce la ansiedad con uso continuado. Ginkgo Biloba: Conocido por mejorar la circulación y función cognitiva.',
       'cognitivo.adaptogenos.content':
-        'Rhodiola Rosea: Combate la fatiga mental y física, mejora la resistencia al estrés. Panax Ginseng: Mejora la memoria y el estado de ánimo. Cordyceps: Puede aumentar la energía y la utilización de oxígeno. Ashwagandha: Reduce el cortisol y mejora la respuesta al estrés. Reishi: Seta adaptogénica que mejora la calidad del sueño. Eleuthero: Mejora la resistencia física y mental.',
+        'Rhodiola Rosea: Combate la fatiga mental y física. Panax Ginseng: Mejora la memoria y el estado de ánimo. Cordyceps: Puede aumentar la energía y utilización del oxígeno.',
       'cognitivo.salud.content':
-        'Fosfatidilserina: Clave para la función cognitiva y prevención del deterioro mental. Melena de León: Seta que puede estimular el crecimiento nervioso y mejorar la memoria. DHA (Omega-3): Esencial para la estructura cerebral y función cognitiva. Coenzima Q10: Vital para la energía cerebral y protección neuronal. Vitamina B12: Esencial para la función nerviosa y prevención de deterioro cognitivo. Curcumina: Potente antiinflamatorio que puede proteger contra enfermedades neurodegenerativas.',
+        'Fosfatidilserina: Clave para la función cognitiva. Melena de León: Hongo que puede estimular el crecimiento nervioso. DHA (Omega-3): Esencial para la estructura cerebral.',
       'cognitivo.estrategias.content':
-        'Ayuno intermitente: Puede mejorar la claridad mental y función cognitiva. Sueño de calidad: Imprescindible para la consolidación de la memoria y regeneración cerebral. Meditación: Reduce el estrés y mejora el enfoque y concentración. Ejercicio regular: Mejora el flujo sanguíneo cerebral y libera factores neurotróficos. Hidratación adecuada: El cerebro es 73% agua, la deshidratación afecta la función cognitiva. Alimentación rica en antioxidantes: Protege contra el estrés oxidativo cerebral.',
+        'Ayuno Intermitente: Puede mejorar la claridad mental. Sueño de Calidad: Esencial para la consolidación de la memoria. Meditación: Reduce el estrés y mejora el enfoque.',
       'faq.title': 'Preguntas Frecuentes',
       'faq.subtitle':
         'Encuentra respuestas a las preguntas más comunes sobre EGN Fitness',
@@ -837,16 +876,16 @@ const resources = {
         'Conservamos tu información personal únicamente durante el tiempo necesario para cumplir con los propósitos descritos en esta política, o según lo requiera la ley. Los datos se eliminan de forma segura cuando ya no son necesarios.',
       'privacy.section7.title': '7. Cookies y Tecnologías Similares',
       'privacy.section7.text':
-        'We use cookies and similar technologies to enhance your experience, analyze app usage, and personalize content. You can control the use of cookies through your browser settings.',
+        'Utilizamos cookies y tecnologías similares para mejorar tu experiencia, analizar el uso de la aplicación y personalizar el contenido. Puedes controlar el uso de cookies a través de la configuración de tu navegador.',
       'privacy.section8.title': '8. Menores de Edad',
       'privacy.section8.text':
-        'Our service is not directed to minors under 18. We do not knowingly collect personal information from minors. If you are a parent or guardian and believe your child has provided us with information, contact us immediately.',
+        'Nuestro servicio no está dirigido a menores de 18 años. No recopilamos intencionalmente información personal de menores. Si eres padre o tutor y crees que tu hijo nos ha proporcionado información, contáctanos inmediatamente.',
       'privacy.section9.title': '9. Cambios en esta Política',
       'privacy.section9.text':
-        'We may update this privacy policy from time to time. We will notify you of significant changes by email or through the app. We recommend reviewing this policy periodically.',
+        'Podemos actualizar esta política de privacidad ocasionalmente. Te notificaremos sobre cambios significativos por email o a través de la aplicación. Te recomendamos revisar esta política periódicamente.',
       'privacy.section10.title': '10. Contacto',
       'privacy.section10.text':
-        'If you have questions about this privacy policy or how we handle your data, you can contact us at:',
+        'Si tienes preguntas sobre esta política de privacidad o sobre cómo manejamos tus datos, puedes contactarnos en:',
       'privacy.compromiso': 'Compromiso con tu Privacidad',
       'privacy.compromisoText':
         'En EGN Fitness, tu privacidad es fundamental. Nos comprometemos a proteger tu información personal y a ser transparentes sobre cómo la utilizamos. Si tienes alguna preocupación, no dudes en contactarnos.',
@@ -895,7 +934,7 @@ const resources = {
         'Separadas por comas (ej: Lactosa, Frutos secos)',
       'stepForm.currentSupplements': 'Suplementos actuales',
       'stepForm.currentSupplementsHelp':
-        'Separados por comas (ej: Proteína Whey, Creatina)',
+        'Separados por comas (ej: Proteína Whey, Creatine)',
       'stepForm.backButton': '← Anterior',
       'stepForm.nextButton': 'Siguiente →',
       'stepForm.updateButton': 'Actualizar perfil',
@@ -1123,10 +1162,25 @@ const resources = {
         'Calcio: Fundamental para la densidad ósea y prevención de osteoporosis, especialmente tras la menopausia. Vitamina D: Esencial para la absorción de calcio y salud ósea. Magnesio: Ayuda a mantener huesos fuertes y reduce calambres. Vitamina K2: Contribuye a la mineralización ósea y previene la calcificación arterial. Colágeno: Apoya la estructura ósea y articular. Ejercicio de resistencia: Clave para mantener la masa ósea en la mujer adulta.',
       'mujer.belleza.title': 'Belleza Natural y Salud de la Piel',
       'mujer.belleza.content':
-        'Colágeno: Mejora la elasticidad y firmeza de la piel, cabello y uñas. Ácido hialurónico: Hidrata y protege la piel desde el interior. Vitamina C: Potente antioxidante que estimula la síntesis de colágeno y protege contra el envejecimiento. Omega-3: Reduce la inflamación y favorece una piel luminosa. Probióticos: Contribuyen al equilibrio de la microbiota y mejoran la salud cutánea. Protección solar y hábitos saludables: Indispensables para una belleza duradera.',
+        'Collagen: Mejora la elasticidad y firmeza de la piel, cabello y uñas. Ácido hialurónico: Hidrata y protege la piel desde el interior. Vitamina C: Potente antioxidante que estimula la síntesis de colágeno y protege contra el envejecimiento. Omega-3: Reduce la inflamación y favorece una piel luminosa. Probióticos: Contribuyen al equilibrio de la microbiota y mejoran la salud cutánea. Protección solar y hábitos saludables: Indispensables para una belleza duradera.',
       'grasa.metabolismo.title': 'Metabolismo Energético',
       'grasa.metabolismo.content':
         'El metabolismo energético es el conjunto de procesos que convierten los nutrientes en energía utilizable. L-Carnitina: Facilita el transporte de ácidos grasos a la mitocondria para su uso como energía. Magnesio: Esencial para más de 300 reacciones metabólicas, incluyendo la producción de energía. Omega-3: Mejora la sensibilidad a la insulina y favorece el metabolismo de las grasas. Vitamina D: Relacionada con una mejor composición corporal y metabolismo activo. Ejercicio regular: Aumenta el gasto calórico y la eficiencia metabólica.',
+      'deportes.yoga.title': 'Yoga',
+      'deportes.yoga.content':
+        'Ashwagandha: Reduce el estrés y mejora la flexibilidad. Magnesio: Ayuda a la relajación muscular. Omega-3: Favorece la recuperación y la salud articular.',
+      'deportes.natacion.title': 'Natación',
+      'deportes.natacion.content':
+        'Electrolitos: Mantienen la hidratación durante el ejercicio. Proteína: Para la recuperación muscular. Magnesio: Previene calambres y mejora el rendimiento acuático.',
+      'grasa.stats.title': 'Estadísticas de Pérdida de Grasa',
+      'grasa.stats.termogenicos':
+        'Los termogénicos pueden aumentar el gasto calórico en un 3-10%',
+      'grasa.stats.apetito':
+        'El 78% de las personas que controlan su apetito logran mantener su peso objetivo',
+      'grasa.stats.fundamentos':
+        'La combinación de dieta, ejercicio y suplementos aumenta la pérdida de grasa en un 35%',
+      'mujer.integral.title': 'Salud Integral Femenina',
+      'mujer.osea-belleza.title': 'Salud Ósea y Belleza',
     },
   },
 };

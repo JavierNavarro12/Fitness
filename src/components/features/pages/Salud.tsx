@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { searchableContent } from '../../../data/content';
 import { Helmet } from 'react-helmet-async';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const saludData = searchableContent.filter(item => item.category === 'salud');
 
@@ -98,6 +100,11 @@ const Salud: React.FC<PageProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
+    AOS.init({ once: true });
+    AOS.refresh();
+  }, []);
+
+  useEffect(() => {
     if (itemToHighlight && itemToHighlight.page === 'salud') {
       const timer = setTimeout(() => {
         const element = document.getElementById(itemToHighlight.id);
@@ -127,9 +134,9 @@ const Salud: React.FC<PageProps> = ({
       </Helmet>
       <div className='p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen'>
         <div className='max-w-7xl mx-auto'>
-          <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-10'>
+          <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 md:p-10'>
             <div
-              className='relative rounded-2xl overflow-hidden mb-12 shadow-lg'
+              className='relative rounded-2xl overflow-hidden mb-6 shadow-lg'
               data-aos='fade-in'
             >
               <img
@@ -144,9 +151,8 @@ const Salud: React.FC<PageProps> = ({
                 </h1>
               </div>
             </div>
-
             <div
-              className='max-w-4xl mx-auto text-center mb-16'
+              className='max-w-4xl mx-auto text-center mb-4'
               data-aos='fade-up'
               data-aos-delay='200'
             >
@@ -154,10 +160,8 @@ const Salud: React.FC<PageProps> = ({
                 {t('salud.description')}
               </p>
             </div>
-
-            {/* Estadísticas de Salud Global */}
             <div
-              className='max-w-6xl mx-auto mb-16'
+              className='max-w-6xl mx-auto mb-8'
               data-aos='fade-up'
               data-aos-delay='300'
             >
