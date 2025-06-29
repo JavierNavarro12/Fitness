@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+echo "🧪 Running pre-commit checks..."
+
+# Run lint-staged (formatting and linting)
+echo "📝 Formatting and linting staged files..."
+yarn lint-staged
+
+# Run type checking
+echo "🔍 Running TypeScript type check..."
+yarn type-check
+
+# Run unit tests
+echo "🧪 Running unit tests..."
+yarn test --watchAll=false --passWithNoTests
+
+echo "✅ Pre-commit checks passed!" 

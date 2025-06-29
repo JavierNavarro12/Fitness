@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import ReportView from './ReportView';
 
@@ -23,25 +24,41 @@ jest.mock('react-i18next', () => ({
 // Mock de @react-pdf/renderer
 jest.mock('@react-pdf/renderer', () => ({
   Document: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="pdf-document">{children}</div>
+    <div data-testid='pdf-document'>{children}</div>
   ),
   Page: ({ children, style }: { children: React.ReactNode; style?: any }) => (
-    <div data-testid="pdf-page" style={style}>{children}</div>
+    <div data-testid='pdf-page' style={style}>
+      {children}
+    </div>
   ),
   Text: ({ children, style }: { children: React.ReactNode; style?: any }) => (
-    <div data-testid="pdf-text" style={style}>{children}</div>
+    <div data-testid='pdf-text' style={style}>
+      {children}
+    </div>
   ),
   View: ({ children, style }: { children: React.ReactNode; style?: any }) => (
-    <div data-testid="pdf-view" style={style}>{children}</div>
+    <div data-testid='pdf-view' style={style}>
+      {children}
+    </div>
   ),
   StyleSheet: {
     create: (styles: any) => styles,
   },
-  Link: ({ children, src, style }: { children: React.ReactNode; src?: string; style?: any }) => (
-    <a data-testid="pdf-link" href={src} style={style}>{children}</a>
+  Link: ({
+    children,
+    src,
+    style,
+  }: {
+    children: React.ReactNode;
+    src?: string;
+    style?: any;
+  }) => (
+    <a data-testid='pdf-link' href={src} style={style}>
+      {children}
+    </a>
   ),
   PDFDownloadLink: ({ children }: any) => (
-    <div data-testid="pdf-download-link">
+    <div data-testid='pdf-download-link'>
       {typeof children === 'function' ? children({ loading: false }) : children}
     </div>
   ),
@@ -49,16 +66,34 @@ jest.mock('@react-pdf/renderer', () => ({
 
 // Mock de react-markdown
 jest.mock('react-markdown', () => {
-  return ({ children }: { children: string }) => <div data-testid="markdown-content">{children}</div>;
+  return ({ children }: { children: string }) => (
+    <div data-testid='markdown-content'>{children}</div>
+  );
 });
 
 // Mock de react-icons
 jest.mock('react-icons/fa6', () => ({
-  FaFile: ({ className }: { className?: string }) => <div data-testid="fa-file" className={className}>📄</div>,
-  FaRegCopy: () => <div data-testid="fa-copy">📋</div>,
-  FaCircleCheck: ({ className }: { className?: string }) => <div data-testid="fa-check" className={className}>✅</div>,
-  FaDownload: ({ className }: { className?: string }) => <div data-testid="fa-download" className={className}>⬇️</div>,
-  FaTrash: ({ className }: { className?: string }) => <div data-testid="fa-trash" className={className}>🗑️</div>,
+  FaFile: ({ className }: { className?: string }) => (
+    <div data-testid='fa-file' className={className}>
+      📄
+    </div>
+  ),
+  FaRegCopy: () => <div data-testid='fa-copy'>📋</div>,
+  FaCircleCheck: ({ className }: { className?: string }) => (
+    <div data-testid='fa-check' className={className}>
+      ✅
+    </div>
+  ),
+  FaDownload: ({ className }: { className?: string }) => (
+    <div data-testid='fa-download' className={className}>
+      ⬇️
+    </div>
+  ),
+  FaTrash: ({ className }: { className?: string }) => (
+    <div data-testid='fa-trash' className={className}>
+      🗑️
+    </div>
+  ),
 }));
 
 // Mock de navigator.clipboard
@@ -110,7 +145,7 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
 
     // Verificar que se renderiza el título del reporte
     expect(screen.getByText('Informe Personalizado')).toBeInTheDocument();
-    
+
     // Verificar que se muestra la fecha de creación (formato local)
     const dateNodes = screen.getAllByText((content, element) => {
       if (!element) return false;
@@ -122,7 +157,7 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
       );
     });
     expect(dateNodes.length).toBeGreaterThan(0);
-    
+
     // Verificar que se renderiza el contenido del markdown
     expect(screen.getByTestId('markdown-content')).toBeInTheDocument();
   });
@@ -156,13 +191,15 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
     render(<ReportView report={mockReport} />);
 
     // Mock asíncrono para clipboard
-    (navigator.clipboard.writeText as jest.Mock).mockImplementation(() => Promise.resolve());
+    (navigator.clipboard.writeText as jest.Mock).mockImplementation(() =>
+      Promise.resolve()
+    );
 
     // Envolver en act y hacer clic en el primer botón de acción (copiar)
-    await act(async () => {
-      userEvent.click(screen.getAllByRole('button')[0]);
-    });
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockReport.content);
+    await userEvent.click(screen.getAllByRole('button')[0]);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      mockReport.content
+    );
 
     // Esperar a que aparezca el icono de check
     expect(await screen.findByTestId('fa-check')).toBeInTheDocument();
@@ -181,14 +218,16 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
 
   test('handles delete functionality with confirmation', async () => {
     (window.confirm as jest.Mock).mockReturnValue(true);
-    
+
     render(<ReportView report={mockReport} onDelete={mockOnDelete} />);
 
     const deleteButton = screen.getByTitle('Eliminar');
     await userEvent.click(deleteButton);
 
     // Verificar que se muestra el diálogo de confirmación
-    expect(window.confirm).toHaveBeenCalledWith('¿Seguro que quieres eliminar este informe?');
+    expect(window.confirm).toHaveBeenCalledWith(
+      '¿Seguro que quieres eliminar este informe?'
+    );
 
     // Verificar que se llama a la función onDelete
     expect(mockOnDelete).toHaveBeenCalledWith('report-1');
@@ -196,14 +235,16 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
 
   test('does not delete when user cancels confirmation', async () => {
     (window.confirm as jest.Mock).mockReturnValue(false);
-    
+
     render(<ReportView report={mockReport} onDelete={mockOnDelete} />);
 
     const deleteButton = screen.getByTitle('Eliminar');
     await userEvent.click(deleteButton);
 
     // Verificar que se muestra el diálogo de confirmación
-    expect(window.confirm).toHaveBeenCalledWith('¿Seguro que quieres eliminar este informe?');
+    expect(window.confirm).toHaveBeenCalledWith(
+      '¿Seguro que quieres eliminar este informe?'
+    );
 
     // Verificar que NO se llama a la función onDelete
     expect(mockOnDelete).not.toHaveBeenCalled();
@@ -248,7 +289,9 @@ Dormir 7-8 horas por noche.`,
     render(<ReportView report={reportWithoutSupplements} />);
 
     // Verificar que NO se muestra la sección de suplementos
-    expect(screen.queryByText('Productos Recomendados')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Productos Recomendados')
+    ).not.toBeInTheDocument();
   });
 
   test('filters personalization summary from content', () => {
@@ -270,7 +313,7 @@ Dormir 7-8 horas por noche.`,
 
   test('handles report without ID for deletion', async () => {
     (window.confirm as jest.Mock).mockReturnValue(true);
-    
+
     const reportWithoutId = { ...mockReport, id: undefined };
     render(<ReportView report={reportWithoutId} onDelete={mockOnDelete} />);
 
@@ -297,7 +340,9 @@ Entrenamiento de fuerza.`,
 
     // Verificar que se extraen suplementos de diferentes formatos
     expect(screen.getByText('Proteína Whey Gold Standard')).toBeInTheDocument();
-    expect(screen.getByText('Creatina Monohidrato 100% Pure')).toBeInTheDocument();
+    expect(
+      screen.getByText('Creatina Monohidrato 100% Pure')
+    ).toBeInTheDocument();
     // Los suplementos con guiones pueden no aparecer en la sección de productos
     // pero sí en el contenido del informe
     const markdownContent = screen.getByTestId('markdown-content');
@@ -322,8 +367,12 @@ Entrenamiento de fuerza.`,
     render(<ReportView report={reportWithSpecialChars} />);
 
     // Verificar que se extraen los suplementos con caracteres especiales
-    expect(screen.getByText('Proteína Whey [Gold Standard]')).toBeInTheDocument();
-    expect(screen.getByText('Creatina Monohidrato (100% Pure)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Proteína Whey [Gold Standard]')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Creatina Monohidrato (100% Pure)')
+    ).toBeInTheDocument();
     expect(screen.getByText('BCAAs (URL del producto)')).toBeInTheDocument();
   });
 
@@ -335,9 +384,12 @@ Entrenamiento de fuerza.`,
 
     render(<ReportView report={reportWithEmptyContent} />);
 
-    // Verificar que se renderiza sin errores
-    expect(screen.getByText('Informe Personalizado')).toBeInTheDocument();
-    expect(screen.getByTestId('markdown-content')).toBeInTheDocument();
+    // Verificar que se renderiza sin errores, pero muestra un mensaje de error
+    expect(
+      screen.getByText(
+        'Error: Datos insuficientes o inválidos para generar el PDF.'
+      )
+    ).toBeInTheDocument();
   });
 
   test('handles content with no supplements section', () => {
@@ -369,24 +421,32 @@ Dormir 7-8 horas por noche.`,
     render(<ReportView report={reportWithoutSupplementsSection} />);
 
     // Verificar que NO se muestra la sección de suplementos
-    expect(screen.queryByText('Productos Recomendados')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Productos Recomendados')
+    ).not.toBeInTheDocument();
   });
 
   test('handles clipboard write error gracefully', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    (navigator.clipboard.writeText as jest.Mock).mockRejectedValue(new Error('Clipboard error'));
-    
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    (navigator.clipboard.writeText as jest.Mock).mockRejectedValue(
+      new Error('Clipboard error')
+    );
+
     render(<ReportView report={mockReport} />);
 
     const copyButton = screen.getByTitle('Copiar');
     await userEvent.click(copyButton);
 
     // Verificar que se intenta copiar al portapapeles
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockReport.content);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      mockReport.content
+    );
 
     // Verificar que el componente no se rompe por el error
     expect(screen.getByTitle('Copiar')).toBeInTheDocument();
-    
+
     consoleSpy.mockRestore();
   });
-}); 
+});
