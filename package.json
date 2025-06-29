@@ -82,6 +82,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/jspdf": "^2.0.0",
     "@types/styled-components": "^5.1.34",
+    "@types/testing-library__react": "^10.2.0",
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
     "autoprefixer": "^10.4.19",

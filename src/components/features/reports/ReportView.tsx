@@ -1,7 +1,18 @@
-import React, { useState, useRef, Suspense, ComponentPropsWithoutRef } from 'react';
+import React, {
+  useState,
+  useRef,
+  Suspense,
+  ComponentPropsWithoutRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
-import { FaFile, FaRegCopy, FaCircleCheck, FaDownload, FaTrash } from 'react-icons/fa6';
+import {
+  FaFile,
+  FaRegCopy,
+  FaCircleCheck,
+  FaDownload,
+  FaTrash,
+} from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReportPDF from './ReportPDF';
@@ -15,6 +26,39 @@ interface Supplement {
   name: string;
   link: string;
 }
+
+// Diccionario de equivalencias de búsqueda para suplementos (todas las claves en minúsculas)
+const supplementSearchTerms: Record<string, string> = {
+  'proteína en polvo': 'whey',
+  'proteína whey': 'whey',
+  'proteína de suero': 'whey',
+  'proteína vegetal': 'proteína vegetal',
+  'creatina monohidrato': 'creatina',
+  creatina: 'creatina',
+  bcaas: 'BCAA',
+  'aminoácidos ramificados': 'BCAA',
+  glutamina: 'glutamina',
+  'beta-alanina': 'beta alanina',
+  cafeína: 'cafeína',
+  'omega-3': 'omega 3',
+  multivitamínico: 'multivitaminas',
+  colágeno: 'colágeno',
+  ashwagandha: 'ashwagandha',
+  hmb: 'HMB',
+  caseína: 'caseína',
+  'l-carnitina': 'carnitina',
+  cla: 'CLA',
+  'vitamina d': 'vitamina D',
+  magnesio: 'magnesio',
+  zma: 'ZMA',
+  hierro: 'hierro',
+  zinc: 'zinc',
+  'vitamina b12': 'vitamina B12',
+  'ginkgo biloba': 'ginkgo biloba',
+  'bacopa monnieri': 'bacopa monnieri',
+  fosfatidilserina: 'fosfatidilserina',
+  // ... puedes añadir más equivalencias aquí ...
+};
 
 // Nueva función para extraer suplementos de todo el informe
 function extractAllSupplements(content: string): string[] {
@@ -125,7 +169,13 @@ function extractAllSupplements(content: string): string[] {
     }
     // ## Nombre
     match = line.match(subtitleRegex);
-    if (match && match[1].length > 2 && !/^suplementos|consideraciones|resumen|introducción|plan|objetivo|deporte|base|fundamentales|adicionales|pasos/i.test(match[1])) {
+    if (
+      match &&
+      match[1].length > 2 &&
+      !/^suplementos|consideraciones|resumen|introducción|plan|objetivo|deporte|base|fundamentales|adicionales|pasos/i.test(
+        match[1]
+      )
+    ) {
       const name = match[1].replace(/:$/, '').trim();
       if (!exclude.some(e => name.toLowerCase().includes(e.toLowerCase()))) {
         supplements.add(name);
@@ -143,7 +193,7 @@ function extractSupplementsWithLinks(content: string): Supplement[] {
     const cleanName = name.replace(/\*+/g, '').trim();
     return {
       name: cleanName,
-      link: `https://www.amazon.es/s?k=${encodeURIComponent(cleanName)}`
+      link: `https://www.amazon.es/s?k=${encodeURIComponent(cleanName)}`,
     };
   });
 }
@@ -166,7 +216,7 @@ function filterPersonalizationSummary(content: string): string {
     'Condiciones médicas:',
     'Alergias:',
     'Suplementos Actuales:',
-    'Suplementos actuales:'
+    'Suplementos actuales:',
   ];
   const lines = content.split('\n');
   let filtered: string[] = [];
@@ -179,7 +229,7 @@ function filterPersonalizationSummary(content: string): string {
     if (/^perfil:$/i.test(trimmedLine)) {
       continue;
     }
-    
+
     // Eliminar bloque de 'Perfil Físico:' o 'Resumen del perfil:'
     if (/^(perfil|resumen del perfil)/i.test(trimmedLine)) {
       skipBlock = true;
@@ -197,7 +247,9 @@ function filterPersonalizationSummary(content: string): string {
     if (keywords.some(k => line.includes(k))) continue;
     filtered.push(line);
   }
-  return filtered.join('\n').replace(/\[([^\]]+)\]\(URL del producto\)/gi, '$1');
+  return filtered
+    .join('\n')
+    .replace(/\[([^\]]+)\]\(URL del producto\)/gi, '$1');
 }
 
 function removeRecommendedProductsSection(content: string): string {
@@ -212,16 +264,32 @@ function removeRecommendedProductsSection(content: string): string {
 
 const markdownComponents = {
   // eslint-disable-next-line jsx-a11y/heading-has-content
-  h1: (props: ComponentPropsWithoutRef<'h1'>) => <h1 className="text-3xl font-bold mt-6 mb-4 text-gray-900" {...props} />,
+  h1: (props: ComponentPropsWithoutRef<'h1'>) => (
+    <h1 className='text-3xl font-bold mt-6 mb-4 text-gray-900' {...props} />
+  ),
   // eslint-disable-next-line jsx-a11y/heading-has-content
-  h2: (props: ComponentPropsWithoutRef<'h2'>) => <h2 className="text-2xl font-bold mt-4 mb-3 text-gray-900" {...props} />,
+  h2: (props: ComponentPropsWithoutRef<'h2'>) => (
+    <h2 className='text-2xl font-bold mt-4 mb-3 text-gray-900' {...props} />
+  ),
   // eslint-disable-next-line jsx-a11y/heading-has-content
-  h3: (props: ComponentPropsWithoutRef<'h3'>) => <h3 className="text-xl font-semibold mt-3 mb-2 text-gray-800" {...props} />,
-  ul: (props: ComponentPropsWithoutRef<'ul'>) => <ul className="list-disc pl-6 mb-2" {...props} />,
-  ol: (props: ComponentPropsWithoutRef<'ol'>) => <ol className="list-decimal pl-6 mb-2" {...props} />,
-  li: (props: ComponentPropsWithoutRef<'li'>) => <li className="mb-1" {...props} />,
-  strong: (props: ComponentPropsWithoutRef<'strong'>) => <strong className="font-semibold text-gray-900" {...props} />,
-  p: (props: ComponentPropsWithoutRef<'p'>) => <p className="mb-2 text-gray-800" {...props} />,
+  h3: (props: ComponentPropsWithoutRef<'h3'>) => (
+    <h3 className='text-xl font-semibold mt-3 mb-2 text-gray-800' {...props} />
+  ),
+  ul: (props: ComponentPropsWithoutRef<'ul'>) => (
+    <ul className='list-disc pl-6 mb-2' {...props} />
+  ),
+  ol: (props: ComponentPropsWithoutRef<'ol'>) => (
+    <ol className='list-decimal pl-6 mb-2' {...props} />
+  ),
+  li: (props: ComponentPropsWithoutRef<'li'>) => (
+    <li className='mb-1' {...props} />
+  ),
+  strong: (props: ComponentPropsWithoutRef<'strong'>) => (
+    <strong className='font-semibold text-gray-900' {...props} />
+  ),
+  p: (props: ComponentPropsWithoutRef<'p'>) => (
+    <p className='mb-2 text-gray-800' {...props} />
+  ),
 };
 
 const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
@@ -245,7 +313,9 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const supplements = extractSupplementsWithLinks(report.content);
 
   // Filtrar el contenido para eliminar el resumen del formulario y la sección de productos
-  const filteredContent = removeRecommendedProductsSection(filterPersonalizationSummary(report.content));
+  const filteredContent = removeRecommendedProductsSection(
+    filterPersonalizationSummary(report.content)
+  );
 
   // Asegura que filteredContent y supplements siempre tengan un valor válido
   const safeFilteredContent = filteredContent || '';
@@ -254,92 +324,125 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   // Limpia el contenido para evitar que ReactMarkdown lo interprete como bloque de código
   let cleanMarkdown = safeFilteredContent
     .replace(/^```[a-z]*\n?/i, '') // elimina ``` al inicio
-    .replace(/```$/i, '')           // elimina ``` al final
+    .replace(/```$/i, '') // elimina ``` al final
     .split('\n')
     .map(line => line.replace(/^\s+/, ''))
     .join('\n');
 
-  if (!safeFilteredContent || safeSupplements.length === 0 || typeof safeFilteredContent !== 'string') {
-    return <div className="text-red-600 text-center font-bold">Error: Datos insuficientes o inválidos para generar el PDF.</div>;
+  if (
+    !safeFilteredContent ||
+    safeSupplements.length === 0 ||
+    typeof safeFilteredContent !== 'string'
+  ) {
+    return (
+      <div className='text-red-600 text-center font-bold'>
+        Error: Datos insuficientes o inválidos para generar el PDF.
+      </div>
+    );
   }
 
   const supplementsWithLinks = extractSupplementsWithLinks(report.content);
 
   return (
-    <div ref={reportRef} className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-0 md:p-0 border border-gray-100 dark:border-gray-700 overflow-hidden">
+    <div
+      ref={reportRef}
+      className='bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-0 md:p-0 border border-gray-100 dark:border-gray-700 overflow-hidden'
+    >
       {/* Encabezado profesional */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600">
-        <div className="flex items-center gap-2 sm:gap-3">
-          {FaFile({ className: "text-white text-xl sm:text-2xl" })}
-          <span className="text-white font-bold text-base sm:text-lg md:text-xl">{t('report.title')}</span>
+      <div className='flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600'>
+        <div className='flex items-center gap-2 sm:gap-3'>
+          {FaFile({ className: 'text-white text-xl sm:text-2xl' })}
+          <span className='text-white font-bold text-base sm:text-lg md:text-xl'>
+            {t('report.title')}
+          </span>
         </div>
-        <div className="flex flex-row items-center gap-1 sm:gap-2">
+        <div className='flex flex-row items-center gap-1 sm:gap-2'>
           <button
             onClick={handleCopy}
-            className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition"
+            className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition'
             title={t('report.copy')}
           >
-            {copied ? FaCircleCheck({ className: "text-green-500" }) : FaRegCopy({})}
-            <span className="hidden sm:inline ml-2">{copied ? t('report.copied') : t('report.copy')}</span>
+            {copied
+              ? FaCircleCheck({ className: 'text-green-500' })
+              : FaRegCopy({})}
+            <span className='hidden sm:inline ml-2'>
+              {copied ? t('report.copied') : t('report.copy')}
+            </span>
           </button>
-          <Suspense fallback={<span className="text-xs">Cargando PDF...</span>}>
+          <Suspense fallback={<span className='text-xs'>Cargando PDF...</span>}>
             <PDFDownloadLink
               document={
                 <ReportPDF
-                  title={safeFilteredContent ? "Informe personalizado" : ""}
+                  title={safeFilteredContent ? 'Informe personalizado' : ''}
                   content={safeFilteredContent}
                   supplements={safeSupplements}
-                  date={report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : ''}
+                  date={
+                    report && report.createdAt
+                      ? new Date(report.createdAt).toLocaleDateString()
+                      : ''
+                  }
                 />
               }
               fileName={`informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`}
-              className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition"
+              className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition'
               style={{ textDecoration: 'none' }}
             >
-              {({ loading }) => loading ? <span className="hidden sm:inline">{t('report.generatingPDF')}</span> : <>
-                {FaDownload({ className: "text-lg" })}
-                <span className="hidden sm:inline ml-2">{t('report.downloadPDF')}</span>
-              </>}
+              {({ loading }) =>
+                loading ? (
+                  <span className='hidden sm:inline'>
+                    {t('report.generatingPDF')}
+                  </span>
+                ) : (
+                  <>
+                    {FaDownload({ className: 'text-lg' })}
+                    <span className='hidden sm:inline ml-2'>
+                      {t('report.downloadPDF')}
+                    </span>
+                  </>
+                )
+              }
             </PDFDownloadLink>
           </Suspense>
           {onDelete && report.id && (
             <button
               onClick={() => {
-                if (window.confirm('¿Seguro que quieres eliminar este informe?') && report.id) {
+                if (
+                  window.confirm(
+                    '¿Seguro que quieres eliminar este informe?'
+                  ) &&
+                  report.id
+                ) {
                   onDelete(report.id);
                 }
               }}
-              className="flex items-center justify-center w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition ml-1"
+              className='flex items-center justify-center w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition ml-1'
               title={t('report.delete')}
             >
-              {FaTrash({ className: "text-lg" })}
+              {FaTrash({ className: 'text-lg' })}
             </button>
           )}
         </div>
       </div>
       {/* Contenido del informe */}
-      <div className="px-6 py-4">
-        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{new Date(report.createdAt).toLocaleString()}</div>
-        <div className="prose max-w-3xl mx-auto bg-white p-6 rounded-xl">
-          <ReactMarkdown components={markdownComponents}>{cleanMarkdown}</ReactMarkdown>
+      <div className='px-6 py-4'>
+        <div className='text-xs text-gray-500 dark:text-gray-400 mb-2'>
+          {new Date(report.createdAt).toLocaleString()}
+        </div>
+        <div className='prose max-w-3xl mx-auto bg-white p-6 rounded-xl'>
+          <ReactMarkdown components={markdownComponents}>
+            {cleanMarkdown}
+          </ReactMarkdown>
         </div>
 
         {/* Sección de Enlaces a Productos Recomendados */}
         {supplementsWithLinks.length > 0 && (
-          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
-            <h3 className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3">Productos Recomendados</h3>
-            <ul className="space-y-2">
+          <div className='px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
+            <h3 className='text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3'>
+              Productos Recomendados
+            </h3>
+            <ul className='space-y-3'>
               {supplementsWithLinks.map((supplement, index) => (
-                <li key={index} className="flex items-center">
-                  <a
-                    href={supplement.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm sm:text-base text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition"
-                  >
-                    {supplement.name}
-                  </a>
-                </li>
+                <AccordionSupplement key={index} supplement={supplement.name} />
               ))}
             </ul>
           </div>
@@ -349,4 +452,84 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   );
 };
 
-export default ReportView; 
+// Componente acordeón profesional para suplementos
+function AccordionSupplement({ supplement }: { supplement: string }) {
+  const [open, setOpen] = React.useState(false);
+  // Normalizar el nombre para buscar en el diccionario
+  const normalized = supplement.trim().toLowerCase();
+  const searchTerm = supplementSearchTerms[normalized] || supplement;
+  const shops = [
+    {
+      name: 'HSN',
+      url: `https://www.hsnstore.com/buscar?q=${encodeURIComponent(searchTerm)}`,
+      logo: 'https://www.hsnstore.com/favicon.ico',
+      color: 'bg-orange-100',
+    },
+    {
+      name: 'Nutritienda',
+      url: `https://www.nutritienda.com/es/buscar?q=${encodeURIComponent(searchTerm)}`,
+      logo: 'https://www.nutritienda.com/favicon.ico',
+      color: 'bg-blue-100',
+    },
+    {
+      name: 'MásMúsculo',
+      url: `https://www.masmusculo.com/es/buscar?controller=search&orderby=position&orderway=desc&search_query=${encodeURIComponent(searchTerm)}`,
+      logo: 'https://www.masmusculo.com/favicon.ico',
+      color: 'bg-yellow-100',
+    },
+  ];
+  return (
+    <li className=''>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`w-full flex items-center justify-between px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm font-semibold text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 mb-1`}
+        aria-expanded={open}
+      >
+        <span className='flex items-center gap-2'>
+          <span className='text-base sm:text-lg font-bold'>{supplement}</span>
+        </span>
+        <svg
+          className={`w-5 h-5 ml-2 transform transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          fill='none'
+          stroke='currentColor'
+          strokeWidth='2'
+          viewBox='0 0 24 24'
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M19 9l-7 7-7-7'
+          />
+        </svg>
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'} bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700`}
+        style={{ pointerEvents: open ? 'auto' : 'none' }}
+      >
+        <div className='flex flex-col gap-3 sm:flex-row sm:gap-4 items-stretch sm:items-center justify-center p-4'>
+          {shops.map(shop => (
+            <a
+              key={shop.name}
+              href={shop.url}
+              target='_blank'
+              rel='noopener noreferrer'
+              className={`flex items-center sm:justify-center gap-2 px-4 py-3 rounded-lg font-semibold shadow hover:shadow-md transition bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 ${shop.color} w-full sm:w-auto`}
+            >
+              <img
+                src={shop.logo}
+                alt={shop.name}
+                className='w-6 h-6 rounded-full'
+              />
+              <span>{shop.name}</span>
+              <span className='ml-2 text-xs text-blue-600 dark:text-blue-300 font-bold'>
+                Ir a tienda
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+export default ReportView;

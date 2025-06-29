@@ -1,20 +1,20 @@
 {
 	"geolocation": {
 		"data": {
-			"city": "Vitoria-Gasteiz",
+			"city": "Granada",
 			"country": {
 				"code": "ES",
 				"name": "Spain"
 			},
 			"subdivision": {
-				"code": "PV",
-				"name": "Basque Country"
+				"code": "AN",
+				"name": "Andalusia"
 			},
 			"timezone": "Europe/Madrid",
-			"latitude": 42.8571,
-			"longitude": -2.7036,
-			"postalCode": "01010"
+			"latitude": 37.162,
+			"longitude": -3.6125,
+			"postalCode": "18007"
 		},
-		"timestamp": 1751114639711
+		"timestamp": 1751210439090
 	}
 }
