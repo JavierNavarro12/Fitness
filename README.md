@@ -152,3 +152,5 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ⭐ **Si este proyecto te ha sido útil, ¡dale una estrella en GitHub!**
 
 <!-- Trigger CI/CD workflow -->
+
+Prueba de integración continua con Codecov.
