@@ -30,6 +30,7 @@ EGN Fitness es una plataforma web progresiva que utiliza inteligencia artificial
 ## ��️ Stack Tecnológico
 
 ### Frontend
+
 - **React 18** con TypeScript
 - **Tailwind CSS** para estilos
 - **React Router** para navegación
@@ -37,12 +38,14 @@ EGN Fitness es una plataforma web progresiva que utiliza inteligencia artificial
 - **AOS** para animaciones
 
 ### Backend & Servicios
+
 - **Firebase** (Auth + Firestore)
 - **OpenAI GPT-3.5** para IA
 - **Netlify Functions** para API
 - **Netlify** para hosting
 
 ### Herramientas
+
 - **React PDF** para generación de documentos
 - **React Markdown** para contenido
 - **Jest & Testing Library** para testing
@@ -81,10 +84,10 @@ REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
 REACT_APP_FIREBASE_APP_ID=tu_app_id
 OPENAI_API_KEY=tu_openai_key
 ```
+
 **Nota:**  
 Por motivos de seguridad, las credenciales **no están incluidas** en el repositorio.  
 Debes crear tu propio proyecto en [Firebase](https://firebase.google.com/) y obtener una API key de [OpenAI](https://platform.openai.com/).
-
 
 ## 🔧 Scripts Disponibles
 
@@ -98,6 +101,7 @@ npm run eject      # Eject (irreversible)
 ## ✅ Estado del Proyecto
 
 ### ✅ Implementado
+
 - [x] Sistema de autenticación completo
 - [x] Formulario de personalización multi-paso
 - [x] Generación de reportes con IA
@@ -110,6 +114,7 @@ npm run eject      # Eject (irreversible)
 - [x] Modo oscuro/claro
 
 ### 🚧 En Desarrollo
+
 - [ ] Integración con wearables
 - [ ] Sistema de seguimiento de progreso
 - [ ] Comunidad de usuarios
@@ -145,3 +150,5 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ---
 
 ⭐ **Si este proyecto te ha sido útil, ¡dale una estrella en GitHub!**
+
+<!-- Trigger CI/CD workflow -->
