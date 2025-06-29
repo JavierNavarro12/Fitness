@@ -263,17 +263,20 @@ function removeRecommendedProductsSection(content: string): string {
 }
 
 const markdownComponents = {
-  // eslint-disable-next-line jsx-a11y/heading-has-content
-  h1: (props: ComponentPropsWithoutRef<'h1'>) => (
-    <h1 className='text-3xl font-bold mt-6 mb-4 text-gray-900' {...props} />
+  h1: ({ children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
+    <h1 className='text-3xl font-bold mt-6 mb-4 text-gray-900' {...props}>
+      {children}
+    </h1>
   ),
-  // eslint-disable-next-line jsx-a11y/heading-has-content
-  h2: (props: ComponentPropsWithoutRef<'h2'>) => (
-    <h2 className='text-2xl font-bold mt-4 mb-3 text-gray-900' {...props} />
+  h2: ({ children, ...props }: ComponentPropsWithoutRef<'h2'>) => (
+    <h2 className='text-2xl font-bold mt-4 mb-3 text-gray-900' {...props}>
+      {children}
+    </h2>
   ),
-  // eslint-disable-next-line jsx-a11y/heading-has-content
-  h3: (props: ComponentPropsWithoutRef<'h3'>) => (
-    <h3 className='text-xl font-semibold mt-3 mb-2 text-gray-800' {...props} />
+  h3: ({ children, ...props }: ComponentPropsWithoutRef<'h3'>) => (
+    <h3 className='text-xl font-semibold mt-3 mb-2 text-gray-800' {...props}>
+      {children}
+    </h3>
   ),
   ul: (props: ComponentPropsWithoutRef<'ul'>) => (
     <ul className='list-disc pl-6 mb-2' {...props} />
