@@ -39,19 +39,18 @@ jobs:
     - name: 🧪 Run unit tests
       run: yarn test --watchAll=false --coverage --passWithNoTests
       
-    # Comentado temporalmente - requiere configuración de Firebase
-    # - name: 🏗️ Build project
-    #   run: yarn build
-    #   
-    # - name: 🚀 Start development server
-    #   run: yarn start &
-    #   
-    # - name: ⏳ Wait for server to be ready
-    #   run: |
-    #     npx wait-on http://localhost:3000 --timeout 60000
-    #   
-    # - name: 🧪 Run E2E tests
-    #   run: yarn cypress:run
+    - name: 🏗️ Build project
+      run: yarn build
+      
+    - name: 🚀 Start development server
+      run: yarn start &
+      
+    - name: ⏳ Wait for server to be ready
+      run: |
+        npx wait-on http://localhost:3000 --timeout 60000
+      
+    - name: 🧪 Run E2E tests
+      run: yarn cypress:run
       
     - name: 📊 Upload coverage reports
       uses: codecov/codecov-action@v3
