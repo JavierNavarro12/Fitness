@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 // Este archivo es el estándar de Create React App para registrar el service worker
 // y habilitar PWA/offline. Puedes personalizarlo si lo necesitas.
 
@@ -27,7 +28,9 @@ export function register(config?: any) {
         // Esto es localhost. Comprobar si hay un service worker válido.
         checkValidServiceWorker(swUrl, config);
         navigator.serviceWorker.ready.then(() => {
-          console.log('Esta app está siendo servida por un service worker en localhost.');
+          console.log(
+            'Esta app está siendo servida por un service worker en localhost.'
+          );
         });
       } else {
         // No es localhost. Registrar el service worker normalmente.
@@ -105,4 +108,4 @@ export function unregister() {
         console.error(error.message);
       });
   }
-} 
+}

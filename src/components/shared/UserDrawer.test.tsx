@@ -1,24 +1,24 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import UserDrawer from './UserDrawer';
-
-// Mock de react-i18next
+jest.mock('../../i18n', () => ({}));
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
-    i18n: { changeLanguage: jest.fn() }
+    i18n: { changeLanguage: () => new Promise(() => {}) },
   }),
+  Trans: ({ children }: any) => children,
 }));
 
 describe('UserDrawer', () => {
   const baseProps = {
     open: true,
-    user: {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@egn.com'
-    },
     onClose: jest.fn(),
+    user: {
+      firstName: 'Javier',
+      lastName: 'Navarro',
+      email: 'javier@email.com',
+    },
     onProfile: jest.fn(),
     onReports: jest.fn(),
     onLogout: jest.fn(),
@@ -27,28 +27,88 @@ describe('UserDrawer', () => {
     onRegister: jest.fn(),
   };
 
-  it('muestra datos del usuario', () => {
-    const { getByText } = render(<UserDrawer {...baseProps} />);
-    expect(getByText('Test')).toBeInTheDocument();
-    expect(getByText('test@egn.com')).toBeInTheDocument();
+  it('does not render when open is false', () => {
+    render(<UserDrawer {...baseProps} open={false} />);
+    expect(screen.queryByText(/Javier/i)).not.toBeInTheDocument();
   });
 
-  it('llama a onClose al hacer click en cerrar', () => {
-    const { getByText } = render(<UserDrawer {...baseProps} />);
-    fireEvent.click(getByText('×'));
-    expect(baseProps.onClose).toHaveBeenCalled();
+  it('renders user info and profile/logout buttons for authenticated user', () => {
+    render(<UserDrawer {...baseProps} />);
+    expect(screen.getAllByText(/Javier/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/javier@email.com/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /profile/i })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
   });
 
-  it('llama a onLogout al hacer click en logout', () => {
-    const { getByText } = render(<UserDrawer {...baseProps} />);
-    fireEvent.click(getByText('userDrawer.logout'));
-    expect(baseProps.onLogout).toHaveBeenCalled();
+  it('renders login/register buttons for guest user', () => {
+    render(<UserDrawer {...baseProps} isGuest={true} />);
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /register/i })
+    ).toBeInTheDocument();
   });
 
-  it('no renderiza cuando open es false', () => {
-    const { container } = render(<UserDrawer {...baseProps} open={false} />);
-    expect(container.firstChild).toBeNull();
+  it('calls onClose when overlay is clicked', () => {
+    const onClose = jest.fn();
+    render(<UserDrawer {...baseProps} onClose={onClose} />);
+    const overlay = screen.getByTestId('userdrawer-overlay');
+    fireEvent.click(overlay);
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onProfile and onClose when profile button is clicked', () => {
+    const onProfile = jest.fn();
+    const onClose = jest.fn();
+    render(
+      <UserDrawer {...baseProps} onProfile={onProfile} onClose={onClose} />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /profile/i }));
+    expect(onProfile).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onLogout and onClose when logout button is clicked (authenticated)', () => {
+    const onLogout = jest.fn();
+    const onClose = jest.fn();
+    render(<UserDrawer {...baseProps} onLogout={onLogout} onClose={onClose} />);
+    fireEvent.click(screen.getByRole('button', { name: /logout/i }));
+    expect(onLogout).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onLogin and onClose when login button is clicked (guest)', () => {
+    const onLogin = jest.fn();
+    const onClose = jest.fn();
+    render(
+      <UserDrawer
+        {...baseProps}
+        isGuest={true}
+        onLogin={onLogin}
+        onClose={onClose}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    expect(onLogin).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onRegister and onClose when register button is clicked (guest)', () => {
+    const onRegister = jest.fn();
+    const onClose = jest.fn();
+    render(
+      <UserDrawer
+        {...baseProps}
+        isGuest={true}
+        onRegister={onRegister}
+        onClose={onClose}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
+    expect(onRegister).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 });
 
-export {}; 
+export {};
