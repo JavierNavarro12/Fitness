@@ -125,9 +125,14 @@ jobs:
     - name: 🏗️ Build project
       run: yarn build
       
-    - name: 🚀 Run Lighthouse CI
-      uses: treosh/lighthouse-ci-action@v10
+    - name: 📦 Download build artifacts
+      uses: actions/download-artifact@v4
       with:
-        configPath: './.lighthouserc.json'
-        uploadArtifacts: true
-        temporaryPublicStorage: true 
+        name: build-files
+        path: build/
+        
+    - name: 🚀 Serve build and run Lighthouse
+      run: |
+        npx serve -s build -l 3000 &
+        sleep 10
+        npx lhci autorun 
