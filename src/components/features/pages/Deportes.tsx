@@ -166,7 +166,7 @@ const Deportes: React.FC<PageProps> = ({
               </h2>
               <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
                 <div
-                  className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700'
+                  className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-red-100/80 dark:hover:bg-red-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='400'
                 >
@@ -178,7 +178,7 @@ const Deportes: React.FC<PageProps> = ({
                   </p>
                 </div>
                 <div
-                  className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700'
+                  className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='500'
                 >
@@ -190,7 +190,7 @@ const Deportes: React.FC<PageProps> = ({
                   </p>
                 </div>
                 <div
-                  className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700'
+                  className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='600'
                 >

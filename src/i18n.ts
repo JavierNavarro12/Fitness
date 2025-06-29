@@ -553,6 +553,15 @@ const resources = {
       'cognitivo.suplementosClave.title':
         'Suplementos Clave para el Rendimiento Cognitivo',
       'cognitivo.areasMejora.title': 'Áreas de Mejora Cognitiva',
+      'mujer.osea.title': 'Salud Ósea y Menopausia',
+      'mujer.osea.content':
+        'Calcio: Fundamental para la densidad ósea y prevención de osteoporosis, especialmente tras la menopausia. Vitamina D: Esencial para la absorción de calcio y salud ósea. Magnesio: Ayuda a mantener huesos fuertes y reduce calambres. Vitamina K2: Contribuye a la mineralización ósea y previene la calcificación arterial. Colágeno: Apoya la estructura ósea y articular. Ejercicio de resistencia: Clave para mantener la masa ósea en la mujer adulta.',
+      'mujer.belleza.title': 'Belleza Natural y Salud de la Piel',
+      'mujer.belleza.content':
+        'Colágeno: Mejora la elasticidad y firmeza de la piel, cabello y uñas. Ácido hialurónico: Hidrata y protege la piel desde el interior. Vitamina C: Potente antioxidante que estimula la síntesis de colágeno y protege contra el envejecimiento. Omega-3: Reduce la inflamación y favorece una piel luminosa. Probióticos: Contribuyen al equilibrio de la microbiota y mejoran la salud cutánea. Protección solar y hábitos saludables: Indispensables para una belleza duradera.',
+      'grasa.metabolismo.title': 'Metabolismo Energético',
+      'grasa.metabolismo.content':
+        'El metabolismo energético es el conjunto de procesos que convierten los nutrientes en energía utilizable. L-Carnitina: Facilita el transporte de ácidos grasos a la mitocondria para su uso como energía. Magnesio: Esencial para más de 300 reacciones metabólicas, incluyendo la producción de energía. Omega-3: Mejora la sensibilidad a la insulina y favorece el metabolismo de las grasas. Vitamina D: Relacionada con una mejor composición corporal y metabolismo activo. Ejercicio regular: Aumenta el gasto calórico y la eficiencia metabólica.',
     },
   },
   es: {
@@ -1109,6 +1118,15 @@ const resources = {
       'cognitivo.suplementosClave.title':
         'Suplementos Clave para el Rendimiento Cognitivo',
       'cognitivo.areasMejora.title': 'Áreas de Mejora Cognitiva',
+      'mujer.osea.title': 'Salud Ósea y Menopausia',
+      'mujer.osea.content':
+        'Calcio: Fundamental para la densidad ósea y prevención de osteoporosis, especialmente tras la menopausia. Vitamina D: Esencial para la absorción de calcio y salud ósea. Magnesio: Ayuda a mantener huesos fuertes y reduce calambres. Vitamina K2: Contribuye a la mineralización ósea y previene la calcificación arterial. Colágeno: Apoya la estructura ósea y articular. Ejercicio de resistencia: Clave para mantener la masa ósea en la mujer adulta.',
+      'mujer.belleza.title': 'Belleza Natural y Salud de la Piel',
+      'mujer.belleza.content':
+        'Colágeno: Mejora la elasticidad y firmeza de la piel, cabello y uñas. Ácido hialurónico: Hidrata y protege la piel desde el interior. Vitamina C: Potente antioxidante que estimula la síntesis de colágeno y protege contra el envejecimiento. Omega-3: Reduce la inflamación y favorece una piel luminosa. Probióticos: Contribuyen al equilibrio de la microbiota y mejoran la salud cutánea. Protección solar y hábitos saludables: Indispensables para una belleza duradera.',
+      'grasa.metabolismo.title': 'Metabolismo Energético',
+      'grasa.metabolismo.content':
+        'El metabolismo energético es el conjunto de procesos que convierten los nutrientes en energía utilizable. L-Carnitina: Facilita el transporte de ácidos grasos a la mitocondria para su uso como energía. Magnesio: Esencial para más de 300 reacciones metabólicas, incluyendo la producción de energía. Omega-3: Mejora la sensibilidad a la insulina y favorece el metabolismo de las grasas. Vitamina D: Relacionada con una mejor composición corporal y metabolismo activo. Ejercicio regular: Aumenta el gasto calórico y la eficiencia metabólica.',
     },
   },
 };

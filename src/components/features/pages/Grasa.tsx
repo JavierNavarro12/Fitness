@@ -191,7 +191,7 @@ const Grasa: React.FC<PageProps> = ({
             </h2>
             <div className='grid md:grid-cols-3 gap-6'>
               <div
-                className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700'
+                className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-red-100/80 dark:hover:bg-red-900/40 cursor-pointer'
                 data-aos='fade-up'
                 data-aos-delay='400'
               >
@@ -203,7 +203,7 @@ const Grasa: React.FC<PageProps> = ({
                 </p>
               </div>
               <div
-                className='bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700'
+                className='bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 cursor-pointer'
                 data-aos='fade-up'
                 data-aos-delay='500'
               >
@@ -215,7 +215,7 @@ const Grasa: React.FC<PageProps> = ({
                 </p>
               </div>
               <div
-                className='bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700'
+                className='bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-yellow-100/80 dark:hover:bg-yellow-900/40 cursor-pointer'
                 data-aos='fade-up'
                 data-aos-delay='600'
               >
@@ -229,10 +229,62 @@ const Grasa: React.FC<PageProps> = ({
             </div>
           </div>
 
-          <div className='grid md:grid-cols-3 gap-8 max-w-6xl mx-auto'>
-            {grasaData.map((item, index) => (
-              <GrasaCard {...item} icon={cardIcons[index]} key={item.id} />
-            ))}
+          {/* Bloque: Termogénicos */}
+          <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-lg py-10 px-4 md:px-10 mb-12 max-w-7xl mx-auto'>
+            <h2
+              className='text-2xl font-semibold text-red-700 dark:text-red-300 mb-8 mt-8 text-center'
+              data-aos='fade-in'
+            >
+              Termogénicos y Metabolismo
+            </h2>
+            <div className='grid md:grid-cols-2 gap-8'>
+              {grasaData
+                .filter(item =>
+                  [
+                    'grasa.termogenicos.title',
+                    'grasa.metabolismo.title',
+                  ].includes(item.title)
+                )
+                .map((item, index) => (
+                  <GrasaCard {...item} icon={cardIcons[index]} key={item.id} />
+                ))}
+            </div>
+          </div>
+
+          {/* Bloque: Control del Apetito */}
+          <div className='bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-24'>
+            <h2
+              className='text-2xl font-semibold text-red-800 dark:text-red-200 mb-10 text-center'
+              data-aos='fade-in'
+            >
+              Control del Apetito
+            </h2>
+            <div className='grid md:grid-cols-1 gap-10'>
+              {grasaData
+                .filter(item => ['grasa.apetito.title'].includes(item.title))
+                .map((item, index) => (
+                  <GrasaCard {...item} icon={cardIcons[index]} key={item.id} />
+                ))}
+            </div>
+          </div>
+
+          {/* Bloque: Fundamentos de la Quema de Grasa */}
+          <div className='bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-24'>
+            <h2
+              className='text-2xl font-semibold text-yellow-800 dark:text-yellow-200 mb-10 text-center'
+              data-aos='fade-in'
+            >
+              Fundamentos de la Quema de Grasa
+            </h2>
+            <div className='grid md:grid-cols-1 gap-10'>
+              {grasaData
+                .filter(item =>
+                  ['grasa.fundamentos.title'].includes(item.title)
+                )
+                .map((item, index) => (
+                  <GrasaCard {...item} icon={cardIcons[index]} key={item.id} />
+                ))}
+            </div>
           </div>
         </div>
       </div>

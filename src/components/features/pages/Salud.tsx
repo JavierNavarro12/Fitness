@@ -166,7 +166,7 @@ const Salud: React.FC<PageProps> = ({
               </h2>
               <div className='grid md:grid-cols-3 gap-6'>
                 <div
-                  className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700'
+                  className='bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='400'
                 >
@@ -178,7 +178,7 @@ const Salud: React.FC<PageProps> = ({
                   </p>
                 </div>
                 <div
-                  className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700'
+                  className='bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='500'
                 >
@@ -190,7 +190,7 @@ const Salud: React.FC<PageProps> = ({
                   </p>
                 </div>
                 <div
-                  className='bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700'
+                  className='bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-purple-100/80 dark:hover:bg-purple-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='600'
                 >

@@ -213,7 +213,7 @@ const Mujer: React.FC<PageProps> = ({
               </h2>
               <div className='grid md:grid-cols-3 gap-6'>
                 <div
-                  className='bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 p-6 rounded-xl border border-pink-200 dark:border-pink-700'
+                  className='bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 p-6 rounded-xl border border-pink-200 dark:border-pink-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-pink-100/80 dark:hover:bg-pink-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='400'
                 >
@@ -225,7 +225,7 @@ const Mujer: React.FC<PageProps> = ({
                   </p>
                 </div>
                 <div
-                  className='bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700'
+                  className='bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-purple-100/80 dark:hover:bg-purple-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='500'
                 >
@@ -237,7 +237,7 @@ const Mujer: React.FC<PageProps> = ({
                   </p>
                 </div>
                 <div
-                  className='bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-800/20 p-6 rounded-xl border border-rose-200 dark:border-rose-700'
+                  className='bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-800/20 p-6 rounded-xl border border-rose-200 dark:border-rose-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-rose-100/80 dark:hover:bg-rose-900/40 cursor-pointer'
                   data-aos='fade-up'
                   data-aos-delay='600'
                 >
@@ -251,10 +251,56 @@ const Mujer: React.FC<PageProps> = ({
               </div>
             </div>
 
-            <div className='grid md:grid-cols-3 gap-8 max-w-6xl mx-auto'>
-              {mujerData.map((item, index) => (
-                <MujerCard {...item} icon={cardIcons[index]} key={item.id} />
-              ))}
+            {/* Bloque: Fundamentos, Equilibrio, Escucha */}
+            <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-lg py-10 px-4 md:px-10 mb-12 max-w-7xl mx-auto'>
+              <h2
+                className='text-2xl font-semibold text-pink-700 dark:text-pink-300 mb-8 mt-8 text-center'
+                data-aos='fade-in'
+              >
+                Salud Integral Femenina
+              </h2>
+              <div className='grid md:grid-cols-3 gap-8'>
+                {mujerData
+                  .filter(item =>
+                    [
+                      'mujer.fundamentos.title',
+                      'mujer.equilibrio.title',
+                      'mujer.escucha.title',
+                    ].includes(item.title)
+                  )
+                  .map((item, index) => (
+                    <MujerCard
+                      {...item}
+                      icon={cardIcons[index]}
+                      key={item.id}
+                    />
+                  ))}
+              </div>
+            </div>
+
+            {/* Bloque: Salud Ósea y Belleza */}
+            <div className='bg-pink-50 dark:bg-pink-900/20 border-2 border-pink-200 dark:border-pink-700 rounded-2xl py-14 px-4 md:px-12 mb-8 max-w-4xl mx-auto shadow-2xl mt-24'>
+              <h2
+                className='text-2xl font-semibold text-pink-800 dark:text-pink-200 mb-10 text-center'
+                data-aos='fade-in'
+              >
+                Salud Ósea y Belleza
+              </h2>
+              <div className='grid md:grid-cols-2 gap-10'>
+                {mujerData
+                  .filter(item =>
+                    ['mujer.osea.title', 'mujer.belleza.title'].includes(
+                      item.title
+                    )
+                  )
+                  .map((item, index) => (
+                    <MujerCard
+                      {...item}
+                      icon={cardIcons[index]}
+                      key={item.id}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
         </div>
