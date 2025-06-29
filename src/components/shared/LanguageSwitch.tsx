@@ -17,6 +17,7 @@ const LanguageSwitch: React.FC<LanguageSwitchProps> = ({ checked, onChange }) =>
         className="sr-only"
         checked={checked}
         onChange={onChange}
+        data-testid="language-switch"
       />
       {/* Background */}
       <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full" />

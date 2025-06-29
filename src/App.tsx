@@ -120,13 +120,15 @@ function App() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   useEffect(() => {
-    // Inicializar AOS
-    AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
-      once: true,
-      offset: 100
-    });
+    // Inicializar AOS solo si no estamos en test
+    if (process.env.NODE_ENV !== 'test') {
+      AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        offset: 100
+      });
+    }
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -735,7 +737,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             <button onClick={() => setShowMobileSearch(v => !v)} className="text-gray-600 dark:text-gray-300">
                 <SearchIcon className="h-6 w-6" />
             </button>
-            <button onClick={() => setMobileMenuOpen(true)} className="text-gray-600 dark:text-gray-300">
+            <button onClick={() => setMobileMenuOpen(true)} className="text-gray-600 dark:text-gray-300" data-testid="hamburger-menu">
                 <HamburgerIcon className="h-7 w-7" />
             </button>
         </div>

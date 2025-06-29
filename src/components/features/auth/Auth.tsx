@@ -215,6 +215,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             placeholder="Correo electrónico"
             className="w-full bg-[#f9fafb] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-3 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all shadow-sm"
             ref={emailRef}
+            data-testid="login-email"
           />
           <input
             type="password"
@@ -222,6 +223,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
             onChange={e => setPassword(e.target.value)}
             placeholder="Contraseña"
             className="w-full bg-[#f9fafb] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-3 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all shadow-sm"
+            data-testid="login-password"
           />
           {isLogin && (
             <div className="text-center">

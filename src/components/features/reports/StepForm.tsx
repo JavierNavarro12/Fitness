@@ -274,6 +274,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                       placeholder="0"
                       onChange={e => handleInputChange('age', e.target.value === '' ? 0 : parseInt(e.target.value))}
                       aria-label={t('Edad')}
+                      data-testid="age-input"
                     />
                   </div>
                   <div>
@@ -285,6 +286,8 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                       onChange={o => handleInputChange('gender', o?.value)}
                       styles={selectStyles}
                       placeholder={t('stepForm.selectPlaceholder')}
+                      inputId="gender-select"
+                      data-testid="gender-select"
                     />
                   </div>
                 </div>
@@ -303,6 +306,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                       value={profile.weight === 0 ? '' : profile.weight}
                       placeholder="0"
                       onChange={e => handleInputChange('weight', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                      data-testid="weight-input"
                     />
                   </div>
                   <div>
@@ -314,6 +318,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                       value={profile.height === 0 ? '' : profile.height}
                       placeholder="0"
                       onChange={e => handleInputChange('height', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                      data-testid="height-input"
                     />
                   </div>
                 </div>
@@ -325,15 +330,15 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                 <div className="space-y-4">
                   <div>
                     <label className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.experienceLevel')} *</label>
-                    <Select options={experienceOptions} value={experienceOptions.find(o => o.value === profile.experience)} onChange={o => handleInputChange('experience', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} />
+                    <Select options={experienceOptions} value={experienceOptions.find(o => o.value === profile.experience)} onChange={o => handleInputChange('experience', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} inputId="experience-select" data-testid="experience-select" />
                   </div>
                   <div>
                     <label className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.trainingFrequency')} *</label>
-                    <Select options={frequencyOptions} value={frequencyOptions.find(o => o.value === profile.frequency)} onChange={o => handleInputChange('frequency', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} />
+                    <Select options={frequencyOptions} value={frequencyOptions.find(o => o.value === profile.frequency)} onChange={o => handleInputChange('frequency', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} inputId="frequency-select" data-testid="frequency-select" />
                   </div>
                   <div>
                     <label className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.mainSport')} *</label>
-                    <Select options={sportOptions} value={sportOptions.find(o => o.value === profile.sport)} onChange={o => handleInputChange('sport', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} />
+                    <Select options={sportOptions} value={sportOptions.find(o => o.value === profile.sport)} onChange={o => handleInputChange('sport', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} inputId="sport-select" data-testid="sport-select" />
                   </div>
                 </div>
               </>
@@ -403,6 +408,7 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
                   type="button"
                   onClick={nextStep}
                   className="px-6 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition"
+                  data-testid="next-step"
                 >
                   {t('stepForm.nextButton')}
                 </button>
