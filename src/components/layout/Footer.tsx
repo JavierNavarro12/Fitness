@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { startTransition } from 'react';
 
-const Footer: React.FC = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-
-  const handleNavigation = (navKey: string) => {
+export const handleNavigation = (navKey: string, navigate: (path: string) => void) => {
     const routes: Record<string, string> = {
       home: '/',
       deportes: '/deportes',
@@ -20,7 +16,7 @@ const Footer: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleContact = (type: string) => {
+export const handleContact = (type: string) => {
     switch (type) {
       case 'email':
         window.open('mailto:endlessgoalsnutrition@gmail.com', '_blank');
@@ -33,14 +29,20 @@ const Footer: React.FC = () => {
     }
   };
 
-  const handleSocialMedia = (platform: string) => {
+export const handleSocialMedia = (platform: string) => {
     const socialLinks = {
       tiktok: 'https://www.tiktok.com/@endlessgoalsnutrition?_t=ZN-8xRPG4v5Il4&_r=1',
       twitter: 'https://x.com/endlessgoalsn?s=21',
       instagram: 'https://www.instagram.com/endlessgoalsnutrition?igsh=MWtnbXQzOW05bjJ3NQ=='
     };
+  if (socialLinks[platform as keyof typeof socialLinks]) {
     window.open(socialLinks[platform as keyof typeof socialLinks], '_blank');
+  }
   };
+
+const Footer: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <footer className="hidden sm:block bg-gray-900 text-white pt-14 pb-8" data-aos="fade-up">
@@ -53,7 +55,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <button 
-                  onClick={() => handleNavigation('home')}
+                  onClick={() => handleNavigation('home', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.nav.home')}
@@ -61,7 +63,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('deportes')}
+                  onClick={() => handleNavigation('deportes', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.nav.deportes')}
@@ -69,7 +71,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('salud')}
+                  onClick={() => handleNavigation('salud', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.nav.salud')}
@@ -77,7 +79,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('grasa')}
+                  onClick={() => handleNavigation('grasa', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.nav.grasa')}
@@ -85,7 +87,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('mujer')}
+                  onClick={() => handleNavigation('mujer', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.nav.mujer')}
@@ -93,7 +95,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('cognitivo')}
+                  onClick={() => handleNavigation('cognitivo', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.nav.cognitivo')}
@@ -108,7 +110,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <button 
-                  onClick={() => handleNavigation('custom')}
+                  onClick={() => handleNavigation('custom', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.services.custom')}
@@ -116,7 +118,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('reports')}
+                  onClick={() => handleNavigation('reports', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.services.reports')}
@@ -124,7 +126,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => handleNavigation('faq')}
+                  onClick={() => handleNavigation('faq', navigate)}
                   className="hover:text-red-400 transition-colors duration-200 text-left w-full"
                 >
                   {t('footer.services.faq')}
@@ -198,8 +200,8 @@ const Footer: React.FC = () => {
                 aria-label="Instagram"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <g transform="translate(0, -1)">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.802c-3.116 0-3.472.012-4.686.068-2.61.119-3.832 1.341-3.951 3.951-.056 1.214-.067 1.57-.067 4.686s.011 3.472.067 4.686c.119 2.61 1.341 3.832 3.951 3.951 1.214.056 1.57.067 4.686.067s3.472-.011 4.686-.067c2.61-.119 3.832-1.341 3.951-3.951.056-1.214.067-1.57.067-4.686s-.011-3.472-.067-4.686c-.119-2.61-1.341-3.832-3.951-3.951-1.214-.056-1.57-.067-4.686-.067zm0 4.486c-2.428 0-4.383 1.955-4.383 4.383s1.955 4.383 4.383 4.383 4.383-1.955 4.383-4.383-1.955-4.383-4.383-4.383zm0 7.265c-1.59 0-2.882-1.292-2.882-2.882s1.292-2.882 2.882-2.882 2.882 1.292 2.882 2.882-1.292 2.882-2.882 2.882zm5.187-7.983c-.707 0-1.28.573-1.28 1.28s.573 1.28 1.28 1.28 1.28-.573 1.28-1.28-.573-1.28-1.28-1.28z"/>
+                  <g>
+                    <path d="M12 2.2c3.2 0 3.584.012 4.85.07 1.366.062 2.633.34 3.608 1.314.975.975 1.252 2.242 1.314 3.608.058 1.266.07 1.65.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.34 2.633-1.314 3.608-.975.975-2.242 1.252-3.608 1.314-1.266.058-1.65.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.34-3.608-1.314-.975-.975-1.252-2.242-1.314-3.608C2.212 15.634 2.2 15.25 2.2 12s.012-3.584.07-4.85c.062-1.366.34-2.633 1.314-3.608C4.56 2.61 5.827 2.333 7.193 2.27 8.459 2.212 8.843 2.2 12 2.2zm0-2.2C8.736 0 8.332.012 7.052.07 5.77.128 4.52.41 3.545 1.384 2.57 2.36 2.288 3.61 2.23 4.892 2.172 6.172 2.16 6.576 2.16 12c0 5.424.012 5.828.07 7.108.058 1.282.34 2.532 1.315 3.507.975.975 2.225 1.257 3.507 1.315C8.332 23.988 8.736 24 12 24s3.668-.012 4.948-.07c1.282-.058 2.532-.34 3.507-1.315.975-.975 1.257-2.225 1.315-3.507.058-1.28.07-1.684.07-7.108 0-5.424-.012-5.828-.07-7.108-.058-1.282-.34-2.532-1.315-3.507C19.48.41 18.23.128 16.948.07 15.668.012 15.264 0 12 0zm0 5.838A6.162 6.162 0 0 0 5.838 12 6.162 6.162 0 0 0 12 18.162 6.162 6.162 0 0 0 18.162 12 6.162 6.162 0 0 0 12 5.838zm0 10.162A4 4 0 1 1 16 12a4 4 0 0 1-4 4zm6.406-11.845a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"/>
                   </g>
                 </svg>
               </button>
@@ -211,13 +213,13 @@ const Footer: React.FC = () => {
           <p>&copy; {new Date().getFullYear()} EGN Fitness. {t('footer.copyright')}.</p>
           <div className="flex justify-center space-x-4 mt-2 text-sm">
             <button 
-              onClick={() => handleNavigation('terms')}
+              onClick={() => handleNavigation('terms', navigate)}
               className="hover:text-red-400 transition-colors duration-200"
             >
               {t('footer.legal.terms')}
             </button>
             <button 
-              onClick={() => handleNavigation('privacy')}
+              onClick={() => handleNavigation('privacy', navigate)}
               className="hover:text-red-400 transition-colors duration-200"
             >
               {t('footer.legal.privacy')}

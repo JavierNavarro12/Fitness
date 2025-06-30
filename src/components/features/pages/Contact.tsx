@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Helper function to encode form data for Netlify
-const encode = (data: { [key: string]: any }) => {
+export const encode = (data: { [key: string]: any }) => {
   return Object.keys(data)
     .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
     .join("&");

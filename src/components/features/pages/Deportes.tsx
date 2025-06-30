@@ -236,4 +236,5 @@ const Deportes: React.FC<PageProps> = ({
   );
 };
 
+export { DeporteCard };
 export default Deportes;

@@ -193,10 +193,10 @@ const Mujer: React.FC<PageProps> = ({
       <div className='p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen'>
         <div className='max-w-7xl mx-auto'>
           <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 md:p-10'>
-            <div
+          <div
               className='relative rounded-2xl overflow-hidden mb-6 shadow-lg'
-              data-aos='fade-in'
-            >
+            data-aos='fade-in'
+          >
               <img
                 src='https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
                 alt={t('mujer.title')}
@@ -205,15 +205,15 @@ const Mujer: React.FC<PageProps> = ({
               <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20'></div>
               <div className='absolute bottom-0 left-0 p-6 sm:p-8'>
                 <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight'>
-                  {t('mujer.title')}
-                </h1>
+                {t('mujer.title')}
+              </h1>
               </div>
             </div>
             <div
               className='max-w-4xl mx-auto text-center mb-4'
-              data-aos='fade-up'
-              data-aos-delay='200'
-            >
+                data-aos='fade-up'
+                data-aos-delay='200'
+              >
               <p className='text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300'>
                 {t('mujer.description')}
               </p>
@@ -325,3 +325,5 @@ const Mujer: React.FC<PageProps> = ({
 };
 
 export default Mujer;
+
+export { MujerCard };

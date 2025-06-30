@@ -35,6 +35,17 @@ describe('MegaMenu', () => {
     const { queryByText } = render(<MegaMenu />);
     expect(queryByText('Conócenos')).not.toBeInTheDocument();
   });
+
+  it('oculta el menú al hacer mouseLeave', () => {
+    const { getByText, queryByText } = render(<MegaMenu />);
+    const button = getByText('Inicio');
+    // Abrir menú
+    fireEvent.mouseEnter(button);
+    expect(queryByText('Conócenos')).toBeInTheDocument();
+    // Simular mouseLeave
+    fireEvent.mouseLeave(button.parentElement!);
+    expect(queryByText('Conócenos')).not.toBeInTheDocument();
+  });
 });
 
 export {}; 

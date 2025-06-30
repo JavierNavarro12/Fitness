@@ -26,12 +26,12 @@ const GrasaCard = ({
   const puntosClave =
     !isHtml &&
     translatedContent
-      .split('.')
-      .map((s: string) => {
-        const parts = s.trim().split(':');
-        return { nombre: parts[0], desc: parts.slice(1).join(':').trim() };
-      })
-      .filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
+    .split('.')
+    .map((s: string) => {
+      const parts = s.trim().split(':');
+      return { nombre: parts[0], desc: parts.slice(1).join(':').trim() };
+    })
+    .filter((s: { nombre: string; desc: string }) => s.nombre && s.desc);
 
   const puntosClaveArr = Array.isArray(puntosClave) ? puntosClave : [];
 
@@ -193,8 +193,8 @@ const Grasa: React.FC<PageProps> = ({
               <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20'></div>
               <div className='absolute bottom-0 left-0 p-6 sm:p-8'>
                 <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight'>
-                  {t('grasa.title')}
-                </h1>
+              {t('grasa.title')}
+            </h1>
               </div>
             </div>
             <div
@@ -203,53 +203,53 @@ const Grasa: React.FC<PageProps> = ({
               data-aos-delay='200'
             >
               <p className='text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300'>
-                {t('grasa.description')}
-              </p>
-            </div>
-            <div
+              {t('grasa.description')}
+            </p>
+          </div>
+          <div
               className='max-w-6xl mx-auto mb-8'
-              data-aos='fade-up'
-              data-aos-delay='300'
-            >
-              <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-8'>
-                {t('grasa.stats.title')}
-              </h2>
-              <div className='grid md:grid-cols-3 gap-6'>
-                <div
-                  className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-red-100/80 dark:hover:bg-red-900/40 cursor-pointer'
-                  data-aos='fade-up'
-                  data-aos-delay='400'
-                >
-                  <div className='text-red-600 dark:text-red-400 text-2xl font-bold mb-2'>
-                    3-10%
-                  </div>
-                  <p className='text-sm text-gray-700 dark:text-gray-300'>
-                    {t('grasa.stats.termogenicos')}
-                  </p>
+            data-aos='fade-up'
+            data-aos-delay='300'
+          >
+            <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-8'>
+              {t('grasa.stats.title')}
+            </h2>
+            <div className='grid md:grid-cols-3 gap-6'>
+              <div
+                className='bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-6 rounded-xl border border-red-200 dark:border-red-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-red-100/80 dark:hover:bg-red-900/40 cursor-pointer'
+                data-aos='fade-up'
+                data-aos-delay='400'
+              >
+                <div className='text-red-600 dark:text-red-400 text-2xl font-bold mb-2'>
+                  3-10%
                 </div>
-                <div
-                  className='bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 cursor-pointer'
-                  data-aos='fade-up'
-                  data-aos-delay='500'
-                >
-                  <div className='text-orange-600 dark:text-orange-400 text-2xl font-bold mb-2'>
-                    78%
-                  </div>
-                  <p className='text-sm text-gray-700 dark:text-gray-300'>
-                    {t('grasa.stats.apetito')}
-                  </p>
+                <p className='text-sm text-gray-700 dark:text-gray-300'>
+                  {t('grasa.stats.termogenicos')}
+                </p>
+              </div>
+              <div
+                className='bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 cursor-pointer'
+                data-aos='fade-up'
+                data-aos-delay='500'
+              >
+                <div className='text-orange-600 dark:text-orange-400 text-2xl font-bold mb-2'>
+                  78%
                 </div>
-                <div
-                  className='bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-yellow-100/80 dark:hover:bg-yellow-900/40 cursor-pointer'
-                  data-aos='fade-up'
-                  data-aos-delay='600'
-                >
-                  <div className='text-yellow-600 dark:text-yellow-400 text-2xl font-bold mb-2'>
-                    35%
-                  </div>
-                  <p className='text-sm text-gray-700 dark:text-gray-300'>
-                    {t('grasa.stats.fundamentos')}
-                  </p>
+                <p className='text-sm text-gray-700 dark:text-gray-300'>
+                  {t('grasa.stats.apetito')}
+                </p>
+              </div>
+              <div
+                className='bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-yellow-100/80 dark:hover:bg-yellow-900/40 cursor-pointer'
+                data-aos='fade-up'
+                data-aos-delay='600'
+              >
+                <div className='text-yellow-600 dark:text-yellow-400 text-2xl font-bold mb-2'>
+                  35%
+                </div>
+                <p className='text-sm text-gray-700 dark:text-gray-300'>
+                  {t('grasa.stats.fundamentos')}
+                </p>
                 </div>
               </div>
             </div>
@@ -313,3 +313,4 @@ const Grasa: React.FC<PageProps> = ({
 };
 
 export default Grasa;
+export { GrasaCard };

@@ -109,6 +109,26 @@ describe('UserDrawer', () => {
     expect(onRegister).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('displays user photo when available', () => {
+    const userWithPhoto = {
+      ...baseProps.user,
+      photo: 'https://example.com/photo.jpg',
+    };
+    render(<UserDrawer {...baseProps} user={userWithPhoto} />);
+    const photoImg = screen.getByAltText('Foto de perfil');
+    expect(photoImg).toBeInTheDocument();
+    expect(photoImg).toHaveAttribute('src', 'https://example.com/photo.jpg');
+  });
+
+  it('displays guest text when user has no firstName', () => {
+    const userWithoutName = {
+      ...baseProps.user,
+      firstName: '',
+    };
+    render(<UserDrawer {...baseProps} user={userWithoutName} />);
+    expect(screen.getByText('userDrawer.guest')).toBeInTheDocument();
+  });
 });
 
-export {};
+export {}; 

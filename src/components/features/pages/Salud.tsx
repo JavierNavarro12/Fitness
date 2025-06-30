@@ -227,3 +227,5 @@ const Salud: React.FC<PageProps> = ({
 };
 
 export default Salud;
+
+export { SaludCard };
