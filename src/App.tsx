@@ -495,8 +495,6 @@ Provide a detailed report in Spanish with the following sections in Markdown for
 2.  **Suplementos Base (Fundamentales)**: Recommended supplements regardless of the goal (e.g., protein, creatine, Omega-3), explaining why for this user, and for each, specify dose, timing, and notes as above.
 3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Specific supplements for the user's goal, with dose, timing, and notes.
 4.  **Suplementos para tu Deporte (${t(customProfile.sport)})**: Specific supplements for the user's sport, with dose, timing, and notes.
-5.  **Consideraciones Adicionales**: Health warnings, importance of diet, etc.
-6.  **Resumen y Siguientes Pasos**: Final summary and recommendations.
 
 Finally, add a separate section with the title '### Recommended Products' and under it, a bulleted list of 3-5 specific products (e.g., 'Whey Protein - Optimum Nutrition Gold Standard Whey'). Do not add links, just the text.
 `
@@ -537,8 +535,6 @@ Proporciona un informe detallado en español con las siguientes secciones en for
 2.  **Suplementos Base (Fundamentales)**: Suplementos recomendados independientemente del objetivo (ej. proteína, creatina, Omega-3), explicando el porqué para este usuario, y para cada uno, especifica dosis, momento y observaciones como arriba.
 3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Suplementos específicos para el objetivo del usuario, con dosis, momento y observaciones.
 4.  **Suplementos para tu Deporte (${t(customProfile.sport)})**: Suplementos específicos para el deporte del usuario, con dosis, momento y observaciones.
-5.  **Consideraciones Adicionales**: Advertencias de salud, importancia de la dieta, etc.
-6.  **Resumen y Siguientes Pasos**: Resumen final y recomendaciones.
 
 Finalmente, añade una sección separada con el título '### Productos Recomendados' y, debajo, una lista de viñetas con 3-5 productos específicos (ej. 'Proteína en Polvo - Optimum Nutrition Gold Standard Whey'). No añadas enlaces, solo el texto.
 `;
