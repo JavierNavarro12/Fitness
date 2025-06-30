@@ -2,16 +2,22 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { HelmetProvider } from 'react-helmet-async';
 import React from 'react';
 
+import Contact from './Contact';
+
 // Mock de useTranslation
-const mockT = jest.fn((key) => {
+const mockT = jest.fn(key => {
   if (key === 'Tu Nombre') return 'Tu Nombre';
   if (key === 'Tu Correo Electrónico') return 'Tu Correo Electrónico';
   if (key === 'Escribe tu mensaje aquí...') return 'Escribe tu mensaje aquí...';
   if (key === 'Contacta con Nosotros') return 'Contacta con Nosotros';
   if (key === 'Enviar Mensaje') return 'Enviar Mensaje';
   if (key === 'Enviando...') return 'Enviando...';
-  if (key === '¡Mensaje enviado con éxito! Gracias por contactarnos.') return '¡Mensaje enviado con éxito! Gracias por contactarnos.';
-  if (key === 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.') return 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.';
+  if (key === '¡Mensaje enviado con éxito! Gracias por contactarnos.')
+    return '¡Mensaje enviado con éxito! Gracias por contactarnos.';
+  if (
+    key === 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+  )
+    return 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.';
   return key;
 });
 jest.mock('react-i18next', () => ({
@@ -19,8 +25,6 @@ jest.mock('react-i18next', () => ({
     t: mockT,
   }),
 }));
-
-import Contact from './Contact';
 
 // Mock de fetch
 global.fetch = jest.fn();
@@ -39,55 +43,70 @@ describe('Contact', () => {
   });
 
   it('renderiza el formulario correctamente', () => {
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    expect(container.querySelector('#name')).toBeInTheDocument();
-    expect(container.querySelector('#email')).toBeInTheDocument();
-    expect(container.querySelector('#message')).toBeInTheDocument();
-    expect(container.querySelector('button[type="submit"]')).toBeInTheDocument();
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
+    expect(screen.getByTestId('submit')).toBeInTheDocument();
   });
 
   it('maneja cambios en los campos del formulario', () => {
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
 
     fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
     fireEvent.change(emailInput, { target: { value: 'juan@example.com' } });
-    fireEvent.change(messageInput, { target: { value: 'Hola, tengo una pregunta' } });
+    fireEvent.change(messageInput, {
+      target: { value: 'Hola, tengo una pregunta' },
+    });
 
-    expect(nameInput.value).toBe('Juan Pérez');
-    expect(emailInput.value).toBe('juan@example.com');
-    expect(messageInput.value).toBe('Hola, tengo una pregunta');
+    expect((nameInput as HTMLInputElement).value).toBe('Juan Pérez');
+    expect((emailInput as HTMLInputElement).value).toBe('juan@example.com');
+    expect((messageInput as HTMLTextAreaElement).value).toBe(
+      'Hola, tengo una pregunta'
+    );
   });
 
   it('maneja envío exitoso del formulario', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
-    const submitButton = container.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
+    const submitButton = screen.getByTestId('submit');
 
     fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
     fireEvent.change(emailInput, { target: { value: 'juan@example.com' } });
-    fireEvent.change(messageInput, { target: { value: 'Hola, tengo una pregunta' } });
+    fireEvent.change(messageInput, {
+      target: { value: 'Hola, tengo una pregunta' },
+    });
 
     fireEvent.click(submitButton);
 
@@ -96,9 +115,13 @@ describe('Contact', () => {
 
     // Esperar a que se complete el envío
     await waitFor(() => {
-      expect(nameInput.value).toBe('');
-      expect(emailInput.value).toBe('');
-      expect(messageInput.value).toBe('');
+      expect((nameInput as HTMLInputElement).value).toBe('');
+    });
+    await waitFor(() => {
+      expect((emailInput as HTMLInputElement).value).toBe('');
+    });
+    await waitFor(() => {
+      expect((messageInput as HTMLTextAreaElement).value).toBe('');
     });
 
     expect(global.fetch).toHaveBeenCalledWith('/', {
@@ -114,22 +137,29 @@ describe('Contact', () => {
   });
 
   it('maneja error en el envío del formulario', async () => {
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+    (global.fetch as jest.Mock).mockRejectedValueOnce(
+      new Error('Network error')
+    );
 
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
-    const submitButton = container.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
+    const submitButton = screen.getByTestId('submit');
 
     fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
     fireEvent.change(emailInput, { target: { value: 'juan@example.com' } });
-    fireEvent.change(messageInput, { target: { value: 'Hola, tengo una pregunta' } });
+    fireEvent.change(messageInput, {
+      target: { value: 'Hola, tengo una pregunta' },
+    });
 
     fireEvent.click(submitButton);
 
@@ -146,22 +176,29 @@ describe('Contact', () => {
   });
 
   it('previene envío múltiple mientras está enviando', async () => {
-    (global.fetch as jest.Mock).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+    (global.fetch as jest.Mock).mockImplementation(
+      () => new Promise(resolve => setTimeout(resolve, 1000))
+    );
 
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
-    const submitButton = container.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
+    const submitButton = screen.getByTestId('submit');
 
     fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
     fireEvent.change(emailInput, { target: { value: 'juan@example.com' } });
-    fireEvent.change(messageInput, { target: { value: 'Hola, tengo una pregunta' } });
+    fireEvent.change(messageInput, {
+      target: { value: 'Hola, tengo una pregunta' },
+    });
 
     fireEvent.click(submitButton);
     expect(submitButton).toBeDisabled();
@@ -173,20 +210,25 @@ describe('Contact', () => {
   it('codifica correctamente los datos del formulario', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
-    const submitButton = container.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
+    const submitButton = screen.getByTestId('submit');
 
     fireEvent.change(nameInput, { target: { value: 'María José' } });
     fireEvent.change(emailInput, { target: { value: 'maria@test.com' } });
-    fireEvent.change(messageInput, { target: { value: '¿Cómo estás? & gracias!' } });
+    fireEvent.change(messageInput, {
+      target: { value: '¿Cómo estás? & gracias!' },
+    });
 
     fireEvent.click(submitButton);
 
@@ -200,19 +242,22 @@ describe('Contact', () => {
   });
 
   it('maneja campos vacíos correctamente', () => {
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
 
-    expect(nameInput.value).toBe('');
-    expect(emailInput.value).toBe('');
-    expect(messageInput.value).toBe('');
+    expect((nameInput as HTMLInputElement).value).toBe('');
+    expect((emailInput as HTMLInputElement).value).toBe('');
+    expect((messageInput as HTMLTextAreaElement).value).toBe('');
 
     expect(nameInput).toHaveAttribute('required');
     expect(emailInput).toHaveAttribute('required');
@@ -220,19 +265,22 @@ describe('Contact', () => {
   });
 
   it('maneja diferentes tipos de entrada', () => {
-    const { container } = render(
+    render(
       <HelmetProvider>
         <Contact />
       </HelmetProvider>
     );
 
-    const nameInput = container.querySelector('#name') as HTMLInputElement;
-    const emailInput = container.querySelector('#email') as HTMLInputElement;
-    const messageInput = container.querySelector('#message') as HTMLTextAreaElement;
+    const nameInput = screen.getByTestId('name');
+    if (!nameInput) throw new Error('No se encontró el input de nombre');
+    const emailInput = screen.getByTestId('email');
+    if (!emailInput) throw new Error('No se encontró el input de correo');
+    const messageInput = screen.getByTestId('message');
+    if (!messageInput) throw new Error('No se encontró el input de mensaje');
 
-    expect(nameInput.type).toBe('text');
-    expect(emailInput.type).toBe('email');
-    expect(messageInput.tagName).toBe('TEXTAREA');
+    expect((nameInput as HTMLInputElement).type).toBe('text');
+    expect((emailInput as HTMLInputElement).type).toBe('email');
+    expect((messageInput as HTMLTextAreaElement).tagName).toBe('TEXTAREA');
   });
 
   it('debug DOM', () => {
@@ -252,8 +300,14 @@ describe('encode', () => {
     // Importar encode directamente del archivo Contact
     // @ts-ignore
     const { encode } = require('./Contact');
-    const data = { name: 'Juan Pérez', email: 'juan@example.com', message: '¡Hola!' };
+    const data = {
+      name: 'Juan Pérez',
+      email: 'juan@example.com',
+      message: '¡Hola!',
+    };
     const result = encode(data);
-    expect(result).toBe('name=Juan%20P%C3%A9rez&email=juan%40example.com&message=%C2%A1Hola!');
+    expect(result).toBe(
+      'name=Juan%20P%C3%A9rez&email=juan%40example.com&message=%C2%A1Hola!'
+    );
   });
-}); 
+});

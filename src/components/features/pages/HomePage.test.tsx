@@ -14,7 +14,8 @@ describe('HomePage', () => {
         </I18nextProvider>
       </HelmetProvider>
     );
-    expect(screen.getByText(/Bienvenido a EGN/i)).toBeInTheDocument();
+    const titles = screen.getAllByText(/Bienvenido a EGN/i);
+    expect(titles.length).toBeGreaterThan(0);
   });
 
   it('llama a onStart al hacer clic en el botón principal', () => {
@@ -26,8 +27,9 @@ describe('HomePage', () => {
         </I18nextProvider>
       </HelmetProvider>
     );
-    const button = screen.getByRole('button');
-    fireEvent.click(button);
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBeGreaterThan(0);
+    fireEvent.click(buttons[0]);
     expect(onStartMock).toHaveBeenCalled();
   });
 

@@ -216,31 +216,29 @@ function removeRecommendedProductsSection(content: string): string {
 }
 
 // Función para generar extracto del contenido
-function generateExcerpt(content: string, maxLength: number = 200): string {
+function generateExcerpt(
+  content: string,
+  maxLines: number = 4,
+  maxLength: number = 400
+): string {
   const filteredContent = removeRecommendedProductsSection(
     filterPersonalizationSummary(content)
   );
-  const lines = filteredContent.split('\n').filter(line => line.trim());
+  const lines = filteredContent.split('\n').filter(line => {
+    const trimmed = line.trim();
+    return (
+      trimmed &&
+      !trimmed.startsWith('#') &&
+      !trimmed.startsWith('##') &&
+      !trimmed.startsWith('###') &&
+      !/^```/.test(trimmed) &&
+      !/^```[a-zA-Z]*$/.test(trimmed)
+    );
+  });
 
-  // Buscar el primer encabezado o párrafo significativo
-  let excerpt = '';
-  for (const line of lines) {
-    if (
-      line.startsWith('#') ||
-      line.startsWith('##') ||
-      line.startsWith('###')
-    ) {
-      continue; // Saltar encabezados
-    }
-    if (line.trim() && line.length > 10) {
-      excerpt = line.trim();
-      break;
-    }
-  }
-
-  if (!excerpt) {
-    excerpt = filteredContent.substring(0, maxLength);
-  }
+  // Tomar hasta maxLines líneas relevantes
+  let excerptLines = lines.slice(0, maxLines);
+  let excerpt = excerptLines.join('\n');
 
   if (excerpt.length > maxLength) {
     excerpt = excerpt.substring(0, maxLength) + '...';
@@ -479,10 +477,10 @@ const ReportAccordionList: React.FC<ReportAccordionListProps> = ({
               {!isExpanded && (
                 <div className='px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-800'>
                   <p
-                    className='text-gray-600 dark:text-gray-300 text-xs leading-snug line-clamp-8'
+                    className='text-gray-600 dark:text-gray-300 text-xs leading-snug line-clamp-4'
                     style={{
                       display: '-webkit-box',
-                      WebkitLineClamp: 8,
+                      WebkitLineClamp: 4,
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',

@@ -676,10 +676,10 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                   <img
                     src='/logo-header.png'
                     alt='EGN Logo'
-                    className='h-24 w-auto mr-4'
-                    style={{ maxHeight: 96 }}
-                    width='96'
-                    height='96'
+                    className='h-20 w-auto'
+                    style={{ maxHeight: 80 }}
+                    width='80'
+                    height='80'
                     loading='eager'
                   />
                 </picture>
@@ -900,9 +900,18 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             className='focus:outline-none'
             onClick={() => startTransition(() => navigate('/'))}
           >
-            <span className='text-3xl font-bold text-red-600 tracking-tight'>
-              EGN
-            </span>
+            <picture>
+              <source srcSet='/logo-header-96.webp' type='image/webp' />
+              <img
+                src='/logo-header.png'
+                alt='EGN Logo'
+                className='h-20 w-auto'
+                style={{ maxHeight: 80 }}
+                width='80'
+                height='80'
+                loading='eager'
+              />
+            </picture>
           </button>
           <div className='flex items-center gap-4'>
             <button
