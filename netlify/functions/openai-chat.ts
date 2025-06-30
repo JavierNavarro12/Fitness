@@ -11,7 +11,10 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+const handler: Handler = async (
+  event: HandlerEvent,
+  context: HandlerContext
+) => {
   // Maneja preflight OPTIONS
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -36,18 +39,33 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ error: 'Invalid request body, "messages" array is required.' }),
+        body: JSON.stringify({
+          error: 'Invalid request body, "messages" array is required.',
+        }),
       };
     }
+
+    const start = Date.now();
+    console.log('Calling OpenAI API at:', new Date(start).toISOString());
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
-        { role: 'system', content: 'Eres un experto en suplementación deportiva.' },
-        ...messages
+        {
+          role: 'system',
+          content: 'Eres un experto en suplementación deportiva.',
+        },
+        ...messages,
       ],
       max_tokens: 1000,
     });
+
+    const end = Date.now();
+    console.log(
+      'OpenAI API response received at:',
+      new Date(end).toISOString()
+    );
+    console.log('OpenAI API duration (ms):', end - start);
 
     return {
       statusCode: 200,
