@@ -6394,17 +6394,30 @@ var handler = async (event, context) => {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ error: 'Invalid request body, "messages" array is required.' })
+        body: JSON.stringify({
+          error: 'Invalid request body, "messages" array is required.'
+        })
       };
     }
+    const start = Date.now();
+    console.log("Calling OpenAI API at:", new Date(start).toISOString());
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: "Eres un experto en suplementaci\xF3n deportiva." },
+        {
+          role: "system",
+          content: "Eres un experto en suplementaci\xF3n deportiva."
+        },
         ...messages
       ],
       max_tokens: 1e3
     });
+    const end = Date.now();
+    console.log(
+      "OpenAI API response received at:",
+      new Date(end).toISOString()
+    );
+    console.log("OpenAI API duration (ms):", end - start);
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
