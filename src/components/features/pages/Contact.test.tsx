@@ -124,7 +124,7 @@ describe('Contact', () => {
       expect((messageInput as HTMLTextAreaElement).value).toBe('');
     });
 
-    expect(global.fetch).toHaveBeenCalledWith('/', {
+    expect(global.fetch).toHaveBeenCalledWith('http://localhost/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: 'form-name=contact&name=Juan%20P%C3%A9rez&email=juan%40example.com&message=Hola%2C%20tengo%20una%20pregunta',
@@ -233,7 +233,7 @@ describe('Contact', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/', {
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'form-name=contact&name=Mar%C3%ADa%20Jos%C3%A9&email=maria%40test.com&message=%C2%BFC%C3%B3mo%20est%C3%A1s%3F%20%26%20gracias!',
