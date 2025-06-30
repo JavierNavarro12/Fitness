@@ -1,4 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import FAQ from './FAQ';
 
 // Mock de useTranslation para cubrir todos los textos
@@ -11,18 +13,28 @@ jest.mock('react-i18next', () => ({
 describe('FAQ', () => {
   const setNav = jest.fn();
 
+  const renderFAQ = () => {
+    return render(
+      <MemoryRouter>
+        <HelmetProvider>
+          <FAQ setNav={setNav} />
+        </HelmetProvider>
+      </MemoryRouter>
+    );
+  };
+
   beforeEach(() => {
     setNav.mockClear();
   });
 
   it('renderiza título y subtítulo', () => {
-    render(<FAQ setNav={setNav} />);
+    renderFAQ();
     expect(screen.getByText('faq.title')).toBeInTheDocument();
     expect(screen.getByText('faq.subtitle')).toBeInTheDocument();
   });
 
   it('renderiza todas las preguntas y respuestas', () => {
-    render(<FAQ setNav={setNav} />);
+    renderFAQ();
     for (let i = 1; i <= 10; i++) {
       expect(screen.getByText(`faq.q${i}`)).toBeInTheDocument();
       expect(screen.getByText(`faq.a${i}`)).toBeInTheDocument();
@@ -30,7 +42,7 @@ describe('FAQ', () => {
   });
 
   it('renderiza sección de no encontrado y botón de contacto', () => {
-    render(<FAQ setNav={setNav} />);
+    renderFAQ();
     expect(screen.getByText('faq.notFoundTitle')).toBeInTheDocument();
     expect(screen.getByText('faq.notFoundText')).toBeInTheDocument();
     const button = screen.getByRole('button', { name: 'faq.contactButton' });
@@ -38,9 +50,9 @@ describe('FAQ', () => {
   });
 
   it('llama a setNav("contact") al hacer click en el botón de contacto', () => {
-    render(<FAQ setNav={setNav} />);
+    renderFAQ();
     const button = screen.getByRole('button', { name: 'faq.contactButton' });
     fireEvent.click(button);
     expect(setNav).toHaveBeenCalledWith('contact');
   });
-}); 
+});

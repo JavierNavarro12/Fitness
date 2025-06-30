@@ -120,7 +120,7 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
       </div>
       {/* Escritorio: diseño original */}
       <div
-        className='hidden sm:block max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-between mt-16 mb-8'
+        className='hidden sm:flex sm:flex-col sm:items-center sm:justify-between max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-16 mb-8'
         data-aos='fade-up'
       >
         <h2

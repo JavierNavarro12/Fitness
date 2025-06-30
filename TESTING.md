@@ -41,7 +41,7 @@ Este documento describe la estrategia de automatización de pruebas implementada
 ```bash
 # Pruebas unitarias
 yarn test                    # Ejecutar todas las pruebas unitarias
-yarn test --watch           # Modo watch para desarrollo
+npm test -- --watchAll       # Modo watch para desarrollo
 yarn test --coverage        # Con reporte de cobertura
 
 # Pruebas E2E
