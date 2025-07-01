@@ -61,11 +61,14 @@ const Terms = lazy(() => import('./components/features/pages/Terms'));
 const Privacy = lazy(() => import('./components/features/pages/Privacy'));
 const Contact = lazy(() => import('./components/features/pages/Contact'));
 const StepForm = lazy(() => import('./components/features/reports/StepForm'));
+const BlogList = lazy(() => import('./components/blog/BlogList'));
+const BlogPost = lazy(() => import('./components/blog/BlogPost'));
 
 const NAVS = [
   { key: 'home', label: 'nav.home' },
   { key: 'custom', label: 'nav.custom' },
   { key: 'reports', label: 'nav.reports' },
+  { key: 'blog', label: 'nav.blog' },
 ];
 
 const megaMenuItems = [
@@ -74,6 +77,7 @@ const megaMenuItems = [
   { key: 'grasa', label: 'megaMenu.grasa', nav: 'grasa' },
   { key: 'mujer', label: 'megaMenu.mujer', nav: 'mujer' },
   { key: 'cognitivo', label: 'megaMenu.cognitivo', nav: 'cognitivo' },
+  { key: 'blog', label: 'nav.blog', nav: 'blog' },
 ];
 
 // NAVBAR_HEIGHT constante para altura base del header
@@ -1009,7 +1013,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
           onNavigate={navKey => {
-            startTransition(() => navigate(navKey));
+            startTransition(() => navigate('/' + navKey));
             setShowProfileModal(false);
             setMobileMenuOpen(false);
           }}
@@ -1104,6 +1108,8 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
               <Route path='/privacy' element={<Privacy />} />
               <Route path='/contact' element={<Contact />} />
               <Route path='/login' element={<LoginPage />} />
+              <Route path='/blog' element={<BlogList />} />
+              <Route path='/blog/:slug' element={<BlogPost />} />
               <Route
                 path='/ai-chat'
                 element={
