@@ -4,6 +4,7 @@ import React, {
   useRef,
   lazy,
   startTransition,
+  Suspense,
 } from 'react';
 import {
   collection,
@@ -171,10 +172,11 @@ function App() {
     page: string;
     id: string;
   } | null>(null);
-  const searchPanelRef = useRef<HTMLDivElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [showMobileChat, setShowMobileChat] = useState(false);
   const navChangedBySearch = useRef(false);
+  const isNavigating = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [customProfile, setCustomProfile] = useState<UserProfile | null>(null);
@@ -190,7 +192,16 @@ function App() {
         easing: 'ease-in-out',
         once: true,
         offset: 100,
+        disable: location.pathname === '/',
       });
+    }
+
+    // Manejar la navegación inicial
+    if (location.pathname === '/') {
+      setNav('home');
+    } else {
+      const currentPath = location.pathname.substring(1); // Remover el '/' inicial
+      setNav(currentPath);
     }
 
     const unsubscribe = onAuthStateChanged(auth, async user => {
@@ -235,39 +246,30 @@ function App() {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (showMobileSearch) return;
-      // Si el menú está abierto y el click es fuera del menú, ciérralo
+      // Si el clic fue en el botón de búsqueda, ignoramos
+      const searchButton = document.querySelector(
+        '[data-testid="search-button"]'
+      );
+      if (searchButton && searchButton.contains(event.target as Node)) {
+        return;
+      }
+
+      // Si el clic fue fuera de la barra de búsqueda, la cerramos
       if (
-        showUserMenu &&
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
+        showMobileSearch &&
+        !(event.target as Element)?.closest('.mobile-search-container')
       ) {
-        setShowUserMenu(false);
+        setShowMobileSearch(false);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showUserMenu, showMobileSearch]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (showMobileSearch) return;
-
-      if (
-        searchPanelRef.current &&
-        !searchPanelRef.current.contains(event.target as Node)
-      ) {
-        setSearchQuery('');
-        setSearchResults([]);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [searchResults, showMobileSearch]);
+  }, [showMobileSearch]);
 
   useEffect(() => {
     if (navChangedBySearch.current) {
@@ -631,7 +633,63 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       setShowSummary(false);
       setIsEditingProfile(false);
     }
+    // Cerrar el chat si no estamos en la sección AI Chat del bottom nav
+    if (showMobileChat && !location.pathname.includes('ai-chat')) {
+      setShowMobileChat(false);
+    }
+  }, [location.pathname, showMobileChat]);
+
+  // Manejar la navegación y el estado del chat
+  const handleChatClick = () => {
+    if (location.pathname === '/ai-chat') {
+      isNavigating.current = true;
+      setShowMobileChat(false);
+      startTransition(() => navigate(-1));
+    } else {
+      isNavigating.current = true;
+      startTransition(() =>
+        navigate('/ai-chat', { state: { from: location.pathname } })
+      );
+    }
+  };
+
+  // Actualizar el estado de navegación cuando cambia la ruta
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (location.pathname === '/') {
+        setNav('home');
+      } else {
+        const path = location.pathname.substring(1).split('/')[0];
+        setNav(path);
+      }
+    };
+
+    handleRouteChange();
   }, [location.pathname]);
+
+  // Inicializar estado del chat basado en la ruta
+  useEffect(() => {
+    if (location.pathname === '/ai-chat' && !isNavigating.current) {
+      setTimeout(() => {
+        setShowMobileChat(true);
+      }, 100);
+    } else {
+      setShowMobileChat(false);
+    }
+    // Resetear el estado de navegación después de procesar el cambio de ruta
+    isNavigating.current = false;
+  }, [location.pathname]);
+
+  // Efecto adicional para manejar el cierre del chat
+  useEffect(() => {
+    if (!showMobileChat) {
+      // Asegurarnos de que el chat esté completamente cerrado antes de permitir que se vuelva a abrir
+      const timer = setTimeout(() => {
+        isNavigating.current = false;
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [showMobileChat]);
 
   if (location.pathname === '/login') {
     return <LoginPage />;
@@ -917,6 +975,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             <button
               onClick={() => setShowMobileSearch(v => !v)}
               className='text-gray-600 dark:text-gray-300'
+              data-testid='search-button'
             >
               <SearchIcon className='h-6 w-6' />
             </button>
@@ -932,7 +991,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
 
         {/* Mobile Search Overlay */}
         {showMobileSearch && (
-          <div className='fixed top-14 left-0 w-full bg-white dark:bg-gray-800 p-4 z-30 shadow-md sm:hidden animate-fade-in-down'>
+          <div className='fixed top-14 left-0 w-full bg-white dark:bg-gray-800 p-4 z-[60] shadow-md sm:hidden animate-fade-in-down mobile-search-container'>
             <SearchPanel
               searchQuery={searchQuery}
               onSearchChange={handleSearchChange}
@@ -967,7 +1026,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
 
         {/* MODAL PERFIL */}
         {showProfileModal && (
-          <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40'>
+          <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black bg-opacity-40'>
             <ProfileSummary
               user={user}
               userProfile={userProfile}
@@ -980,75 +1039,121 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         {/* CONTENIDO PRINCIPAL */}
         <main
           className='flex-1 flex flex-col container mx-auto px-4 pt-20 sm:pt-8 pb-8 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-[calc(100vh-80px)]'
-          data-aos='fade-up'
           style={{ position: 'relative' }}
         >
-          <Routes>
-            {/* Rutas públicas */}
-            <Route
-              path='/'
-              element={<HomePage onStart={() => requireLogin('custom')} />}
-            />
-            <Route
-              path='/deportes'
-              element={
-                <Deportes
-                  itemToHighlight={searchResultToHighlight}
-                  onHighlightComplete={handleHighlightComplete}
-                />
-              }
-            />
-            <Route
-              path='/salud'
-              element={
-                <Salud
-                  itemToHighlight={searchResultToHighlight}
-                  onHighlightComplete={handleHighlightComplete}
-                />
-              }
-            />
-            <Route
-              path='/grasa'
-              element={
-                <Grasa
-                  itemToHighlight={searchResultToHighlight}
-                  onHighlightComplete={handleHighlightComplete}
-                />
-              }
-            />
-            <Route
-              path='/mujer'
-              element={
-                <Mujer
-                  itemToHighlight={searchResultToHighlight}
-                  onHighlightComplete={handleHighlightComplete}
-                />
-              }
-            />
-            <Route
-              path='/cognitivo'
-              element={
-                <Cognitivo
-                  itemToHighlight={searchResultToHighlight}
-                  onHighlightComplete={handleHighlightComplete}
-                />
-              }
-            />
-            <Route path='/faq' element={<FAQ setNav={setNav} />} />
-            <Route path='/terms' element={<Terms />} />
-            <Route path='/privacy' element={<Privacy />} />
-            <Route path='/contact' element={<Contact />} />
-            <Route path='/login' element={<LoginPage />} />
-            {/* Rutas protegidas */}
-            <Route
-              path='/custom'
-              element={
-                user ? (
-                  <>
-                    {(isEditingProfile ||
-                      (!showSummary && !isEditingProfile)) && (
-                      <div className='flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -mt-16'>
-                        <div className='mt-2 w-full flex justify-center'>
+          <Suspense
+            fallback={
+              <div className='flex items-center justify-center flex-1 min-h-[50vh]'>
+                <Loader />
+              </div>
+            }
+          >
+            <Routes>
+              {/* Rutas públicas */}
+              <Route
+                path='/'
+                element={<HomePage onStart={() => requireLogin('custom')} />}
+              />
+              <Route
+                path='/deportes'
+                element={
+                  <Deportes
+                    itemToHighlight={searchResultToHighlight}
+                    onHighlightComplete={handleHighlightComplete}
+                  />
+                }
+              />
+              <Route
+                path='/salud'
+                element={
+                  <Salud
+                    itemToHighlight={searchResultToHighlight}
+                    onHighlightComplete={handleHighlightComplete}
+                  />
+                }
+              />
+              <Route
+                path='/grasa'
+                element={
+                  <Grasa
+                    itemToHighlight={searchResultToHighlight}
+                    onHighlightComplete={handleHighlightComplete}
+                  />
+                }
+              />
+              <Route
+                path='/mujer'
+                element={
+                  <Mujer
+                    itemToHighlight={searchResultToHighlight}
+                    onHighlightComplete={handleHighlightComplete}
+                  />
+                }
+              />
+              <Route
+                path='/cognitivo'
+                element={
+                  <Cognitivo
+                    itemToHighlight={searchResultToHighlight}
+                    onHighlightComplete={handleHighlightComplete}
+                  />
+                }
+              />
+              <Route path='/faq' element={<FAQ setNav={setNav} />} />
+              <Route path='/terms' element={<Terms />} />
+              <Route path='/privacy' element={<Privacy />} />
+              <Route path='/contact' element={<Contact />} />
+              <Route path='/login' element={<LoginPage />} />
+              <Route
+                path='/ai-chat'
+                element={
+                  <div className='flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg'>
+                    <PersonalizedChatAI
+                      userProfile={userProfile}
+                      mobileMenuOpen={mobileMenuOpen}
+                      isMobile={window.innerWidth < 640}
+                      isOpen={true}
+                      onClose={() => {
+                        setShowMobileChat(false);
+                        startTransition(() => navigate(-1));
+                      }}
+                      isPageContent={true}
+                    />
+                  </div>
+                }
+              />
+              {/* Rutas protegidas */}
+              <Route
+                path='/custom'
+                element={
+                  user ? (
+                    <>
+                      {(isEditingProfile ||
+                        (!showSummary && !isEditingProfile)) && (
+                        <div className='flex flex-1 flex-col items-center justify-center min-h-[calc(100vh-136px)] sm:hidden -mt-16'>
+                          <div className='mt-2 w-full flex justify-center'>
+                            <StepForm
+                              onComplete={
+                                isEditingProfile
+                                  ? profile => {
+                                      setCustomProfile(profile);
+                                      setIsEditingProfile(false);
+                                      setShowSummary(true);
+                                    }
+                                  : handleSaveProfile
+                              }
+                              initialProfile={
+                                isEditingProfile ? customProfile : undefined
+                              }
+                              isEditing={isEditingProfile}
+                              user={user}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {(isEditingProfile ||
+                        (!showSummary && !isEditingProfile)) && (
+                        <div className='hidden sm:flex items-center justify-center min-h-[calc(100vh-8rem)] -mt-16'>
                           <StepForm
                             onComplete={
                               isEditingProfile
@@ -1066,174 +1171,168 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                             user={user}
                           />
                         </div>
-                      </div>
-                    )}
-                    {(isEditingProfile ||
-                      (!showSummary && !isEditingProfile)) && (
-                      <div className='hidden sm:flex items-center justify-center min-h-[calc(100vh-8rem)] -mt-16'>
-                        <StepForm
-                          onComplete={
-                            isEditingProfile
-                              ? profile => {
-                                  setCustomProfile(profile);
-                                  setIsEditingProfile(false);
-                                  setShowSummary(true);
-                                }
-                              : handleSaveProfile
-                          }
-                          initialProfile={
-                            isEditingProfile ? customProfile : undefined
-                          }
-                          isEditing={isEditingProfile}
-                          user={user}
-                        />
-                      </div>
-                    )}
-                    {showSummary && customProfile && !isEditingProfile && (
-                      <div className='flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-8rem)]'>
-                        <div className='max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 relative'>
-                          <button
-                            className='absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl'
-                            title={t('profileSummary.title')}
-                            onClick={() =>
-                              startTransition(() => setIsEditingProfile(true))
-                            }
-                          >
-                            <span className='-scale-x-100 inline-block'>
-                              ✏️
-                            </span>
-                          </button>
-                          <h2 className='text-2xl font-bold text-red-600 dark:text-red-400 mb-6'>
-                            {t('profileSummary.title')}
-                          </h2>
-                          <ul className='space-y-2 mb-8 text-gray-700 dark:text-gray-300'>
-                            <li>
-                              <b>{t('profileSummary.age')}:</b>{' '}
-                              {customProfile.age} {t('profileSummary.years')}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.gender')}:</b>{' '}
-                              {t('gender.' + customProfile.gender)}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.weight')}:</b>{' '}
-                              {customProfile.weight} {t('profileSummary.kg')}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.height')}:</b>{' '}
-                              {customProfile.height} cm
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.objective')}:</b>{' '}
-                              {customProfile.objective}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.experience')}:</b>{' '}
-                              {t('experience.' + customProfile.experience)}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.trainingFrequency')}:</b>{' '}
-                              {t('frequency.' + customProfile.frequency)}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.mainSport')}:</b>{' '}
-                              {t(customProfile.sport)}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.medicalConditions')}:</b>{' '}
-                              {customProfile.medicalConditions.length
-                                ? customProfile.medicalConditions.join(', ')
-                                : t('profileSummary.none')}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.allergies')}:</b>{' '}
-                              {customProfile.allergies.length
-                                ? customProfile.allergies.join(', ')
-                                : t('profileSummary.none')}
-                            </li>
-                            <li>
-                              <b>{t('profileSummary.currentSupplements')}:</b>{' '}
-                              {customProfile.currentSupplements.length
-                                ? customProfile.currentSupplements.join(', ')
-                                : t('profileSummary.none')}
-                            </li>
-                          </ul>
-                          {generating && (
-                            <div className='flex justify-center items-center py-8'>
-                              <Loader />
-                            </div>
-                          )}
-                          <button
-                            onClick={handleGenerateReport}
-                            className='w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed'
-                            disabled={generating}
-                          >
-                            {generating
-                              ? t('profileSummary.generatingButton')
-                              : t('profileSummary.generateButton')}
-                          </button>
+                      )}
+                      {showSummary && customProfile && !isEditingProfile && (
+                        <div className='flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-8rem)]'>
+                          <div className='max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 relative'>
+                            <button
+                              className='absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl'
+                              title={t('profileSummary.title')}
+                              onClick={() =>
+                                startTransition(() => setIsEditingProfile(true))
+                              }
+                            >
+                              <span className='-scale-x-100 inline-block'>
+                                ✏️
+                              </span>
+                            </button>
+                            <h2 className='text-2xl font-bold text-red-600 dark:text-red-400 mb-6'>
+                              {t('profileSummary.title')}
+                            </h2>
+                            <ul className='space-y-2 mb-8 text-gray-700 dark:text-gray-300'>
+                              <li>
+                                <b>{t('profileSummary.age')}:</b>{' '}
+                                {customProfile.age} {t('profileSummary.years')}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.gender')}:</b>{' '}
+                                {t('gender.' + customProfile.gender)}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.weight')}:</b>{' '}
+                                {customProfile.weight} {t('profileSummary.kg')}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.height')}:</b>{' '}
+                                {customProfile.height} cm
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.objective')}:</b>{' '}
+                                {customProfile.objective}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.experience')}:</b>{' '}
+                                {t('experience.' + customProfile.experience)}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.trainingFrequency')}:</b>{' '}
+                                {t('frequency.' + customProfile.frequency)}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.mainSport')}:</b>{' '}
+                                {t(customProfile.sport)}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.medicalConditions')}:</b>{' '}
+                                {customProfile.medicalConditions.length
+                                  ? customProfile.medicalConditions.join(', ')
+                                  : t('profileSummary.none')}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.allergies')}:</b>{' '}
+                                {customProfile.allergies.length
+                                  ? customProfile.allergies.join(', ')
+                                  : t('profileSummary.none')}
+                              </li>
+                              <li>
+                                <b>{t('profileSummary.currentSupplements')}:</b>{' '}
+                                {customProfile.currentSupplements.length
+                                  ? customProfile.currentSupplements.join(', ')
+                                  : t('profileSummary.none')}
+                              </li>
+                            </ul>
+                            {generating && (
+                              <div className='flex justify-center items-center py-8'>
+                                <Loader />
+                              </div>
+                            )}
+                            <button
+                              onClick={handleGenerateReport}
+                              className='w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed'
+                              disabled={generating}
+                            >
+                              {generating
+                                ? t('profileSummary.generatingButton')
+                                : t('profileSummary.generateButton')}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <LoginRequired sectionName='Personalización' />
-                )
-              }
-            />
-            <Route
-              path='/reports'
-              element={
-                user ? (
-                  <div className='max-w-4xl mx-auto'>
-                    {userReports.length === 0 ? (
-                      <div className='text-center text-gray-500 py-12'>
-                        {t('No tienes informes generados aún.')}
-                      </div>
-                    ) : (
-                      <ReportAccordionList
-                        reports={userReports}
-                        onDelete={handleDeleteReport}
-                        initialExpandedId={location.state?.expandId}
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <LoginRequired sectionName='Informes' />
-                )
-              }
-            />
-            <Route
-              path='/profile'
-              element={
-                user ? (
-                  <ProfileSummary
-                    user={user}
-                    userProfile={userProfile}
-                    onLogout={handleLogout}
-                    onClose={() => startTransition(() => navigate('/'))}
-                  />
-                ) : (
-                  <LoginRequired sectionName='Perfil' />
-                )
-              }
-            />
-          </Routes>
+                      )}
+                    </>
+                  ) : (
+                    <LoginRequired sectionName='Personalización' />
+                  )
+                }
+              />
+              <Route
+                path='/reports'
+                element={
+                  user ? (
+                    <div className='max-w-4xl mx-auto'>
+                      {userReports.length === 0 ? (
+                        <div className='text-center text-gray-500 py-12'>
+                          {t('No tienes informes generados aún.')}
+                        </div>
+                      ) : (
+                        <ReportAccordionList
+                          reports={userReports}
+                          onDelete={handleDeleteReport}
+                          initialExpandedId={location.state?.expandId}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <LoginRequired sectionName='Informes' />
+                  )
+                }
+              />
+              <Route
+                path='/profile'
+                element={
+                  user ? (
+                    <ProfileSummary
+                      user={user}
+                      userProfile={userProfile}
+                      onLogout={handleLogout}
+                      onClose={() => startTransition(() => navigate('/'))}
+                    />
+                  ) : (
+                    <LoginRequired sectionName='Perfil' />
+                  )
+                }
+              />
+            </Routes>
+          </Suspense>
         </main>
         {/* Footer solo si no está en sección privada sin login */}
         {!(['custom', 'reports', 'profile'].includes(nav) && !user) && (
           <Footer />
         )}
         {/* Bottom navigation bar solo visible en móvil */}
-        <BottomNav user={user} onSignOut={() => signOut(auth)} />
+        <BottomNav
+          user={user}
+          onSignOut={() => signOut(auth)}
+          onChatClick={handleChatClick}
+          isChatOpen={location.pathname === '/ai-chat'}
+        />
 
-        {/* Chat IA Personalizado */}
-        {location.pathname !== '/profile' && !showProfileModal && (
-          <PersonalizedChatAI
-            userProfile={userProfile}
-            mobileMenuOpen={mobileMenuOpen}
-          />
-        )}
+        {/* Chat IA Personalizado - solo mostrar como flotante si no estamos en la página de chat */}
+        {location.pathname !== '/profile' &&
+          location.pathname !== '/ai-chat' &&
+          !showProfileModal && (
+            <PersonalizedChatAI
+              userProfile={userProfile}
+              mobileMenuOpen={mobileMenuOpen}
+              isMobile={window.innerWidth < 640}
+              isOpen={showMobileChat}
+              onClose={() => {
+                setShowMobileChat(false);
+                if (location.pathname === '/ai-chat') {
+                  startTransition(() => navigate(-1));
+                }
+              }}
+            />
+          )}
       </div>
     </>
   );

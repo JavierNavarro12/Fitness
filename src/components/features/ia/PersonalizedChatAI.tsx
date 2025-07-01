@@ -20,11 +20,19 @@ import { FaTrash } from 'react-icons/fa';
 interface PersonalizedChatAIProps {
   userProfile: UserProfile | null;
   mobileMenuOpen?: boolean;
+  isMobile?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  isPageContent?: boolean;
 }
 
 const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({
   userProfile,
   mobileMenuOpen,
+  isMobile = false,
+  isOpen = false,
+  onClose,
+  isPageContent = false,
 }) => {
   const { i18n } = useTranslation();
   const [input, setInput] = useState('');
@@ -40,6 +48,15 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isMobile) {
+      setOpen(isOpen);
+    } else if (isPageContent) {
+      // Si es contenido de página, siempre debe estar abierto
+      setOpen(true);
+    }
+  }, [isMobile, isOpen, isPageContent]);
 
   useEffect(() => {
     if (
@@ -315,11 +332,19 @@ INSTRUCCIONES:
     return `¡Hola! Soy tu asistente personal de suplementación.\n\nVeo que tu objetivo es ${userProfile.objective} y practicas ${cleanSport}.\n\n¿En qué puedo ayudarte hoy? Puedo darte recomendaciones personalizadas basadas en tu perfil.`;
   };
 
+  const handleClose = () => {
+    if (isMobile && onClose) {
+      onClose();
+    } else {
+      setOpen(false);
+    }
+  };
+
   // Widget flotante
   return (
-    <div>
-      {/* Botón flotante para abrir/cerrar el chat */}
-      {!mobileMenuOpen && (
+    <div className={isPageContent ? 'h-full flex flex-col flex-1' : ''}>
+      {/* Botón flotante para abrir/cerrar el chat - solo mostrar en desktop */}
+      {!mobileMenuOpen && !isMobile && !isPageContent && (
         <button
           className='fixed right-6 bottom-24 sm:right-16 sm:bottom-10 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl transition-all duration-300 focus:outline-none'
           onClick={() => {
@@ -339,31 +364,44 @@ INSTRUCCIONES:
         </button>
       )}
       {/* Ventana de chat */}
-      {open && (
+      {(open || isPageContent) && (
         <>
+          {/* Solo mostrar overlay si no es contenido de página */}
+          {!isPageContent && (
+            <div
+              className={`fixed ${isMobile ? 'inset-x-0 top-14 bottom-20' : 'inset-0'} bg-black/20 backdrop-blur-sm z-[45]`}
+              data-testid='personalized-chat-overlay'
+            />
+          )}
           <div
-            className='fixed inset-0 bg-black/20 backdrop-blur-sm z-40'
-            data-testid='personalized-chat-overlay'
-          />
-          <div className='fixed left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28 z-50 w-[98vw] max-w-lg sm:w-[32rem] bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden -translate-x-1/2 sm:translate-x-0'>
+            className={`
+              ${
+                isPageContent
+                  ? 'h-full flex-1 flex flex-col'
+                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45]`
+              }
+              w-auto max-w-lg sm:w-[32rem] bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden 
+              ${!isMobile && !isPageContent && '-translate-x-1/2 sm:translate-x-0'}
+            `}
+          >
             {/* Header con botón historial */}
-            <div className='p-4 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <span>EGN IA Personal</span>
+            <div className='px-4 py-3 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between'>
+              <div className='flex items-center gap-3'>
+                <span className='text-lg'>EGN IA Personal</span>
                 {currentChatId && (
-                  <span className='text-xs bg-red-500 px-2 py-1 rounded-full'>
+                  <span className='text-xs bg-red-500 px-3 py-1 rounded-full'>
                     {i18n.language === 'en' ? 'Continuing' : 'Continuando'}
                   </span>
                 )}
               </div>
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-3'>
                 <button
                   onClick={() => {
                     if (!showHistory) loadHistory();
                     setShowHistory(h => !h);
                     setSelectedChat(null);
                   }}
-                  className='text-white text-xl font-bold hover:text-red-200 focus:outline-none mr-2'
+                  className='text-white text-xl font-bold hover:text-red-200 focus:outline-none'
                   title={i18n.language === 'en' ? 'History' : 'Historial'}
                   aria-label={i18n.language === 'en' ? 'History' : 'Historial'}
                 >
@@ -374,25 +412,29 @@ INSTRUCCIONES:
                   />
                 </button>
                 <button
-                  className='text-xs text-blue-100 hover:underline mr-2'
+                  className='text-sm text-blue-100 hover:underline'
                   onClick={startNewChat}
                 >
                   {i18n.language === 'en' ? 'New chat' : 'Nuevo chat'}
                 </button>
-                <button
-                  onClick={() => setOpen(false)}
-                  className='text-white text-xl font-bold hover:text-red-200'
-                >
-                  ×
-                </button>
+                {!isPageContent && (
+                  <button
+                    onClick={handleClose}
+                    className='text-white text-2xl font-bold hover:text-red-200'
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Panel de historial */}
             {showHistory ? (
               <div
                 className='flex-1 p-4 overflow-y-auto bg-gray-50'
-                style={{ minHeight: '320px', maxHeight: '75vh' }}
+                style={{
+                  minHeight: isPageContent ? 'auto' : '200px',
+                  maxHeight: isPageContent ? 'none' : '75vh',
+                }}
               >
                 <div className='mb-2 flex items-center justify-between'>
                   <span className='font-semibold text-gray-700'>
@@ -495,8 +537,11 @@ INSTRUCCIONES:
             ) : (
               <>
                 <div
-                  className='flex-1 p-4 overflow-y-auto bg-gray-50'
-                  style={{ minHeight: '320px', maxHeight: '60vh' }}
+                  className='flex-1 p-2 overflow-y-auto bg-gray-50'
+                  style={{
+                    minHeight: isPageContent ? 'auto' : '150px',
+                    maxHeight: isPageContent ? 'none' : '60vh',
+                  }}
                 >
                   {messages.length === 0 && (
                     <div className='text-gray-600 text-sm leading-relaxed'>
@@ -506,10 +551,10 @@ INSTRUCCIONES:
                   {messages.map((msg, i) => (
                     <div
                       key={i}
-                      className={`mb-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`mb-1.5 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`px-4 py-2 rounded-xl max-w-[80%] text-sm shadow ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}
+                        className={`px-2.5 py-1 rounded-lg max-w-[80%] text-sm ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}
                       >
                         {msg.content}
                       </div>
@@ -517,9 +562,9 @@ INSTRUCCIONES:
                   ))}
                   <div ref={messagesEndRef} />
                 </div>
-                <div className='p-3 border-t border-red-100 flex gap-2 rounded-b-2xl'>
+                <div className='flex gap-2 px-3 py-3 border-t border-red-100 bg-white'>
                   <input
-                    className='flex-1 border-2 border-red-200 rounded-xl p-2 focus:outline-none focus:border-red-500 transition'
+                    className='flex-1 border border-red-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-500 transition text-base'
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e =>
@@ -537,7 +582,7 @@ INSTRUCCIONES:
                     disabled={loading}
                   />
                   <button
-                    className='bg-red-600 hover:bg-red-700 text-white rounded-xl px-4 py-2 font-bold transition disabled:opacity-50'
+                    className='bg-red-600 hover:bg-red-700 text-white rounded-xl px-5 py-2.5 font-medium transition disabled:opacity-50 text-base whitespace-nowrap'
                     onClick={sendMessage}
                     disabled={loading}
                   >

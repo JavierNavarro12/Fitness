@@ -15,6 +15,16 @@ import i18n from '../../../i18n';
 // Mock fetch
 global.fetch = jest.fn();
 
+// Silenciar los console.error durante los tests
+const originalError = console.error;
+beforeAll(() => {
+  console.error = jest.fn();
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
 const mockUserProfile: UserProfile = {
   age: 25,
   gender: 'male',
@@ -34,9 +44,17 @@ const renderWithI18n = (component: React.ReactElement) => {
   return render(<I18nextProvider i18n={i18n}>{component}</I18nextProvider>);
 };
 
+// Helper para envolver operaciones asíncronas
+const actAsync = async (callback: () => Promise<void>) => {
+  await act(async () => {
+    await callback();
+  });
+};
+
 describe('PersonalizedChatAI', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (fetch as jest.Mock).mockClear();
   });
 
   describe('Funcionalidad básica', () => {
@@ -87,6 +105,63 @@ describe('PersonalizedChatAI', () => {
         screen.getByText(/Soy tu asistente de suplementación/i)
       ).toBeInTheDocument();
     });
+
+    test('renderiza correctamente como contenido de página', () => {
+      renderWithI18n(
+        <PersonalizedChatAI
+          userProfile={mockUserProfile}
+          isPageContent={true}
+        />
+      );
+
+      // No debería mostrar el botón flotante
+      expect(
+        screen.queryByRole('button', { name: /abrir chat ia personalizado/i })
+      ).not.toBeInTheDocument();
+
+      // Debería mostrar el chat directamente
+      expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
+
+      // No debería mostrar el botón de cerrar
+      expect(screen.queryByText('×')).not.toBeInTheDocument();
+    });
+
+    test('maneja correctamente el estado móvil', () => {
+      renderWithI18n(
+        <PersonalizedChatAI
+          userProfile={mockUserProfile}
+          isMobile={true}
+          isOpen={true}
+        />
+      );
+
+      // Verificar que el chat está abierto
+      expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
+
+      // No debería mostrar el botón flotante en móvil
+      expect(
+        screen.queryByRole('button', { name: /abrir chat ia personalizado/i })
+      ).not.toBeInTheDocument();
+    });
+
+    test('maneja correctamente el cierre en móvil', () => {
+      const onClose = jest.fn();
+      renderWithI18n(
+        <PersonalizedChatAI
+          userProfile={mockUserProfile}
+          isMobile={true}
+          isOpen={true}
+          onClose={onClose}
+        />
+      );
+
+      // Cerrar el chat
+      const closeButton = screen.getByText('×');
+      fireEvent.click(closeButton);
+
+      // Verificar que se llamó al callback de cierre
+      expect(onClose).toHaveBeenCalled();
+    });
   });
 
   describe('Interacción con mensajes', () => {
@@ -98,21 +173,34 @@ describe('PersonalizedChatAI', () => {
 
       renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
 
+      // Abrir el chat
       const button = screen.getByRole('button', {
         name: /abrir chat ia personalizado/i,
       });
-      fireEvent.click(button);
+      await actAsync(async () => {
+        fireEvent.click(button);
+      });
 
+      // Esperar a que el chat esté visible
+      await waitFor(() => {
+        expect(screen.getByText('EGN IA Personal')).toBeInTheDocument();
+      });
+
+      // Interactuar con el chat
       const input = screen.getByPlaceholderText(/¿Alguna duda/i);
       const sendButton = screen.getByText('Enviar');
 
-      fireEvent.change(input, { target: { value: 'Test message' } });
-      fireEvent.click(sendButton);
+      await actAsync(async () => {
+        fireEvent.change(input, { target: { value: 'Test message' } });
+        fireEvent.click(sendButton);
+      });
 
+      // Verificar que el mensaje del usuario aparece
       await waitFor(() => {
         expect(screen.getByText('Test message')).toBeInTheDocument();
       });
 
+      // Verificar que la respuesta de la IA aparece
       await waitFor(() => {
         expect(screen.getByText('Respuesta de la IA')).toBeInTheDocument();
       });
@@ -123,17 +211,29 @@ describe('PersonalizedChatAI', () => {
 
       renderWithI18n(<PersonalizedChatAI userProfile={mockUserProfile} />);
 
+      // Abrir el chat
       const button = screen.getByRole('button', {
         name: /abrir chat ia personalizado/i,
       });
-      fireEvent.click(button);
+      await actAsync(async () => {
+        fireEvent.click(button);
+      });
 
+      // Esperar a que el chat esté visible
+      await waitFor(() => {
+        expect(screen.getByText('EGN IA Personal')).toBeInTheDocument();
+      });
+
+      // Interactuar con el chat
       const input = screen.getByPlaceholderText(/¿Alguna duda/i);
       const sendButton = screen.getByText('Enviar');
 
-      fireEvent.change(input, { target: { value: 'Test message' } });
-      fireEvent.click(sendButton);
+      await actAsync(async () => {
+        fireEvent.change(input, { target: { value: 'Test message' } });
+        fireEvent.click(sendButton);
+      });
 
+      // Verificar mensaje de error
       await waitFor(() => {
         expect(
           screen.getByText(/Ocurrió un error al conectar con la IA/i)
@@ -1077,6 +1177,142 @@ describe('PersonalizedChatAI', () => {
         screen.getByText(/¡Hola! Soy tu asistente personal de suplementación/i)
       ).toBeInTheDocument();
       expect(screen.queryByText(/Historial de chats/i)).not.toBeInTheDocument();
+    });
+
+    test('maneja la generación de respuestas correctamente', async () => {
+      (fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ reply: 'Respuesta de la IA' }),
+      });
+
+      render(
+        <I18nextProvider i18n={i18n}>
+          <PersonalizedChatAI
+            userProfile={mockUserProfile}
+            mobileMenuOpen={false}
+            isMobile={false}
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </I18nextProvider>
+      );
+
+      // Esperar a que el botón de chat esté visible y hacer clic en él
+      const chatButton = await screen.findByRole('button', {
+        name: /abrir chat ia personalizado/i,
+      });
+      fireEvent.click(chatButton);
+
+      // Esperar a que el chat esté visible
+      await waitFor(() => {
+        expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
+      });
+
+      // Ahora buscar el input y el botón
+      const input = screen.getByPlaceholderText(/¿alguna duda/i);
+      const sendButton = screen.getByRole('button', { name: /enviar/i });
+
+      // Interactuar con el chat
+      await actAsync(async () => {
+        fireEvent.change(input, { target: { value: 'Test message' } });
+        fireEvent.click(sendButton);
+      });
+
+      // Verificar que el mensaje del usuario aparece
+      await waitFor(() => {
+        expect(screen.getByText('Test message')).toBeInTheDocument();
+      });
+
+      // Verificar que la respuesta de la IA aparece
+      await waitFor(() => {
+        expect(screen.getByText('Respuesta de la IA')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Comportamiento con menú móvil', () => {
+    test('se cierra cuando se abre el menú móvil', () => {
+      const { rerender } = renderWithI18n(
+        <PersonalizedChatAI
+          userProfile={mockUserProfile}
+          mobileMenuOpen={false}
+          isMobile={true}
+          isOpen={true}
+        />
+      );
+
+      // Verificar que el chat está abierto inicialmente
+      expect(screen.getByText(/EGN IA Personal/i)).toBeInTheDocument();
+
+      // Simular apertura del menú móvil
+      rerender(
+        <I18nextProvider i18n={i18n}>
+          <PersonalizedChatAI
+            userProfile={mockUserProfile}
+            mobileMenuOpen={true}
+            isMobile={true}
+            isOpen={true}
+          />
+        </I18nextProvider>
+      );
+
+      // Verificar que el chat se cerró
+      expect(screen.queryByText(/EGN IA Personal/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Navegación y estado del chat', () => {
+    test('mantiene el estado del chat al cambiar entre vistas', () => {
+      const { rerender } = renderWithI18n(
+        <PersonalizedChatAI
+          userProfile={mockUserProfile}
+          isPageContent={true}
+        />
+      );
+
+      // Enviar un mensaje
+      const input = screen.getByPlaceholderText(/¿Alguna duda/i);
+      fireEvent.change(input, { target: { value: 'Test message' } });
+      fireEvent.click(screen.getByText('Enviar'));
+
+      // Cambiar a vista flotante
+      rerender(
+        <I18nextProvider i18n={i18n}>
+          <PersonalizedChatAI
+            userProfile={mockUserProfile}
+            isPageContent={false}
+          />
+        </I18nextProvider>
+      );
+
+      // El mensaje debería seguir visible
+      expect(screen.getByText('Test message')).toBeInTheDocument();
+    });
+
+    test('mantiene el historial al cambiar entre vistas', async () => {
+      const { rerender } = renderWithI18n(
+        <PersonalizedChatAI
+          userProfile={mockUserProfile}
+          isPageContent={true}
+        />
+      );
+
+      // Abrir historial
+      const historyButton = screen.getByRole('button', { name: /historial/i });
+      fireEvent.click(historyButton);
+
+      // Cambiar a vista flotante
+      rerender(
+        <I18nextProvider i18n={i18n}>
+          <PersonalizedChatAI
+            userProfile={mockUserProfile}
+            isPageContent={false}
+          />
+        </I18nextProvider>
+      );
+
+      // El historial debería mantenerse
+      expect(screen.getByText(/Historial de chats/i)).toBeInTheDocument();
     });
   });
 });
