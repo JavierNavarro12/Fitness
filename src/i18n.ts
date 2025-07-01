@@ -8,6 +8,7 @@ const resources = {
       'nav.custom': 'Personalize',
       'nav.reports': 'Reports',
       'nav.categories': 'Categories',
+      'nav.blog': 'Blog',
       'search.placeholder': 'Search...',
       'home.welcome': 'Welcome to EGN',
       'home.description':
@@ -198,7 +199,11 @@ const resources = {
         'It is crucial that you include this information in your profile. Our AI will consider these limitations to avoid recommendations that may be harmful to your health.',
       'faq.q10': 'How do I contact support?',
       'faq.a10':
-        'You can contact us by email at endlessgoalsnutrition@gmail.com or follow us on our social networks for the latest updates and tips.',
+        'You can contact us through our contact form or by email. We are here to help you with any questions about our service.',
+      'blog.title': 'Blog',
+      'blog.readMore': 'Read more',
+      'blog.backToList': '← Back to blog',
+      'blog.noPosts': 'No blog posts available yet.',
       'faq.notFoundTitle': "Can't find your answer?",
       'faq.notFoundText':
         'Our team is here to help you. Feel free to contact us.',
@@ -597,6 +602,7 @@ const resources = {
       'nav.custom': 'Personalizar',
       'nav.reports': 'Informes',
       'nav.categories': 'Categorías',
+      'nav.blog': 'Blog',
       'search.placeholder': 'Buscar...',
       'home.welcome': 'Bienvenido a EGN',
       'home.description':
@@ -631,7 +637,7 @@ const resources = {
         'El 75% de las personas no consume suficiente magnesio diariamente',
       'salud.stats.omega3':
         'Solo el 10% de la población consume la cantidad recomendada de Omega-3',
-      'grasa.title': 'Quema de Grasa Inteligente',
+      'grasa.title': 'Quema de Grasa',
       'grasa.description':
         'Descubre los suplementos y estrategias más efectivos para optimizar la pérdida de grasa de forma saludable y sostenible.',
       'grasa.card.suplementos': 'Suplementos Clave',
@@ -789,6 +795,10 @@ const resources = {
       'faq.q10': '¿Cómo contacto con soporte?',
       'faq.a10':
         'Puedes contactarnos por email en endlessgoalsnutrition@gmail.com o seguirnos en nuestras redes sociales para obtener las últimas actualizaciones y consejos.',
+      'blog.title': 'Blog',
+      'blog.readMore': 'Leer más',
+      'blog.backToList': '← Volver al blog',
+      'blog.noPosts': 'Aún no hay posts disponibles.',
       'faq.notFoundTitle': '¿No encuentras tu respuesta?',
       'faq.notFoundText':
         'Nuestro equipo está aquí para ayudarte. No dudes en contactarnos.',
