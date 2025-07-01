@@ -654,16 +654,16 @@ const resources = {
       'grasa.cafeina.content':
         'Estimula el metabolismo, incrementa el gasto energético y mejora el rendimiento durante el ejercicio. Ayuda a movilizar la grasa para su uso como energía.',
       'grasa.puntos-clave': 'Puntos Clave',
-      'mujer.title': "Women's Health & Wellness",
+      'mujer.title': 'Salud y Bienestar Femenino',
       'mujer.description':
-        'Women have unique nutritional and physiological needs. This section focuses on key supplements to support hormonal, bone, and overall female wellness.',
-      'mujer.stats.title': "Women's Health in Numbers",
+        'Las mujeres tienen necesidades nutricionales y fisiológicas únicas. Esta sección se centra en suplementos clave para apoyar el bienestar hormonal, óseo y general femenino.',
+      'mujer.stats.title': 'Salud Femenina en Números',
       'mujer.stats.fundamentos':
-        '85% of women do not consume enough calcium to prevent osteoporosis',
+        'El 85% de las mujeres no consume suficiente calcio para prevenir la osteoporosis',
       'mujer.stats.equilibrio':
-        '70% of women experience hormonal imbalances at some point in their lives',
+        'El 70% de las mujeres experimenta desequilibrios hormonales en algún momento de su vida',
       'mujer.stats.escucha':
-        '60% of women who listen to their bodies improve their overall well-being',
+        'El 60% de las mujeres que escuchan a su cuerpo mejoran su bienestar general',
       'cognitivo.title': 'Rendimiento Cognitivo',
       'cognitivo.description':
         'Tu cerebro es tu activo más importante. Descubre cómo la suplementación puede potenciar tu enfoque, memoria y resistencia al estrés para un máximo rendimiento mental.',
@@ -1198,7 +1198,7 @@ const resources = {
 i18n.use(initReactI18next).init({
   resources,
   lng: 'es',
-  fallbackLng: 'es',
+  fallbackLng: 'en',
   interpolation: {
     escapeValue: false,
   },
