@@ -18,37 +18,52 @@ EGN Fitness es una plataforma web progresiva que utiliza inteligencia artificial
 
 ## ✨ Características Principales
 
-- �� **IA Personalizada**: Recomendaciones basadas en perfil completo del usuario
+- 🧠 **IA Personalizada**: Recomendaciones basadas en perfil completo del usuario
 - 📊 **Reportes Profesionales**: Generación automática de informes detallados
-- �� **Chat Inteligente**: Asistente virtual con contexto personalizado
+- 💬 **Chat Inteligente**: Asistente virtual con contexto personalizado
 - 📱 **PWA**: Aplicación web progresiva con funcionalidad offline
 - 🌍 **Internacionalización**: Soporte completo para Español e Inglés
 - 📄 **Exportación PDF**: Reportes descargables en formato profesional
-- �� **Autenticación**: Sistema seguro con Firebase Auth
-- �� **Historial**: Seguimiento de reportes y conversaciones
+- 🔐 **Autenticación**: Sistema seguro con Firebase Auth
+- 📈 **Historial**: Seguimiento de reportes y conversaciones
 
-## ��️ Stack Tecnológico
+## 🛠️ Stack Tecnológico
 
 ### Frontend
 
 - **React 18** con TypeScript
-- **Tailwind CSS** para estilos
-- **React Router** para navegación
+- **Tailwind CSS** para estilos responsivos
+- **React Router** para navegación SPA
 - **React i18next** para internacionalización
-- **AOS** para animaciones
+- **AOS** para animaciones suaves
+- **React PDF** para generación de documentos
+- **React Markdown** para contenido dinámico
 
 ### Backend & Servicios
 
-- **Firebase** (Auth + Firestore)
-- **OpenAI GPT-3.5** para IA
-- **Netlify Functions** para API
-- **Netlify** para hosting
+- **Firebase Auth** para autenticación
+- **Firestore** para base de datos NoSQL
+- **OpenAI GPT-3.5** para inteligencia artificial
+- **Contentful** como CMS headless para gestión de blogs
+- **Netlify Functions** para API serverless
+- **Netlify Forms** para formularios de contacto
+- **Netlify** para hosting y CDN
 
-### Herramientas
+### Testing & Calidad
 
-- **React PDF** para generación de documentos
-- **React Markdown** para contenido
-- **Jest & Testing Library** para testing
+- **Jest** para testing unitario con coverage
+- **React Testing Library** para testing de componentes
+- **Cypress** para tests end-to-end (E2E)
+- **ESLint** para análisis estático de código
+- **Prettier** para formateo automático
+- **Husky** para hooks de pre-commit
+
+### CI/CD & DevOps
+
+- **GitHub Actions** para integración continua
+- **Codecov** para reportes de cobertura
+- **Lighthouse CI** para auditoría de rendimiento
+- **TypeScript** para tipado estático
 
 ## 🚀 Instalación
 
@@ -83,20 +98,51 @@ REACT_APP_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
 REACT_APP_FIREBASE_APP_ID=tu_app_id
 OPENAI_API_KEY=tu_openai_key
+REACT_APP_CONTENTFUL_SPACE_ID=tu_contentful_space_id
+REACT_APP_CONTENTFUL_ACCESS_TOKEN=tu_contentful_access_token
+REACT_APP_CONTENTFUL_ENVIRONMENT=master
 ```
 
 **Nota:**  
 Por motivos de seguridad, las credenciales **no están incluidas** en el repositorio.  
-Debes crear tu propio proyecto en [Firebase](https://firebase.google.com/) y obtener una API key de [OpenAI](https://platform.openai.com/).
+Debes crear tu propio proyecto en [Firebase](https://firebase.google.com/), obtener una API key de [OpenAI](https://platform.openai.com/) y configurar un espacio en [Contentful](https://www.contentful.com/) para la gestión de blogs.
 
 ## 🔧 Scripts Disponibles
 
 ```bash
 npm start          # Ejecutar en modo desarrollo
 npm run build      # Construir para producción
-npm test           # Ejecutar tests
-npm run eject      # Eject (irreversible)
+npm test           # Ejecutar tests unitarios
+npm run test:e2e   # Ejecutar tests E2E con Cypress
+npm run test:all   # Ejecutar todos los tests
+npm run cypress:open # Abrir Cypress en modo interactivo
+npm run lint       # Análisis de código con ESLint
+npm run format     # Formatear código con Prettier
 ```
+
+## 🧪 Testing & Cobertura
+
+El proyecto incluye una suite completa de testing:
+
+### Tests Unitarios
+
+- **Framework**: Jest + React Testing Library
+- **Cobertura**: Reportes automáticos con Codecov
+- **Comando**: `npm test`
+
+### Tests E2E
+
+- **Framework**: Cypress
+- **Configuración**: Automated viewport testing
+- **Comando**: `npm run cypress:run`
+
+### CI/CD Pipeline
+
+- ✅ Tests unitarios automáticos
+- ✅ Tests E2E en cada PR
+- ✅ Reportes de cobertura
+- ✅ Auditoría de rendimiento con Lighthouse
+- ✅ Deploy automático a Netlify
 
 ## ✅ Estado del Proyecto
 
@@ -112,13 +158,15 @@ npm run eject      # Eject (irreversible)
 - [x] Internacionalización (ES/EN)
 - [x] Sistema de búsqueda semántica
 - [x] Modo oscuro/claro
+- [x] Pipeline CI/CD completo
+- [x] Tests unitarios y E2E
 
 ### 🚧 En Desarrollo
 
 - [ ] Integración con wearables
 - [ ] Sistema de seguimiento de progreso
 - [ ] Comunidad de usuarios
-- [ ] Tests automatizados completos
+- [ ] Métricas avanzadas de performance
 
 ## 🤝 Contribuir
 
@@ -132,25 +180,22 @@ npm run eject      # Eject (irreversible)
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
-## ��‍💻 Autor
+## 👨‍💻 Autor
 
 **Javier Navarro** - [GitHub](https://github.com/JavierNavarro12)
 
 - 🌐 [Sitio Web](https://endlessgoalsnutrition.com/)
 - 📧 Email: endlessgoalsnutrition@gmail.com
-- �� Granada, España 🇪🇸
+- 📍 Granada, España 🇪🇸
 
-## �� Agradecimientos
+## 🙏 Agradecimientos
 
 - [OpenAI](https://openai.com/) por proporcionar la API de IA
 - [Firebase](https://firebase.google.com/) por la infraestructura backend
+- [Contentful](https://www.contentful.com/) por el CMS headless para blogs
 - [Netlify](https://netlify.com/) por el hosting y funciones serverless
 - [Tailwind CSS](https://tailwindcss.com/) por el framework de estilos
 
 ---
 
 ⭐ **Si este proyecto te ha sido útil, ¡dale una estrella en GitHub!**
-
-<!-- Trigger CI/CD workflow -->
-
-Prueba de integración continua con Codecov.
