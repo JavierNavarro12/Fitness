@@ -424,6 +424,28 @@ export default function ReportAccordionList({
     }
   }, [initialExpandedId, reports.length]);
 
+  // Hacer scroll automático al informe expandido
+  useEffect(() => {
+    if (expandedId && reportRefs.current[expandedId]) {
+      // Delay más largo para asegurar que el DOM se haya actualizado completamente
+      // y evitar conflictos con ScrollToTop
+      setTimeout(() => {
+        const element = reportRefs.current[expandedId];
+        if (element) {
+          // Obtener la posición del elemento
+          const elementRect = element.getBoundingClientRect();
+          const offsetTop = window.pageYOffset + elementRect.top;
+
+          // Hacer scroll con un offset para mostrar la parte roja completa
+          window.scrollTo({
+            top: offsetTop - 80, // 80px de margen superior para mostrar toda la parte roja
+            behavior: 'smooth',
+          });
+        }
+      }, 300);
+    }
+  }, [expandedId]);
+
   const toggleReport = (reportId: string) => {
     if (expandedId === reportId) {
       setExpandedId(null);
