@@ -84,7 +84,6 @@ function parseReportContent(content: string): {
     }
 
     // Parsing mejorado: buscar patrones más flexibles
-    const sectionText = section.toLowerCase();
     const originalLines = section
       .split('\n')
       .map(line => line.trim())
