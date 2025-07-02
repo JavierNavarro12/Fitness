@@ -55,10 +55,21 @@ const Footer: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const isHome =
+    typeof window !== 'undefined' && window.location.pathname === '/';
+
+  React.useEffect(() => {
+    if (isHome) {
+      // Forzamos visibilidad de todos los elementos que tengan data-aos
+      const nodes = document.querySelectorAll('footer [data-aos]');
+      nodes.forEach(node => node.classList.add('aos-animate'));
+    }
+  }, [isHome]);
+
   return (
     <footer
-      className='hidden sm:block bg-gray-900 text-white pt-14 pb-8'
-      data-aos='fade-up'
+      className='hidden sm:block bg-gray-900 text-white pt-14 pb-8 aos-animate'
+      data-aos={isHome ? undefined : 'fade-up'}
     >
       <div className='container mx-auto px-6'>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>

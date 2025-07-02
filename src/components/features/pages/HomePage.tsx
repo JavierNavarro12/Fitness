@@ -81,9 +81,9 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
         </div>
       </div>
 
-      {/* Desktop: diseño con imágenes */}
-      <div className='hidden sm:block p-4 md:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen'>
-        <div className='sm:flex sm:flex-col sm:items-center sm:justify-between max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 mb-8'>
+      {/* Wrapper que replica la lógica de la página de Informes */}
+      <div className='hidden sm:flex items-center justify-center min-h-[calc(100vh-8rem)] -mt-4 mb-20'>
+        <div className='max-w-4xl w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8'>
           <h2 className='text-3xl font-bold text-red-600 mb-4 text-center'>
             {t('home.welcome')}
           </h2>
