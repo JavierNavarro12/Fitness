@@ -82,7 +82,7 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
       </div>
 
       {/* Desktop: diseño con imágenes */}
-      <div className='hidden sm:flex sm:flex-col sm:items-center sm:justify-between max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-16 mb-8 min-h-[calc(100vh-12rem)]'>
+      <div className='hidden sm:flex sm:flex-col sm:items-center sm:justify-between max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 mb-8 min-h-[calc(100vh-12rem)]'>
         <h2 className='text-3xl font-bold text-red-600 mb-4 text-center'>
           {t('home.welcome')}
         </h2>

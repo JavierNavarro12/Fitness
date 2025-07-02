@@ -187,6 +187,7 @@ function App() {
   const [showSummary, setShowSummary] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const profileButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     // Inicializar AOS solo si no estamos en test
@@ -695,6 +696,24 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
     }
   }, [showMobileChat]);
 
+  // Cerrar menú de usuario al hacer click fuera (ignorando el botón de perfil)
+  useEffect(() => {
+    if (!showUserMenu) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        (userMenuRef.current &&
+          userMenuRef.current.contains(event.target as Node)) ||
+        (profileButtonRef.current &&
+          profileButtonRef.current.contains(event.target as Node))
+      ) {
+        return;
+      }
+      setShowUserMenu(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showUserMenu]);
+
   if (location.pathname === '/login') {
     return <LoginPage />;
   }
@@ -865,6 +884,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
               <div className='flex items-center justify-end gap-2'>
                 {user ? (
                   <button
+                    ref={profileButtonRef}
                     className='flex items-center focus:outline-none'
                     onClick={() => setShowUserMenu(v => !v)}
                     aria-label='Menú de usuario'
@@ -980,6 +1000,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
               onClick={() => setShowMobileSearch(v => !v)}
               className='text-gray-600 dark:text-gray-300'
               data-testid='search-button'
+              aria-label='Buscar'
             >
               <SearchIcon className='h-6 w-6' />
             </button>
@@ -987,6 +1008,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
               onClick={() => setMobileMenuOpen(true)}
               className='text-gray-600 dark:text-gray-300'
               data-testid='hamburger-menu'
+              aria-label='Abrir menú de navegación'
             >
               <HamburgerIcon className='h-7 w-7' />
             </button>
