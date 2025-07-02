@@ -9,9 +9,12 @@ import {
   FaTrash,
   FaChevronDown,
   FaChevronUp,
+  FaToggleOn,
+  FaToggleOff,
 } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import ReportView from './ReportView';
+import StructuredReportView from './StructuredReportView';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReportPDF from './ReportPDF';
 import {
@@ -379,6 +382,9 @@ export default function ReportAccordionList({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [mobileStructuredViews, setMobileStructuredViews] = useState<{
+    [key: string]: boolean;
+  }>({});
   const reportRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
 
   // Escuchar cambios en el estado de autenticación
@@ -499,6 +505,13 @@ export default function ReportAccordionList({
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
+  };
+
+  const toggleMobileStructuredView = (reportId: string) => {
+    setMobileStructuredViews(prev => ({
+      ...prev,
+      [reportId]: !prev[reportId],
+    }));
   };
 
   // Filtrar informes válidos
@@ -631,6 +644,22 @@ export default function ReportAccordionList({
                         <button
                           onClick={e => {
                             e.stopPropagation();
+                            toggleMobileStructuredView(reportId);
+                          }}
+                          className='flex items-center justify-center w-7 h-7 rounded-lg border-2 border-purple-300 dark:border-purple-400 bg-white dark:bg-gray-900 text-purple-600 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-800 transition'
+                          title={
+                            mobileStructuredViews[reportId]
+                              ? 'Cambiar a vista clásica'
+                              : 'Cambiar a vista estructurada'
+                          }
+                        >
+                          {mobileStructuredViews[reportId]
+                            ? FaToggleOn({ className: 'text-purple-500' })
+                            : FaToggleOff({ className: 'text-purple-600' })}
+                        </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
                             handleCopy(report);
                           }}
                           className='flex items-center justify-center w-7 h-7 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 transition'
@@ -700,7 +729,7 @@ export default function ReportAccordionList({
                                 onDelete(report.id);
                               }
                             }}
-                            className='flex items-center justify-center w-7 h-7 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition'
+                            className='flex items-center justify-center w-7 h-7 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 transition'
                             title={t('report.delete')}
                           >
                             {FaTrash({ className: 'text-lg' })}
@@ -710,34 +739,41 @@ export default function ReportAccordionList({
                     </div>
 
                     {/* Contenido del informe */}
-                    <div className='prose max-w-none bg-white p-2 rounded-xl mb-2 text-xs'>
-                      {(() => {
-                        let cleanMarkdown = filteredContent
-                          .replace(/^```[a-z]*\n?/i, '') // elimina ``` al inicio
-                          .replace(/```$/i, '') // elimina ``` al final
-                          .split('\n')
-                          .map(line => line.replace(/^\s+/, ''))
-                          .join('\n');
-                        return <ReactMarkdown>{cleanMarkdown}</ReactMarkdown>;
-                      })()}
-                    </div>
-
-                    {/* Sección de Productos Recomendados */}
-                    {supplements.length > 0 && (
-                      <div className='px-2 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
-                        <h3 className='text-xs font-bold text-red-600 dark:text-red-400 mb-2'>
-                          Productos Recomendados
-                        </h3>
-                        <ul className='space-y-2'>
-                          {supplements.map((supplement, idx) => (
-                            <AccordionSupplement
-                              key={supplement.name + '-' + idx}
-                              supplement={supplement.name}
-                            />
-                          ))}
-                        </ul>
+                    {mobileStructuredViews[reportId] ? (
+                      <div className='mb-2'>
+                        <StructuredReportView report={report} />
+                      </div>
+                    ) : (
+                      <div className='prose max-w-none bg-white p-2 rounded-xl mb-2 text-xs'>
+                        {(() => {
+                          let cleanMarkdown = filteredContent
+                            .replace(/^```[a-z]*\n?/i, '') // elimina ``` al inicio
+                            .replace(/```$/i, '') // elimina ``` al final
+                            .split('\n')
+                            .map(line => line.replace(/^\s+/, ''))
+                            .join('\n');
+                          return <ReactMarkdown>{cleanMarkdown}</ReactMarkdown>;
+                        })()}
                       </div>
                     )}
+
+                    {/* Sección de Productos Recomendados - Solo en vista clásica */}
+                    {!mobileStructuredViews[reportId] &&
+                      supplements.length > 0 && (
+                        <div className='px-2 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
+                          <h3 className='text-xs font-bold text-red-600 dark:text-red-400 mb-2'>
+                            Productos Recomendados
+                          </h3>
+                          <ul className='space-y-2'>
+                            {supplements.map((supplement, idx) => (
+                              <AccordionSupplement
+                                key={supplement.name + '-' + idx}
+                                supplement={supplement.name}
+                              />
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>

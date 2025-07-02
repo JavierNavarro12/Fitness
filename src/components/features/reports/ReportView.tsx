@@ -12,10 +12,13 @@ import {
   FaCircleCheck,
   FaDownload,
   FaTrash,
+  FaToggleOn,
+  FaToggleOff,
 } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReportPDF from './ReportPDF';
+import StructuredReportView from './StructuredReportView';
 
 interface ReportViewProps {
   report: Report;
@@ -298,6 +301,7 @@ const markdownComponents = {
 const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const [useStructuredView, setUseStructuredView] = useState(false); // Iniciar con vista clásica
   const reportRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = async () => {
@@ -361,6 +365,26 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
         </div>
         <div className='flex flex-row items-center gap-1 sm:gap-2'>
           <button
+            onClick={() => setUseStructuredView(!useStructuredView)}
+            className='flex items-center justify-center w-10 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-1 sm:px-3 sm:py-1.5 rounded-lg border-2 border-purple-300 dark:border-purple-400 bg-white dark:bg-gray-900 text-purple-600 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-800 font-semibold text-xs sm:text-sm shadow-md transition'
+            title={
+              useStructuredView
+                ? 'Cambiar a vista clásica'
+                : 'Cambiar a vista estructurada'
+            }
+          >
+            {useStructuredView
+              ? FaToggleOn({
+                  className: 'text-purple-500 text-lg sm:text-base',
+                })
+              : FaToggleOff({
+                  className: 'text-purple-600 text-lg sm:text-base',
+                })}
+            <span className='hidden sm:inline ml-2'>
+              {useStructuredView ? 'Estructurada' : 'Clásica'}
+            </span>
+          </button>
+          <button
             onClick={handleCopy}
             className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition'
             title={t('report.copy')}
@@ -398,9 +422,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
                 ) : (
                   <>
                     {FaDownload({ className: 'text-lg' })}
-                    <span className='hidden sm:inline ml-2'>
-                      {t('report.downloadPDF')}
-                    </span>
+                    <span className='hidden sm:inline ml-2'>PDF</span>
                   </>
                 )
               }
@@ -418,10 +440,11 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
                   onDelete(report.id);
                 }
               }}
-              className='flex items-center justify-center w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition ml-1'
+              className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition ml-1'
               title={t('report.delete')}
             >
               {FaTrash({ className: 'text-lg' })}
+              <span className='hidden sm:inline ml-2'>Eliminar</span>
             </button>
           )}
         </div>
@@ -431,14 +454,18 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
         <div className='text-xs text-gray-500 dark:text-gray-400 mb-2'>
           {new Date(report.createdAt).toLocaleString()}
         </div>
-        <div className='prose max-w-3xl mx-auto bg-white p-6 rounded-xl'>
-          <ReactMarkdown components={markdownComponents}>
-            {cleanMarkdown}
-          </ReactMarkdown>
-        </div>
+        {useStructuredView ? (
+          <StructuredReportView report={report} />
+        ) : (
+          <div className='prose max-w-3xl mx-auto bg-white p-6 rounded-xl'>
+            <ReactMarkdown components={markdownComponents}>
+              {cleanMarkdown}
+            </ReactMarkdown>
+          </div>
+        )}
 
-        {/* Sección de Enlaces a Productos Recomendados */}
-        {supplementsWithLinks.length > 0 && (
+        {/* Sección de Enlaces a Productos Recomendados - Solo en vista clásica */}
+        {!useStructuredView && supplementsWithLinks.length > 0 && (
           <div className='px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
             <h3 className='text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3'>
               Productos Recomendados

@@ -488,22 +488,29 @@ For each recommended supplement, specify:
 - The best time of day to take it (e.g., before/after training, breakfast, night, etc)
 - Any important usage recommendations or warnings
 
-The format for each supplement should be:
-- **Supplement Name**  
-  - Recommended dose: X  
-  - Timing: Y  
-  - Notes: Z
+IMPORTANT: The format for each supplement must be exactly like this (EXAMPLE):
+
+## Whey Protein
+Recommended dose: 30g
+Timing: After workout
+Notes: Helps with muscle recovery
+
+## Creatine Monohydrate
+Recommended dose: 5g
+Timing: Any time of day
+Notes: May increase water retention
+
+Use EXACTLY this format for EVERY recommended supplement:
 
 Do not repeat the profile summary, only the report and the product list.
 The report must be clear, professional, and easy to read.
 
 Provide a detailed report in Spanish with the following sections in Markdown format:
 1.  **Introducción Personalizada**: Brief and motivating introduction.
-2.  **Suplementos Base (Fundamentales)**: Recommended supplements regardless of the goal (e.g., protein, creatine, Omega-3), explaining why for this user, and for each, specify dose, timing, and notes as above.
-3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Specific supplements for the user's goal, with dose, timing, and notes.
-4.  **Suplementos para tu Deporte (${t(customProfile.sport)})**: Specific supplements for the user's sport, with dose, timing, and notes.
-5.  **Consideraciones Adicionales**: Health warnings, importance of diet, etc.
-6.  **Resumen y Siguientes Pasos**: Final summary and recommendations.
+2.  **Suplementos Base (Fundamentales)**: For each fundamental supplement, use the format specified above with ## for the name.
+3.  **Suplementos para tu Objetivo (${customProfile.objective})**: For each specific supplement, use the format specified above with ## for the name.
+4.  **Suplementos para tu Deporte (${t(customProfile.sport)})**: For each specific supplement, use the format specified above with ## for the name.
+5.  **Notas Adicionales**: Health warnings, importance of diet, general important recommendations.
 
 Finally, add a separate section with the title '### Recommended Products' and under it, a bulleted list of 3-5 specific products (e.g., 'Whey Protein - Optimum Nutrition Gold Standard Whey'). Do not add links, just the text.
 `
@@ -530,22 +537,29 @@ Para cada suplemento recomendado, indica:
 - El mejor momento del día para tomarlo (por ejemplo: antes/después de entrenar, desayuno, noche, etc)
 - Observaciones o advertencias importantes de uso
 
-El formato para cada suplemento debe ser:
-- **Nombre del suplemento**  
-  - Dosis recomendada: X  
-  - Momento de toma: Y  
-  - Observaciones: Z
+IMPORTANTE: El formato para cada suplemento debe ser exactamente así (EJEMPLO):
+
+## Proteína Whey
+Dosis recomendada: 30g
+Momento de toma: Después del entrenamiento
+Observaciones: Ayuda en la recuperación muscular
+
+## Creatina Monohidratada
+Dosis recomendada: 5g
+Momento de toma: En cualquier momento del día
+Observaciones: Puede aumentar la retención de agua
+
+Usa EXACTAMENTE este formato para CADA suplemento recomendado:
 
 No repitas el resumen del perfil, solo el informe y la lista de productos.
 El informe debe ser claro, profesional y fácil de leer.
 
 Proporciona un informe detallado en español con las siguientes secciones en formato Markdown:
 1.  **Introducción Personalizada**: Introducción breve y motivadora.
-2.  **Suplementos Base (Fundamentales)**: Suplementos recomendados independientemente del objetivo (ej. proteína, creatina, Omega-3), explicando el porqué para este usuario, y para cada uno, especifica dosis, momento y observaciones como arriba.
-3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Suplementos específicos para el objetivo del usuario, con dosis, momento y observaciones.
-4.  **Suplementos para tu Deporte (${t(customProfile.sport)})**: Suplementos específicos para el deporte del usuario, con dosis, momento y observaciones.
-5.  **Consideraciones Adicionales**: Advertencias de salud, importancia de la dieta, etc.
-6.  **Resumen y Siguientes Pasos**: Resumen final y recomendaciones.
+2.  **Suplementos Base (Fundamentales)**: Para cada suplemento fundamental, usa el formato especificado arriba con ## para el nombre.
+3.  **Suplementos para tu Objetivo (${customProfile.objective})**: Para cada suplemento específico, usa el formato especificado arriba con ## para el nombre.
+4.  **Suplementos para tu Deporte (${t(customProfile.sport)})**: Para cada suplemento específico, usa el formato especificado arriba con ## para el nombre.
+5.  **Notas Adicionales**: Advertencias de salud, importancia de la dieta, recomendaciones generales importantes.
 
 Finalmente, añade una sección separada con el título '### Productos Recomendados' y, debajo, una lista de viñetas con 3-5 productos específicos (ej. 'Proteína en Polvo - Optimum Nutrition Gold Standard Whey'). No añadas enlaces, solo el texto.
 `;

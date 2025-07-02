@@ -94,6 +94,16 @@ jest.mock('react-icons/fa6', () => ({
       🗑️
     </div>
   ),
+  FaToggleOn: ({ className }: { className?: string }) => (
+    <div data-testid='fa-toggle-on' className={className}>
+      🟢
+    </div>
+  ),
+  FaToggleOff: ({ className }: { className?: string }) => (
+    <div data-testid='fa-toggle-off' className={className}>
+      ⚪
+    </div>
+  ),
 }));
 
 // Mock de navigator.clipboard
@@ -195,8 +205,9 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
       Promise.resolve()
     );
 
-    // Envolver en act y hacer clic en el primer botón de acción (copiar)
-    await userEvent.click(screen.getAllByRole('button')[0]);
+    // Envolver en act y hacer clic en el botón de copiar específico
+    const copyButton = screen.getByTitle('Copiar');
+    await userEvent.click(copyButton);
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       mockReport.content
     );
