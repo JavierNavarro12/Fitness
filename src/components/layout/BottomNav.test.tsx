@@ -29,7 +29,11 @@ describe('BottomNav', () => {
     mockLocation.pathname = '/';
   });
 
-  const renderBottomNav = (props?: { user?: any; onSignOut?: () => void }) => {
+  const renderBottomNav = (props?: {
+    user?: any;
+    onSignOut?: () => void;
+    onNavigationClick?: () => void;
+  }) => {
     return render(
       <BrowserRouter>
         <BottomNav {...props} onChatClick={() => {}} isChatOpen={false} />
@@ -134,5 +138,28 @@ describe('BottomNav', () => {
 
     // Verificar que el menú se muestra
     expect(screen.getByText('bottomNav.profile')).toBeInTheDocument();
+  });
+
+  it('llama a onNavigationClick cuando se hace clic en cualquier botón de navegación', () => {
+    const mockOnNavigationClick = jest.fn();
+    renderBottomNav({ onNavigationClick: mockOnNavigationClick });
+
+    const buttons = screen.getAllByRole('button');
+
+    // Home
+    fireEvent.click(buttons[0]);
+    expect(mockOnNavigationClick).toHaveBeenCalledTimes(1);
+
+    // Custom
+    fireEvent.click(buttons[1]);
+    expect(mockOnNavigationClick).toHaveBeenCalledTimes(2);
+
+    // Reports
+    fireEvent.click(buttons[2]);
+    expect(mockOnNavigationClick).toHaveBeenCalledTimes(3);
+
+    // Profile
+    fireEvent.click(buttons[4]);
+    expect(mockOnNavigationClick).toHaveBeenCalledTimes(4);
   });
 });

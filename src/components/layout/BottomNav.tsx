@@ -66,6 +66,7 @@ interface BottomNavProps {
   onSignOut?: () => void;
   onChatClick?: () => void;
   isChatOpen?: boolean;
+  onNavigationClick?: () => void; // Nueva prop para cerrar el menú móvil
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
@@ -73,6 +74,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
   onSignOut,
   onChatClick,
   isChatOpen,
+  onNavigationClick,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -127,11 +129,16 @@ const BottomNav: React.FC<BottomNavProps> = ({
         return (
           <button
             key={item.key}
-            onClick={() =>
-              item.onClick
-                ? item.onClick()
-                : item.path && startTransition(() => navigate(item.path))
-            }
+            onClick={() => {
+              // Cerrar el menú móvil si está abierto
+              onNavigationClick?.();
+
+              if (item.onClick) {
+                item.onClick();
+              } else if (item.path) {
+                startTransition(() => navigate(item.path));
+              }
+            }}
             className={`flex flex-col items-center justify-center flex-1 mx-1 py-1.5 focus:outline-none transition-colors ${isActive ? 'text-red-600 font-semibold' : 'text-gray-500 dark:text-gray-300'}`}
           >
             {item.customIcon ? (

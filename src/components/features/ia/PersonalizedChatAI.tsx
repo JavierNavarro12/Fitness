@@ -24,6 +24,7 @@ interface PersonalizedChatAIProps {
   isOpen?: boolean;
   onClose?: () => void;
   isPageContent?: boolean;
+  user?: any;
 }
 
 const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({
@@ -33,6 +34,7 @@ const PersonalizedChatAI: React.FC<PersonalizedChatAIProps> = ({
   isOpen = false,
   onClose,
   isPageContent = false,
+  user,
 }) => {
   const { i18n } = useTranslation();
   const [input, setInput] = useState('');
@@ -377,15 +379,17 @@ INSTRUCCIONES:
             className={`
               ${
                 isPageContent
-                  ? 'h-full flex-1 flex flex-col'
-                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45]`
+                  ? isMobile
+                    ? 'fixed top-16 left-0 right-0 bottom-20 flex flex-col bg-white dark:bg-gray-800 rounded-t-lg rounded-b-2xl'
+                    : 'h-full flex-1 flex flex-col bg-white rounded-2xl shadow-2xl border border-red-200'
+                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45] w-auto max-w-lg sm:w-[32rem] bg-white rounded-2xl shadow-2xl border border-red-200`
               }
-              w-auto max-w-lg sm:w-[32rem] bg-white rounded-2xl shadow-2xl border border-red-200 flex flex-col animate-fade-in overflow-hidden 
+              flex flex-col animate-fade-in overflow-hidden 
               ${!isMobile && !isPageContent && '-translate-x-1/2 sm:translate-x-0'}
             `}
           >
             {/* Header con botón historial */}
-            <div className='px-4 py-3 border-b border-red-100 bg-red-600 rounded-t-2xl text-white font-bold flex items-center justify-between'>
+            <div className='px-4 py-3 border-b border-red-100 bg-red-600 text-white font-bold flex items-center justify-between'>
               <div className='flex items-center gap-3'>
                 <span className='text-lg'>EGN IA Personal</span>
                 {currentChatId && (
@@ -503,17 +507,37 @@ INSTRUCCIONES:
                     <div className='mb-2 font-semibold text-gray-700'>
                       {i18n.language === 'en' ? 'Conversation' : 'Conversación'}
                     </div>
-                    <div className='space-y-2 text-sm'>
+                    <div className='space-y-3 text-sm'>
                       {selectedChat.messages.map((msg: any, i: number) => (
                         <div
                           key={i}
-                          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                          className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
+                          {/* Avatar para IA en historial */}
+                          {msg.role === 'assistant' && (
+                            <div className='w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0'>
+                              <span className='text-white text-xs font-bold'>
+                                AI
+                              </span>
+                            </div>
+                          )}
+
                           <div
-                            className={`px-3 py-1 rounded-xl max-w-[80%] ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-gray-100 text-gray-800 border border-gray-200'}`}
+                            className={`px-3 py-2 rounded-xl max-w-[75%] ${
+                              msg.role === 'user'
+                                ? 'bg-blue-500 text-white rounded-br-sm'
+                                : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                            }`}
                           >
                             {msg.content}
                           </div>
+
+                          {/* Avatar para usuario en historial */}
+                          {msg.role === 'user' && (
+                            <div className='w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0'>
+                              <span className='text-gray-600 text-xs'>👤</span>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -543,21 +567,63 @@ INSTRUCCIONES:
                     maxHeight: isPageContent ? 'none' : '60vh',
                   }}
                 >
-                  {messages.length === 0 && (
-                    <div className='text-gray-600 text-sm leading-relaxed'>
-                      {getWelcomeMessage()}
+                  {/* Mensaje de bienvenida siempre visible */}
+                  <div className='mb-4 flex items-end gap-2 justify-start'>
+                    {/* Avatar para IA */}
+                    <div className='w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0 mb-1'>
+                      <span className='text-white text-sm font-bold'>AI</span>
                     </div>
-                  )}
+
+                    {/* Bocadillo del mensaje de bienvenida */}
+                    <div className='px-4 py-3 rounded-2xl rounded-bl-md max-w-[75%] text-sm bg-gray-200 text-gray-800'>
+                      <div className='whitespace-pre-wrap'>
+                        {getWelcomeMessage()}
+                      </div>
+                    </div>
+                  </div>
                   {messages.map((msg, i) => (
                     <div
                       key={i}
-                      className={`mb-1.5 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`mb-4 flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
+                      {/* Avatar para IA (lado izquierdo) */}
+                      {msg.role === 'assistant' && (
+                        <div className='w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0 mb-1'>
+                          <span className='text-white text-sm font-bold'>
+                            AI
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Bocadillo del mensaje */}
                       <div
-                        className={`px-2.5 py-1 rounded-lg max-w-[80%] text-sm ${msg.role === 'user' ? 'bg-red-100 text-red-900' : 'bg-white text-gray-800 border border-gray-200'}`}
+                        className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm ${
+                          msg.role === 'user'
+                            ? 'bg-blue-500 text-white rounded-br-md'
+                            : 'bg-gray-200 text-gray-800 rounded-bl-md'
+                        }`}
                       >
-                        {msg.content}
+                        <div className='whitespace-pre-wrap'>{msg.content}</div>
                       </div>
+
+                      {/* Avatar para usuario (lado derecho) */}
+                      {msg.role === 'user' && (
+                        <div className='w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 mb-1 overflow-hidden'>
+                          {user?.photoURL || userProfile?.photo ? (
+                            <img
+                              src={user?.photoURL || userProfile?.photo}
+                              alt='Usuario'
+                              className='w-full h-full object-cover'
+                            />
+                          ) : (
+                            <span className='text-gray-600 text-sm font-bold'>
+                              {user?.displayName?.[0]?.toUpperCase() ||
+                                user?.email?.[0]?.toUpperCase() ||
+                                '👤'}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                   <div ref={messagesEndRef} />

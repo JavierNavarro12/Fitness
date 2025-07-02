@@ -559,8 +559,15 @@ const resources = {
       'deportes.fitness.content':
         'Creatine: Improves strength and power. BCAAs: Reduces muscle fatigue. Beta-Alanine: Increases endurance during short and intense efforts.',
       'sports.fitness': 'Fitness',
-      'profileSummary.years': 'años',
+      'profileSummary.years': 'years',
       'profileSummary.kg': 'kg',
+      'profileSummary.favoriteReports': 'Favorite Reports',
+      'profileSummary.noFavorites': 'You have no reports marked as favorites',
+      'profileSummary.addFavoritesHelp':
+        'Mark reports as favorites from the Reports section',
+      'profileSummary.back': 'Back',
+      'profileSummary.close': 'Close',
+      'profileSummary.removeFavorite': 'Remove from favorites',
       'cognitivo.memoria.title': 'Memory and Learning',
       'cognitivo.memoria.content':
         '- **Bacopa Monnieri:** Improves working memory and information retention.\n- **Ginkgo Biloba:** Enhances mental agility and cerebral circulation.\n- **Phosphatidylserine:** Essential for cognitive function and learning.\n- Strong memory is key for academic, professional, and athletic success.',
@@ -1158,6 +1165,14 @@ const resources = {
       'sports.fitness': 'Fitness',
       'profileSummary.years': 'años',
       'profileSummary.kg': 'kg',
+      'profileSummary.favoriteReports': 'Informes Favoritos',
+      'profileSummary.noFavorites':
+        'No tienes informes marcados como favoritos',
+      'profileSummary.addFavoritesHelp':
+        'Marca informes como favoritos desde la sección de Informes',
+      'profileSummary.back': 'Volver',
+      'profileSummary.close': 'Cerrar',
+      'profileSummary.removeFavorite': 'Quitar de favoritos',
       'cognitivo.memoria.title': 'Memoria y Aprendizaje',
       'cognitivo.memoria.content':
         '- **Bacopa Monnieri:** Mejora la memoria de trabajo y la retención de información.\n- **Ginkgo Biloba:** Favorece la agilidad mental y la circulación cerebral.\n- **Fosfatidilserina:** Clave para la función cognitiva y el aprendizaje.\n- Una memoria sólida es esencial para el éxito académico, profesional y deportivo.',

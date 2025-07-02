@@ -23,11 +23,17 @@ const visualCards = [
 const Home: React.FC<HomeProps> = ({ onStart }) => {
   const { t } = useTranslation();
   const lcpImgRef = useRef<HTMLImageElement>(null);
+  const lowPriorityImgRefs = useRef<(HTMLImageElement | null)[]>([]);
 
   useEffect(() => {
     if (lcpImgRef.current) {
       lcpImgRef.current.setAttribute('fetchpriority', 'high');
     }
+    lowPriorityImgRefs.current.forEach(img => {
+      if (img) {
+        img.setAttribute('fetchpriority', 'low');
+      }
+    });
   }, []);
 
   return (
@@ -94,7 +100,13 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
             {fitnessImages.map((img, i) => (
               <img
                 key={i}
-                ref={i === 1 ? lcpImgRef : undefined} // fitness-1.webp es el índice 1
+                ref={
+                  i === 1
+                    ? lcpImgRef
+                    : el => {
+                        lowPriorityImgRefs.current[i] = el;
+                      }
+                } // fitness-1.webp es el índice 1
                 src={img.src}
                 alt={img.alt}
                 className={`rounded-xl shadow-md object-cover w-full h-48 ${img.order}`}
@@ -102,7 +114,6 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
                 height={400}
                 loading={i === 1 ? 'eager' : 'lazy'} // Solo fitness-1.webp eager
                 decoding='async'
-                fetchPriority={i === 1 ? 'high' : 'low'}
               />
             ))}
           </div>

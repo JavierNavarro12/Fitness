@@ -977,7 +977,9 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         </header>
 
         {/* Header móvil fijo */}
-        <header className='fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-between h-14 sm:hidden px-6'>
+        <header
+          className={`fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow z-40 flex items-center justify-between h-14 sm:hidden px-6 ${location.pathname === '/profile' ? 'hidden' : ''}`}
+        >
           <button
             className='focus:outline-none'
             onClick={() => startTransition(() => navigate('/'))}
@@ -1056,6 +1058,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             <ProfileSummary
               user={user}
               userProfile={userProfile}
+              reports={userReports}
               onLogout={handleLogout}
               onClose={() => setShowProfileModal(false)}
             />
@@ -1135,7 +1138,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
               <Route
                 path='/ai-chat'
                 element={
-                  <div className='flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg'>
+                  <div className='flex-1 flex flex-col sm:bg-white sm:dark:bg-gray-800 sm:rounded-2xl sm:shadow-lg'>
                     <PersonalizedChatAI
                       userProfile={userProfile}
                       mobileMenuOpen={mobileMenuOpen}
@@ -1146,6 +1149,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                         startTransition(() => navigate(-1));
                       }}
                       isPageContent={true}
+                      user={user}
                     />
                   </div>
                 }
@@ -1321,6 +1325,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                     <ProfileSummary
                       user={user}
                       userProfile={userProfile}
+                      reports={userReports}
                       onLogout={handleLogout}
                       onClose={() => startTransition(() => navigate('/'))}
                     />
@@ -1342,6 +1347,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
           onSignOut={() => signOut(auth)}
           onChatClick={handleChatClick}
           isChatOpen={location.pathname === '/ai-chat'}
+          onNavigationClick={() => setMobileMenuOpen(false)}
         />
 
         {/* Chat IA Personalizado - solo mostrar como flotante si no estamos en la página de chat */}
@@ -1359,6 +1365,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                   startTransition(() => navigate(-1));
                 }
               }}
+              user={user}
             />
           )}
       </div>
