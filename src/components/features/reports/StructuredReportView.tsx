@@ -59,72 +59,108 @@ function parseReportContent(content: string): {
     // Si no hay nombre, saltar esta sección
     if (!supplement.name) continue;
 
-    // Buscar información específica en las líneas siguientes
-    for (const line of lines) {
-      const trimmedLine = line.toLowerCase();
+    // Excluir secciones que no son suplementos
+    const excludedSections = [
+      'notas adicionales',
+      'additional notes',
+      'conclusión',
+      'conclusion',
+      'resumen',
+      'summary',
+      'importante',
+      'important',
+      'consideraciones',
+      'considerations',
+      'recomendaciones generales',
+      'general recommendations',
+    ];
 
-      // Buscar dosis/dosificación - formato nuevo y antiguo
-      if (
-        trimmedLine.startsWith('dosis recomendada:') ||
-        trimmedLine.startsWith('recommended dose:') ||
-        trimmedLine.startsWith('dosificación:') ||
-        trimmedLine.includes('- dosis') ||
-        trimmedLine.includes('- recommended dose')
-      ) {
-        const colonIndex = line.indexOf(':');
-        if (colonIndex !== -1) {
-          supplement.dosage = line.substring(colonIndex + 1).trim();
-        } else {
-          // Formato de lista con guión
-          const dashMatch = line.match(
-            /[-•]\s*(?:dosis|recommended dose|dosificación)[:\s]+(.+)/i
-          );
-          if (dashMatch) {
-            supplement.dosage = dashMatch[1].trim();
-          }
-        }
+    if (
+      excludedSections.some(excluded =>
+        supplement.name.toLowerCase().includes(excluded)
+      )
+    ) {
+      continue;
+    }
+
+    // Parsing mejorado: buscar patrones más flexibles
+    const sectionText = section.toLowerCase();
+    const originalLines = section
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line);
+
+    // Buscar dosis con múltiples patrones
+    const dosagePatterns = [
+      /(?:dosis\s*recomendada|recommended\s*dose|dosificación|dosis)[\s:]+([^\n\r]+)/i,
+      /[-•]\s*(?:dosis|dosificación)[\s:]+([^\n\r]+)/i,
+    ];
+
+    for (const pattern of dosagePatterns) {
+      const match = section.match(pattern);
+      if (match && match[1] && !supplement.dosage) {
+        supplement.dosage = match[1].trim();
+        break;
       }
+    }
 
-      // Buscar momento de toma - formato nuevo y antiguo
-      if (
-        trimmedLine.startsWith('momento de toma:') ||
-        trimmedLine.startsWith('timing:') ||
-        trimmedLine.startsWith('momento:') ||
-        trimmedLine.includes('- timing') ||
-        trimmedLine.includes('- momento')
-      ) {
-        const colonIndex = line.indexOf(':');
-        if (colonIndex !== -1) {
-          supplement.timing = line.substring(colonIndex + 1).trim();
-        } else {
-          // Formato de lista con guión
-          const dashMatch = line.match(/[-•]\s*(?:timing|momento)[:\s]+(.+)/i);
-          if (dashMatch) {
-            supplement.timing = dashMatch[1].trim();
-          }
-        }
+    // Buscar momento con múltiples patrones
+    const timingPatterns = [
+      /(?:momento\s*de\s*toma|timing|momento)[\s:]+([^\n\r]+)/i,
+      /[-•]\s*(?:timing|momento)[\s:]+([^\n\r]+)/i,
+    ];
+
+    for (const pattern of timingPatterns) {
+      const match = section.match(pattern);
+      if (match && match[1] && !supplement.timing) {
+        supplement.timing = match[1].trim();
+        break;
       }
+    }
 
-      // Buscar observaciones/interacciones - formato nuevo y antiguo
+    // Buscar notas/observaciones/interacciones con MUCHOS más patrones
+    const notesPatterns = [
+      /(?:notas|notes|observaciones|interacciones|precauciones|consideraciones|advertencias|efectos|contraindicaciones|importante|recomendaciones)[\s:]+([^\n\r]+)/i,
+      /[-•]\s*(?:notas|notes|observaciones|interacciones|precauciones|consideraciones)[\s:]+([^\n\r]+)/i,
+      // Buscar cualquier línea que contenga palabras clave comunes en notas
+      /(?:evitar|combinar|tomar\s+con|no\s+recomendado|cuidado|atención|puede\s+causar|efectos?\s+secundarios?)[\s:]([^\n\r]*)/i,
+    ];
+
+    for (const pattern of notesPatterns) {
+      const match = section.match(pattern);
       if (
-        trimmedLine.startsWith('observaciones:') ||
-        trimmedLine.startsWith('notes:') ||
-        trimmedLine.startsWith('interacciones:') ||
-        trimmedLine.startsWith('precauciones:') ||
-        trimmedLine.includes('- notes') ||
-        trimmedLine.includes('- observaciones')
+        match &&
+        match[1] &&
+        match[1].trim().length > 3 &&
+        !supplement.interactions
       ) {
-        const colonIndex = line.indexOf(':');
-        if (colonIndex !== -1) {
-          supplement.interactions = line.substring(colonIndex + 1).trim();
-        } else {
-          // Formato de lista con guión
-          const dashMatch = line.match(
-            /[-•]\s*(?:notes|observaciones|interacciones)[:\s]+(.+)/i
-          );
-          if (dashMatch) {
-            supplement.interactions = dashMatch[1].trim();
-          }
+        supplement.interactions = match[1].trim();
+        break;
+      }
+    }
+
+    // Si no encontramos notas con patrones específicos, buscar líneas que parezcan notas
+    if (!supplement.interactions) {
+      for (const line of originalLines) {
+        const lineLower = line.toLowerCase();
+        // Buscar líneas que contengan palabras típicas de notas/advertencias
+        if (
+          (lineLower.includes('evitar') ||
+            lineLower.includes('combinar') ||
+            lineLower.includes('no tomar') ||
+            lineLower.includes('cuidado') ||
+            lineLower.includes('atención') ||
+            lineLower.includes('puede causar') ||
+            lineLower.includes('efectos') ||
+            lineLower.includes('interactúa') ||
+            lineLower.includes('precaución')) &&
+          line.length > 10 && // Evitar líneas muy cortas
+          !lineLower.includes('dosis') &&
+          !lineLower.includes('momento') &&
+          !supplement.name.toLowerCase().includes(lineLower)
+        ) {
+          supplement.interactions = line;
+          break;
         }
       }
     }
@@ -317,11 +353,11 @@ const SupplementCard: React.FC<{ supplement: SupplementInfo }> = ({
         )}
 
         {supplement.interactions && (
-          <div className='flex items-start py-2'>
-            <span className='text-gray-600 font-medium w-20 sm:w-24 mr-3 flex-shrink-0 mt-0.5'>
+          <div className='flex items-start py-3 bg-blue-50 rounded-lg px-3'>
+            <span className='text-blue-600 font-medium w-20 sm:w-24 mr-3 flex-shrink-0 mt-0.5'>
               Notas
             </span>
-            <span className='text-gray-900 flex-1 leading-relaxed'>
+            <span className='text-blue-900 flex-1 leading-relaxed text-sm break-words'>
               {supplement.interactions}
             </span>
           </div>
