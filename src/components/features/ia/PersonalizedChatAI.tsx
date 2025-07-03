@@ -381,15 +381,15 @@ INSTRUCCIONES:
                 isPageContent
                   ? isMobile
                     ? 'fixed top-16 left-0 right-0 bottom-20 flex flex-col bg-white dark:bg-gray-800 rounded-t-lg rounded-b-2xl'
-                    : 'h-full flex-1 flex flex-col bg-white rounded-2xl shadow-2xl border border-red-200'
-                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45] w-auto max-w-lg sm:w-[32rem] bg-white rounded-2xl shadow-2xl border border-red-200`
+                    : 'h-full flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-red-200 dark:border-red-700'
+                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45] w-auto max-w-lg sm:w-[32rem] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-red-200 dark:border-red-700`
               }
               flex flex-col animate-fade-in overflow-hidden 
               ${!isMobile && !isPageContent && '-translate-x-1/2 sm:translate-x-0'}
             `}
           >
             {/* Header con botón historial */}
-            <div className='px-4 py-3 border-b border-red-100 bg-red-600 text-white font-bold flex items-center justify-between'>
+            <div className='px-4 py-3 border-b border-red-100 dark:border-red-700 bg-red-600 text-white font-bold flex items-center justify-between'>
               <div className='flex items-center gap-3'>
                 <span className='text-lg'>EGN IA Personal</span>
                 {currentChatId && (
@@ -416,7 +416,7 @@ INSTRUCCIONES:
                   />
                 </button>
                 <button
-                  className='text-sm text-blue-100 hover:underline'
+                  className='text-sm text-blue-200 hover:underline'
                   onClick={startNewChat}
                 >
                   {i18n.language === 'en' ? 'New chat' : 'Nuevo chat'}
@@ -434,14 +434,14 @@ INSTRUCCIONES:
 
             {showHistory ? (
               <div
-                className='flex-1 p-4 overflow-y-auto bg-gray-50'
+                className='flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900'
                 style={{
                   minHeight: isPageContent ? 'auto' : '200px',
                   maxHeight: isPageContent ? 'none' : '75vh',
                 }}
               >
                 <div className='mb-2 flex items-center justify-between'>
-                  <span className='font-semibold text-gray-700'>
+                  <span className='font-semibold text-gray-700 dark:text-gray-300'>
                     {i18n.language === 'en'
                       ? 'Chat History'
                       : 'Historial de chats'}
@@ -454,11 +454,11 @@ INSTRUCCIONES:
                   </button>
                 </div>
                 {historyLoading ? (
-                  <div className='text-gray-500 text-sm'>
+                  <div className='text-gray-500 dark:text-gray-400 text-sm'>
                     {i18n.language === 'en' ? 'Loading...' : 'Cargando...'}
                   </div>
                 ) : chatHistory.length === 0 ? (
-                  <div className='text-gray-500 text-sm'>
+                  <div className='text-gray-500 dark:text-gray-400 text-sm'>
                     {i18n.language === 'en'
                       ? 'No history yet.'
                       : 'Sin historial aún.'}
@@ -468,7 +468,7 @@ INSTRUCCIONES:
                     {chatHistory.map(chat => (
                       <li
                         key={chat.id}
-                        className='flex flex-row items-center bg-white border border-red-100 rounded-lg px-3 py-2 hover:bg-red-50 transition'
+                        className='flex flex-row items-center bg-white dark:bg-gray-800 border border-red-100 dark:border-red-700 rounded-lg px-3 py-2 hover:bg-red-50 dark:hover:bg-gray-700 transition'
                       >
                         <span
                           onClick={() => setSelectedChat(chat)}
@@ -503,8 +503,8 @@ INSTRUCCIONES:
                 )}
                 {/* Mostrar chat seleccionado */}
                 {selectedChat && (
-                  <div className='mt-4 bg-white border border-red-100 rounded-lg p-3 max-h-60 overflow-y-auto'>
-                    <div className='mb-2 font-semibold text-gray-700'>
+                  <div className='mt-4 bg-white dark:bg-gray-800 border border-red-100 dark:border-red-700 rounded-lg p-3 max-h-60 overflow-y-auto'>
+                    <div className='mb-2 font-semibold text-gray-700 dark:text-gray-300'>
                       {i18n.language === 'en' ? 'Conversation' : 'Conversación'}
                     </div>
                     <div className='space-y-3 text-sm'>
@@ -526,7 +526,7 @@ INSTRUCCIONES:
                             className={`px-3 py-2 rounded-xl max-w-[75%] ${
                               msg.role === 'user'
                                 ? 'bg-blue-500 text-white rounded-br-sm'
-                                : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-sm'
                             }`}
                           >
                             {msg.content}
@@ -534,8 +534,10 @@ INSTRUCCIONES:
 
                           {/* Avatar para usuario en historial */}
                           {msg.role === 'user' && (
-                            <div className='w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0'>
-                              <span className='text-gray-600 text-xs'>👤</span>
+                            <div className='w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center flex-shrink-0'>
+                              <span className='text-gray-600 dark:text-gray-400 text-xs'>
+                                👤
+                              </span>
                             </div>
                           )}
                         </div>
@@ -561,7 +563,7 @@ INSTRUCCIONES:
             ) : (
               <>
                 <div
-                  className='flex-1 p-2 overflow-y-auto bg-gray-50'
+                  className='flex-1 p-2 overflow-y-auto bg-gray-50 dark:bg-gray-900'
                   style={{
                     minHeight: isPageContent ? 'auto' : '150px',
                     maxHeight: isPageContent ? 'none' : '60vh',
@@ -575,7 +577,7 @@ INSTRUCCIONES:
                     </div>
 
                     {/* Bocadillo del mensaje de bienvenida */}
-                    <div className='px-4 py-3 rounded-2xl rounded-bl-md max-w-[75%] text-sm bg-gray-200 text-gray-800'>
+                    <div className='px-4 py-3 rounded-2xl rounded-bl-md max-w-[75%] text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100'>
                       <div className='whitespace-pre-wrap'>
                         {getWelcomeMessage()}
                       </div>
@@ -600,7 +602,7 @@ INSTRUCCIONES:
                         className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm ${
                           msg.role === 'user'
                             ? 'bg-blue-500 text-white rounded-br-md'
-                            : 'bg-gray-200 text-gray-800 rounded-bl-md'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-md'
                         }`}
                       >
                         <div className='whitespace-pre-wrap'>{msg.content}</div>
@@ -608,7 +610,7 @@ INSTRUCCIONES:
 
                       {/* Avatar para usuario (lado derecho) */}
                       {msg.role === 'user' && (
-                        <div className='w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 mb-1 overflow-hidden'>
+                        <div className='w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center flex-shrink-0 mb-1 overflow-hidden'>
                           {user?.photoURL || userProfile?.photo ? (
                             <img
                               src={user?.photoURL || userProfile?.photo}
@@ -616,7 +618,7 @@ INSTRUCCIONES:
                               className='w-full h-full object-cover'
                             />
                           ) : (
-                            <span className='text-gray-600 text-sm font-bold'>
+                            <span className='text-gray-600 dark:text-gray-400 text-sm font-bold'>
                               {user?.displayName?.[0]?.toUpperCase() ||
                                 user?.email?.[0]?.toUpperCase() ||
                                 '👤'}
@@ -628,9 +630,9 @@ INSTRUCCIONES:
                   ))}
                   <div ref={messagesEndRef} />
                 </div>
-                <div className='flex gap-2 px-3 py-3 border-t border-red-100 bg-white'>
+                <div className='flex gap-2 px-3 py-3 border-t border-red-100 dark:border-red-700 bg-white dark:bg-gray-800'>
                   <input
-                    className='flex-1 border border-red-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-500 transition text-base'
+                    className='flex-1 border border-red-200 dark:border-red-700 rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-500 transition text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e =>

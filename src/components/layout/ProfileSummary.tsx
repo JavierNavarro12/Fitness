@@ -68,15 +68,28 @@ const ProfileSummary: React.FC<ProfileSummaryProps> = ({
   // Obtener los reportes favoritos reales
   const favoriteReports = reports
     .filter(report => favoriteReportIds.has(report.id))
-    .map(report => ({
-      id: report.id,
-      title: t('report.title'),
-      date: new Date(report.createdAt).toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
-    }))
+    .map(report => {
+      // Construir título más descriptivo con el deporte
+      const baseTitleKey = 'report.title';
+      const baseTitle = t(baseTitleKey);
+      let enhancedTitle = baseTitle;
+
+      // Si el reporte tiene información de perfil con deporte, agregarlo
+      if (report.profile?.sport) {
+        const sportTranslated = t(report.profile.sport);
+        enhancedTitle = `${baseTitle} - ${sportTranslated}`;
+      }
+
+      return {
+        id: report.id,
+        title: enhancedTitle,
+        date: new Date(report.createdAt).toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      };
+    })
     .slice(0, 5); // Limitar a 5 favoritos
 
   const handleReportClick = (reportId: string) => {
