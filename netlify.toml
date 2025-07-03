@@ -12,6 +12,70 @@
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
 
+# Optimización de caché para recursos estáticos
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    # 1 año de caché para CSS con hash
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    # 1 año de caché para JS con hash
+
+[[headers]]
+  for = "*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    # 1 año de caché para imágenes WebP
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    # 1 año de caché para imágenes PNG
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    # 1 año de caché para imágenes JPG
+
+[[headers]]
+  for = "*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    # 1 año de caché para fuentes
+
+[[headers]]
+  for = "*.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Caché corto para el HTML principal
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    # 1 hora de caché para HTML
+
+# Headers de seguridad y rendimiento
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Preload de recursos críticos
+    Link = "</logo-header-96.webp>; rel=preload; as=image; type=image/webp, </imagen-inicio.webp>; rel=preload; as=image; type=image/webp"
+
 [forms]
   [forms.contact]
     to = ["endlessgoalsnutrition@gmail.com"]

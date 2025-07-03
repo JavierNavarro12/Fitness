@@ -82,7 +82,10 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
             src={visualCards[0].img}
             alt={visualCards[0].alt}
             className='w-full h-48 object-cover rounded-xl shadow-md'
-            loading='lazy'
+            loading='eager'
+            fetchPriority='high'
+            width={400}
+            height={192}
           />
         </div>
       </div>
