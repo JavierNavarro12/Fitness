@@ -78,7 +78,7 @@ const megaMenuItems = [
   { key: 'grasa', label: 'megaMenu.grasa', nav: 'grasa' },
   { key: 'mujer', label: 'megaMenu.mujer', nav: 'mujer' },
   { key: 'cognitivo', label: 'megaMenu.cognitivo', nav: 'cognitivo' },
-  { key: 'blog', label: 'nav.blog', nav: 'blog' },
+  // { key: 'blog', label: 'nav.blog', nav: 'blog' }, // Eliminado del menú desplegable web
 ];
 
 // NAVBAR_HEIGHT constante para altura base del header

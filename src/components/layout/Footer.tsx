@@ -20,6 +20,7 @@ export const handleNavigation = (
     terms: '/terms',
     privacy: '/privacy',
     contact: '/contact',
+    blog: '/blog',
   };
   startTransition(() => navigate(routes[navKey] || '/'));
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -158,6 +159,14 @@ const Footer: React.FC = () => {
                   className='hover:text-red-400 transition-colors duration-200 text-left w-full'
                 >
                   {t('footer.services.faq')}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNavigation('blog', navigate)}
+                  className='hover:text-red-400 transition-colors duration-200 text-left w-full'
+                >
+                  {t('nav.blog')}
                 </button>
               </li>
             </ul>
