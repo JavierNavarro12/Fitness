@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
 import {
@@ -15,8 +15,6 @@ import {
 import ReactMarkdown from 'react-markdown';
 import ReportView from './ReportView';
 import StructuredReportView from './StructuredReportView';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import ReportPDF from './ReportPDF';
 import {
   getUserFavorites,
   addToFavorites,
@@ -24,6 +22,7 @@ import {
 } from '../../../services/favoritesService';
 import { auth } from '../../../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import html2pdf from 'html2pdf.js';
 
 interface ReportAccordionListProps {
   reports: Report[];
@@ -385,7 +384,8 @@ export default function ReportAccordionList({
   const [mobileStructuredViews, setMobileStructuredViews] = useState<{
     [key: string]: boolean;
   }>({});
-  const reportRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
+  const [isExportingPDF, setIsExportingPDF] = useState<string | null>(null);
+  const reportRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Escuchar cambios en el estado de autenticación
   useEffect(() => {
@@ -553,63 +553,65 @@ export default function ReportAccordionList({
               className={`transition-shadow duration-200 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden ${isExpanded ? 'shadow-2xl' : ''}`}
             >
               {/* Header de la tarjeta */}
-              <div
-                className='flex items-center justify-between px-4 py-2 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600 cursor-pointer min-h-[56px]'
-                onClick={() => toggleReport(report.id || '')}
-              >
-                <div className='flex items-center gap-3 min-w-0'>
-                  {FaFile({ className: 'text-white text-lg flex-shrink-0' })}
-                  <div className='min-w-0'>
-                    <h3 className='text-white font-bold text-sm truncate max-w-[140px]'>
-                      {t('report.title')}
-                    </h3>
-                    <p className='text-red-100 text-xs truncate'>
-                      {new Date(report.createdAt).toLocaleDateString()}
-                    </p>
+              {!isExportingPDF || isExportingPDF !== reportId ? (
+                <div
+                  className='flex items-center justify-between px-4 py-2 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600 cursor-pointer min-h-[56px]'
+                  onClick={() => toggleReport(report.id || '')}
+                >
+                  <div className='flex items-center gap-3 min-w-0'>
+                    {FaFile({ className: 'text-white text-lg flex-shrink-0' })}
+                    <div className='min-w-0'>
+                      <h3 className='text-white font-bold text-sm truncate max-w-[140px]'>
+                        {t('report.title')}
+                      </h3>
+                      <p className='text-red-100 text-xs truncate'>
+                        {new Date(report.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <button
+                      onClick={async e => {
+                        e.stopPropagation();
+                        await toggleFavorite(report.id || '');
+                      }}
+                      className='p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors'
+                      aria-label={
+                        favorites.includes(report.id || '')
+                          ? 'Quitar de favoritos'
+                          : 'Marcar como favorito'
+                      }
+                    >
+                      {favorites.includes(report.id || '') ? (
+                        <svg
+                          className='w-5 h-5 text-yellow-400'
+                          fill='currentColor'
+                          viewBox='0 0 24 24'
+                        >
+                          <path d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
+                        </svg>
+                      ) : (
+                        <svg
+                          className='w-5 h-5 text-white'
+                          fill='none'
+                          stroke='currentColor'
+                          viewBox='0 0 24 24'
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'
+                          />
+                        </svg>
+                      )}
+                    </button>
+                    {isExpanded
+                      ? FaChevronUp({ className: 'text-white text-lg' })
+                      : FaChevronDown({ className: 'text-white text-lg' })}
                   </div>
                 </div>
-                <div className='flex items-center gap-2'>
-                  <button
-                    onClick={async e => {
-                      e.stopPropagation();
-                      await toggleFavorite(report.id || '');
-                    }}
-                    className='p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors'
-                    aria-label={
-                      favorites.includes(report.id || '')
-                        ? 'Quitar de favoritos'
-                        : 'Marcar como favorito'
-                    }
-                  >
-                    {favorites.includes(report.id || '') ? (
-                      <svg
-                        className='w-5 h-5 text-yellow-400'
-                        fill='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
-                      </svg>
-                    ) : (
-                      <svg
-                        className='w-5 h-5 text-white'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeWidth={2}
-                          d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'
-                        />
-                      </svg>
-                    )}
-                  </button>
-                  {isExpanded
-                    ? FaChevronUp({ className: 'text-white text-lg' })
-                    : FaChevronDown({ className: 'text-white text-lg' })}
-                </div>
-              </div>
+              ) : null}
 
               {/* Extracto cuando está colapsado */}
               {!isExpanded && (
@@ -672,45 +674,36 @@ export default function ReportAccordionList({
                         {filteredContent &&
                         Array.isArray(supplements) &&
                         supplements.length > 0 ? (
-                          <Suspense
-                            fallback={
-                              <span className='text-xs'>Cargando PDF...</span>
-                            }
-                          >
-                            <PDFDownloadLink
-                              document={
-                                <ReportPDF
-                                  title={
-                                    filteredContent
-                                      ? 'Informe personalizado'
-                                      : ''
-                                  }
-                                  content={filteredContent || ''}
-                                  supplements={supplements || []}
-                                  date={
-                                    report && report.createdAt
-                                      ? new Date(
-                                          report.createdAt
-                                        ).toLocaleDateString()
-                                      : ''
-                                  }
-                                />
+                          <button
+                            onClick={async e => {
+                              e.stopPropagation();
+                              setIsExportingPDF(reportId);
+                              await new Promise(resolve =>
+                                setTimeout(resolve, 50)
+                              );
+                              const el = reportRefs.current[reportId];
+                              if (el) {
+                                await html2pdf()
+                                  .set({
+                                    margin: 0,
+                                    filename: `informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`,
+                                    html2canvas: { scale: 2 },
+                                    jsPDF: {
+                                      unit: 'mm',
+                                      format: 'a4',
+                                      orientation: 'portrait',
+                                    },
+                                  })
+                                  .from(el)
+                                  .save();
                               }
-                              fileName={`informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`}
-                              className='flex items-center justify-center w-7 h-7 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition'
-                              style={{ textDecoration: 'none' }}
-                            >
-                              {({ loading }) => (
-                                <>
-                                  {loading ? (
-                                    <span className='text-xs'>...</span>
-                                  ) : (
-                                    FaDownload({ className: 'text-lg' })
-                                  )}
-                                </>
-                              )}
-                            </PDFDownloadLink>
-                          </Suspense>
+                              setIsExportingPDF(null);
+                            }}
+                            className='flex items-center justify-center w-7 h-7 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition'
+                            title='Descargar PDF'
+                          >
+                            {FaDownload({ className: 'text-lg' })}
+                          </button>
                         ) : (
                           <div className='text-red-600 text-center font-bold'>
                             No hay datos suficientes para generar el PDF.
@@ -758,22 +751,24 @@ export default function ReportAccordionList({
                     )}
 
                     {/* Sección de Productos Recomendados - Solo en vista clásica */}
-                    {!mobileStructuredViews[reportId] &&
-                      supplements.length > 0 && (
-                        <div className='px-2 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
-                          <h3 className='text-xs font-bold text-red-600 dark:text-red-400 mb-2'>
-                            Productos Recomendados
-                          </h3>
-                          <ul className='space-y-2'>
-                            {supplements.map((supplement, idx) => (
-                              <AccordionSupplement
-                                key={supplement.name + '-' + idx}
-                                supplement={supplement.name}
-                              />
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                    {!isExportingPDF || isExportingPDF !== reportId
+                      ? !mobileStructuredViews[reportId] &&
+                        supplements.length > 0 && (
+                          <div className='px-2 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
+                            <h3 className='text-xs font-bold text-red-600 dark:text-red-400 mb-2'>
+                              Productos Recomendados
+                            </h3>
+                            <ul className='space-y-2'>
+                              {supplements.map((supplement, idx) => (
+                                <AccordionSupplement
+                                  key={supplement.name + '-' + idx}
+                                  supplement={supplement.name}
+                                />
+                              ))}
+                            </ul>
+                          </div>
+                        )
+                      : null}
                   </div>
                 )}
               </div>

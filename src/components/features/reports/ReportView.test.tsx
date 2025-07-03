@@ -177,7 +177,7 @@ Entrenamiento de fuerza 3-4 veces por semana.`,
 
     // Verificar que se renderizan los botones de acción
     expect(screen.getByTitle('Copiar')).toBeInTheDocument();
-    expect(screen.getByTestId('pdf-download-link')).toBeInTheDocument();
+    expect(screen.getByTitle('Descargar PDF')).toBeInTheDocument();
     expect(screen.getByTestId('fa-file')).toBeInTheDocument();
   });
 
@@ -318,7 +318,7 @@ Dormir 7-8 horas por noche.`,
   test('generates correct PDF download link', () => {
     render(<ReportView report={mockReport} />);
 
-    const pdfLink = screen.getByTestId('pdf-download-link');
+    const pdfLink = screen.getByTitle('Descargar PDF');
     expect(pdfLink).toBeInTheDocument();
   });
 

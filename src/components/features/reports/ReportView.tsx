@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  Suspense,
-  ComponentPropsWithoutRef,
-} from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Report } from '../../../types';
 import {
@@ -16,9 +11,9 @@ import {
   FaToggleOff,
 } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import ReportPDF from './ReportPDF';
 import StructuredReportView from './StructuredReportView';
+import html2pdf from 'html2pdf.js';
+import type { ComponentPropsWithoutRef } from 'react';
 
 interface ReportViewProps {
   report: Report;
@@ -303,6 +298,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
   const [copied, setCopied] = useState(false);
   const [useStructuredView, setUseStructuredView] = useState(false); // Iniciar con vista clásica
   const reportRef = useRef<HTMLDivElement>(null);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -350,105 +346,101 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
 
   const supplementsWithLinks = extractSupplementsWithLinks(report.content);
 
+  const handleDownloadPDF = async () => {
+    setIsExportingPDF(true);
+    await new Promise(resolve => setTimeout(resolve, 50)); // Espera a que el DOM actualice
+    if (reportRef.current) {
+      await html2pdf()
+        .set({
+          margin: 0,
+          filename: `informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`,
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        })
+        .from(reportRef.current)
+        .save();
+    }
+    setIsExportingPDF(false);
+  };
+
   return (
     <div
       ref={reportRef}
+      id='informe-html'
       className='bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-0 md:p-0 border border-gray-100 dark:border-gray-700 overflow-hidden'
     >
       {/* Encabezado profesional */}
-      <div className='flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600'>
-        <div className='flex items-center gap-2 sm:gap-3'>
-          {FaFile({ className: 'text-white text-xl sm:text-2xl' })}
-          <span className='text-white font-bold text-base sm:text-lg md:text-xl'>
-            {t('report.title')}
-          </span>
-        </div>
-        <div className='flex flex-row items-center gap-1 sm:gap-2'>
-          <button
-            onClick={() => setUseStructuredView(!useStructuredView)}
-            className='flex items-center justify-center w-10 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-1 sm:px-3 sm:py-1.5 rounded-lg border-2 border-purple-300 dark:border-purple-400 bg-white dark:bg-gray-900 text-purple-600 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-800 font-semibold text-xs sm:text-sm shadow-md transition'
-            title={
-              useStructuredView
-                ? 'Cambiar a vista clásica'
-                : 'Cambiar a vista estructurada'
-            }
-          >
-            {useStructuredView
-              ? FaToggleOn({
-                  className: 'text-purple-500 text-lg sm:text-base',
-                })
-              : FaToggleOff({
-                  className: 'text-purple-600 text-lg sm:text-base',
-                })}
-            <span className='hidden sm:inline ml-2'>
-              {useStructuredView ? 'Estructurada' : 'Clásica'}
+      {!isExportingPDF && (
+        <div className='flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-400 dark:from-red-800 dark:to-red-600'>
+          <div className='flex items-center gap-2 sm:gap-3'>
+            {FaFile({ className: 'text-white text-xl sm:text-2xl' })}
+            <span className='text-white font-bold text-base sm:text-lg md:text-xl'>
+              {t('report.title')}
             </span>
-          </button>
-          <button
-            onClick={handleCopy}
-            className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition'
-            title={t('report.copy')}
-          >
-            {copied
-              ? FaCircleCheck({ className: 'text-green-500' })
-              : FaRegCopy({})}
-            <span className='hidden sm:inline ml-2'>
-              {copied ? t('report.copied') : t('report.copy')}
-            </span>
-          </button>
-          <Suspense fallback={<span className='text-xs'>Cargando PDF...</span>}>
-            <PDFDownloadLink
-              document={
-                <ReportPDF
-                  title={safeFilteredContent ? 'Informe personalizado' : ''}
-                  content={safeFilteredContent}
-                  supplements={safeSupplements}
-                  date={
-                    report && report.createdAt
-                      ? new Date(report.createdAt).toLocaleDateString()
-                      : ''
-                  }
-                />
-              }
-              fileName={`informe-${report && report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'sin-fecha'}.pdf`}
-              className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition'
-              style={{ textDecoration: 'none' }}
-            >
-              {({ loading }) =>
-                loading ? (
-                  <span className='hidden sm:inline'>
-                    {t('report.generatingPDF')}
-                  </span>
-                ) : (
-                  <>
-                    {FaDownload({ className: 'text-lg' })}
-                    <span className='hidden sm:inline ml-2'>PDF</span>
-                  </>
-                )
-              }
-            </PDFDownloadLink>
-          </Suspense>
-          {onDelete && report.id && (
+          </div>
+          <div className='flex flex-row items-center gap-1 sm:gap-2'>
             <button
-              onClick={() => {
-                if (
-                  window.confirm(
-                    '¿Seguro que quieres eliminar este informe?'
-                  ) &&
-                  report.id
-                ) {
-                  onDelete(report.id);
-                }
-              }}
-              className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition ml-1'
-              title={t('report.delete')}
+              onClick={() => setUseStructuredView(!useStructuredView)}
+              className='flex items-center justify-center w-10 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-1 sm:px-3 sm:py-1.5 rounded-lg border-2 border-purple-300 dark:border-purple-400 bg-white dark:bg-gray-900 text-purple-600 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-800 font-semibold text-xs sm:text-sm shadow-md transition'
+              title={
+                useStructuredView
+                  ? 'Cambiar a vista clásica'
+                  : 'Cambiar a vista estructurada'
+              }
             >
-              {FaTrash({ className: 'text-lg' })}
-              <span className='hidden sm:inline ml-2'>Eliminar</span>
+              {useStructuredView
+                ? FaToggleOn({
+                    className: 'text-purple-500 text-lg sm:text-base',
+                  })
+                : FaToggleOff({
+                    className: 'text-purple-600 text-lg sm:text-base',
+                  })}
+              <span className='hidden sm:inline ml-2'>
+                {useStructuredView ? 'Estructurada' : 'Clásica'}
+              </span>
             </button>
-          )}
+            <button
+              onClick={handleCopy}
+              className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition'
+              title={t('report.copy')}
+            >
+              {copied
+                ? FaCircleCheck({ className: 'text-green-500' })
+                : FaRegCopy({})}
+              <span className='hidden sm:inline ml-2'>
+                {copied ? t('report.copied') : t('report.copy')}
+              </span>
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-blue-200 dark:border-blue-400 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 font-semibold text-xs sm:text-sm shadow-sm transition'
+              title='Descargar PDF'
+            >
+              {FaDownload({ className: 'text-lg' })}
+              <span className='hidden sm:inline ml-2'>PDF</span>
+            </button>
+            {onDelete && report.id && (
+              <button
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      '¿Seguro que quieres eliminar este informe?'
+                    ) &&
+                    report.id
+                  ) {
+                    onDelete(report.id);
+                  }
+                }}
+                className='flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto gap-0 sm:gap-2 p-0 sm:px-3 sm:py-1.5 rounded-lg border border-red-200 dark:border-red-400 bg-white dark:bg-gray-900 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-800 font-semibold text-xs sm:text-sm shadow-sm transition ml-1'
+                title={t('report.delete')}
+              >
+                {FaTrash({ className: 'text-lg' })}
+                <span className='hidden sm:inline ml-2'>Eliminar</span>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       {/* Contenido del informe */}
       <div className='px-6 py-4'>
         <div className='text-xs text-gray-500 dark:text-gray-400 mb-2'>
@@ -465,18 +457,23 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
         )}
 
         {/* Sección de Enlaces a Productos Recomendados - Solo en vista clásica */}
-        {!useStructuredView && supplementsWithLinks.length > 0 && (
-          <div className='px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
-            <h3 className='text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3'>
-              Productos Recomendados
-            </h3>
-            <ul className='space-y-3'>
-              {supplementsWithLinks.map((supplement, index) => (
-                <AccordionSupplement key={index} supplement={supplement.name} />
-              ))}
-            </ul>
-          </div>
-        )}
+        {!isExportingPDF &&
+          !useStructuredView &&
+          supplementsWithLinks.length > 0 && (
+            <div className='px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60'>
+              <h3 className='text-base sm:text-lg font-bold text-red-600 dark:text-red-400 mb-3'>
+                Productos Recomendados
+              </h3>
+              <ul className='space-y-3'>
+                {supplementsWithLinks.map((supplement, index) => (
+                  <AccordionSupplement
+                    key={index}
+                    supplement={supplement.name}
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
       </div>
     </div>
   );
