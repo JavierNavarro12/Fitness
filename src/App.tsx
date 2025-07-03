@@ -41,6 +41,7 @@ import ScrollToTop from './components/layout/ScrollToTop';
 import LoginRequired from './components/shared/LoginRequired';
 import ReportAccordionList from './components/features/reports/ReportAccordionList';
 import Loader from './components/shared/Loader';
+import { removeFromFavorites } from './services/favoritesService';
 
 interface SearchResult {
   id: string;
@@ -437,6 +438,10 @@ function App() {
     try {
       await deleteDoc(doc(db, 'reports', reportId));
       setUserReports(prev => prev.filter(r => r.id !== reportId));
+      // Limpieza de favoritos del usuario actual
+      if (user && user.uid) {
+        await removeFromFavorites(user.uid, reportId);
+      }
     } catch (error) {
       console.error('Error al eliminar el informe.');
       console.error(error);
