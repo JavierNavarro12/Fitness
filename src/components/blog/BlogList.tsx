@@ -42,8 +42,8 @@ const BlogList: React.FC = () => {
 
   return (
     <div className='w-full flex flex-col items-center px-2 sm:px-4 lg:px-0 pt-4 pb-12 sm:pt-8 min-h-[70vh] bg-gray-100 dark:bg-gray-900'>
-      <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100 mb-10 w-full max-w-7xl text-left px-2 sm:px-0'>
-        {t('blog.title')}
+      <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100 mb-10 w-full max-w-7xl text-center px-2 sm:px-0'>
+        Blogs
       </h1>
       {blogs.length === 0 ? (
         <div className='text-center text-gray-500 py-12'>
