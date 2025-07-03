@@ -81,6 +81,16 @@ const megaMenuItems = [
   // { key: 'blog', label: 'nav.blog', nav: 'blog' }, // Eliminado del menú desplegable web
 ];
 
+// Nuevo: menú móvil con blog
+const mobileMenuItems = [
+  { key: 'deportes', label: 'megaMenu.deportes', nav: 'deportes' },
+  { key: 'salud', label: 'megaMenu.salud', nav: 'salud' },
+  { key: 'grasa', label: 'megaMenu.grasa', nav: 'grasa' },
+  { key: 'mujer', label: 'megaMenu.mujer', nav: 'mujer' },
+  { key: 'cognitivo', label: 'megaMenu.cognitivo', nav: 'cognitivo' },
+  { key: 'blog', label: 'nav.blog', nav: 'blog' }, // Blog solo en móvil
+];
+
 // NAVBAR_HEIGHT constante para altura base del header
 const NAVBAR_HEIGHT = 64;
 
@@ -1060,7 +1070,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             setShowProfileModal(false);
             setMobileMenuOpen(false);
           }}
-          menuItems={megaMenuItems}
+          menuItems={mobileMenuItems}
           darkMode={darkMode}
           onToggleDarkMode={() => setDarkMode(v => !v)}
           i18n={i18n}
