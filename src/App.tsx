@@ -766,7 +766,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
     }
     // Actualizar la ruta anterior
     previousPath.current = location.pathname;
-  }, [location.pathname]);
+  }, [location.pathname, reportState.status]);
 
   // useEffect para resetear el estado del reporte cuando se muestra el resumen del perfil
   useEffect(() => {
