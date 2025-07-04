@@ -159,14 +159,22 @@ const ReportGenerationStatus: React.FC<ReportGenerationStatusProps> = ({
               ¡Reporte generado exitosamente!
             </p>
             {state.source === 'fallback' && (
-              <p className='text-sm text-blue-600 dark:text-blue-400'>
+              <p className='text-sm text-blue-600 dark:text-blue-400 mb-4'>
                 Generado con recomendaciones estándar
               </p>
             )}
             {state.source === 'ai' && (
-              <p className='text-sm text-green-600 dark:text-green-400'>
+              <p className='text-sm text-green-600 dark:text-green-400 mb-4'>
                 Reporte personalizado con IA
               </p>
+            )}
+            {onCancel && (
+              <button
+                onClick={onCancel}
+                className='px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors'
+              >
+                Generar Nuevo Informe
+              </button>
             )}
           </div>
         );

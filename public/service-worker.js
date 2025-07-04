@@ -1,4 +1,5 @@
-const CACHE_NAME = 'egn-fitness-v1.2.0';
+/* eslint-disable no-undef, no-restricted-globals */
+const CACHE_NAME = 'egn-fitness-v1.3.0';
 const OFFLINE_CACHE = 'egn-offline-v1.0.0';
 
 // Recursos críticos para precaching
@@ -256,4 +257,120 @@ self.addEventListener('message', event => {
   }
 });
 
-console.log('🚀 EGN Service Worker cargado exitosamente');
+// ===== NOTIFICACIONES PUSH =====
+
+// Manejar clicks en notificaciones
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener('notificationclick', event => {
+  console.log('🖱️ Click en notificación:', event);
+
+  const action = event.action;
+  const notification = event.notification;
+  const data = notification.data || {};
+
+  // Cerrar notificación
+  notification.close();
+
+  if (action === 'close') {
+    return;
+  }
+
+  // Determinar URL de destino según el tipo de notificación
+  let urlToOpen = '/';
+
+  if (data.click_action) {
+    urlToOpen = data.click_action;
+  } else if (data.type === 'report') {
+    urlToOpen = '/reports';
+  } else if (data.type === 'supplement') {
+    urlToOpen = '/custom';
+  } else if (data.type === 'achievement') {
+    urlToOpen = '/reports';
+  } else if (action === 'open') {
+    urlToOpen = '/';
+  }
+
+  // Manejar acciones específicas
+  if (action === 'taken' && data.type === 'supplement') {
+    // Marcar suplemento como tomado
+    console.log('✅ Suplemento marcado como tomado:', data.supplement);
+    // Aquí podrías enviar una notificación a la app o guardar el estado
+    return;
+  }
+
+  if (action === 'snooze' && data.type === 'supplement') {
+    // Postponer notificación 15 minutos
+    console.log('⏰ Notificación postpone 15 minutos');
+    scheduleSnoozeNotification(data);
+    return;
+  }
+
+  // Abrir/enfocar ventana de la app
+  event.waitUntil(
+    // eslint-disable-next-line no-restricted-globals
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        // Buscar si ya hay una ventana abierta
+        for (const client of clientList) {
+          // eslint-disable-next-line no-restricted-globals
+          if (client.url.includes(self.location.origin)) {
+            // Si encontramos una ventana, enfocarla y navegar
+            if (client.navigate) {
+              client.navigate(urlToOpen);
+            }
+            return client.focus();
+          }
+        }
+
+        // Si no hay ventana abierta, abrir una nueva
+        // eslint-disable-next-line no-restricted-globals
+        return clients.openWindow(urlToOpen);
+      })
+  );
+});
+
+// Manejar cierre de notificaciones
+// eslint-disable-next-line no-restricted-globals
+self.addEventListener('notificationclose', event => {
+  console.log('❌ Notificación cerrada:', event.notification.tag);
+
+  const data = event.notification.data || {};
+
+  // Analytics sobre notificaciones cerradas
+  if (data.type === 'supplement') {
+    console.log('📊 Usuario cerró recordatorio de suplemento sin interactuar');
+  } else if (data.type === 'report') {
+    console.log('📊 Usuario cerró notificación de reporte');
+  }
+});
+
+// Función para postponer notificaciones
+function scheduleSnoozeNotification(data) {
+  // En una implementación real, esto se haría con un servidor
+  // Aquí simulamos con setTimeout
+  setTimeout(
+    () => {
+      // eslint-disable-next-line no-restricted-globals
+      self.registration.showNotification(
+        `⏰ Recordatorio: ${data.supplement}`,
+        {
+          body: 'No olvides tomar tu suplemento',
+          icon: '/logo-192.png',
+          badge: '/logo-96.png',
+          tag: `snooze-${data.supplement}`,
+          data: data,
+          actions: [
+            { action: 'taken', title: '✅ Tomado' },
+            { action: 'snooze', title: '⏰ 15 min más' },
+          ],
+          requireInteraction: true,
+          vibrate: [200, 100, 200],
+        }
+      );
+    },
+    15 * 60 * 1000
+  ); // 15 minutos
+}
+
+console.log('🚀 EGN Service Worker con notificaciones cargado exitosamente');
