@@ -680,13 +680,19 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         source: result.source,
       });
 
-      // Auto-resetear el estado después de la navegación para permitir generar nuevos reportes
+      // Mostrar mensaje de éxito durante 1 segundo antes de navegar
       setTimeout(() => {
-        setReportState({
-          status: 'idle',
-          message: '',
-        });
-      }, 5000); // Resetear después de 5 segundos
+        startTransition(() =>
+          navigate('/reports', { state: { expandId: docRef.id } })
+        );
+        // Auto-resetear el estado después de la navegación para permitir generar nuevos reportes
+        setTimeout(() => {
+          setReportState({
+            status: 'idle',
+            message: '',
+          });
+        }, 4000); // 4 segundos después de navegar
+      }, 1000); // 1 segundo mostrando el mensaje de éxito
 
       // Mostrar notificación de nuevo reporte
       if (process.env.NODE_ENV !== 'test') {
@@ -695,20 +701,6 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
             'Suplementación Personalizada'
           );
         }, 1000);
-      }
-
-      // Navegar a reportes después de un breve delay
-      if (process.env.NODE_ENV === 'test') {
-        // En tests, navegar inmediatamente
-        startTransition(() =>
-          navigate('/reports', { state: { expandId: docRef.id } })
-        );
-      } else {
-        setTimeout(() => {
-          startTransition(() =>
-            navigate('/reports', { state: { expandId: docRef.id } })
-          );
-        }, 2000);
       }
     } catch (error) {
       console.error('Error generating report:', error);
@@ -774,7 +766,8 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
       showSummary &&
       reportState.status !== 'idle' &&
       reportState.status !== 'generating' &&
-      reportState.status !== 'retrying'
+      reportState.status !== 'retrying' &&
+      reportState.status !== 'success'
     ) {
       setReportState({
         status: 'idle',
@@ -1421,12 +1414,6 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                                   : t('profileSummary.none')}
                               </li>
                             </ul>
-
-                            {/* Administrador de Notificaciones */}
-                            <NotificationManager
-                              userProfile={customProfile}
-                              user={user}
-                            />
 
                             {reportState.status !== 'idle' && (
                               <ReportGenerationStatus

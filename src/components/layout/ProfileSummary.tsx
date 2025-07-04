@@ -409,15 +409,15 @@ const ProfileSummary: React.FC<ProfileSummaryProps> = ({
         </button>
       </div>
 
-      {/* Campanita de notificaciones arriba derecha */}
-      <div className='absolute top-4 right-4 z-20'>
+      <div className='fixed top-6 right-6 z-30'>
         <button
           onClick={() => setShowNotificationsModal(true)}
-          className='p-2 rounded-full bg-white dark:bg-gray-800 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none'
+          className='p-2 rounded-full bg-white dark:bg-gray-800 shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none border border-gray-200 dark:border-gray-700'
           aria-label='Notificaciones'
+          style={{ position: 'fixed', top: 24, right: 24 }}
         >
           <svg
-            className='w-6 h-6 text-gray-500 dark:text-gray-300'
+            className='w-7 h-7 text-gray-500 dark:text-gray-300'
             fill='none'
             stroke='currentColor'
             viewBox='0 0 24 24'
@@ -432,7 +432,6 @@ const ProfileSummary: React.FC<ProfileSummaryProps> = ({
         </button>
       </div>
 
-      {/* Modal de notificaciones */}
       {showNotificationsModal && (
         <div
           className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40'
