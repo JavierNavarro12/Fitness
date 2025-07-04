@@ -168,14 +168,6 @@ const ReportGenerationStatus: React.FC<ReportGenerationStatusProps> = ({
                 Reporte personalizado con IA
               </p>
             )}
-            {onCancel && (
-              <button
-                onClick={onCancel}
-                className='px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors'
-              >
-                Generar Nuevo Informe
-              </button>
-            )}
           </div>
         );
 
