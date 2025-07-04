@@ -52,4 +52,14 @@ export interface Report {
   content: string;
   createdAt: string;
   userId: string;
-} 
+}
+
+// Nuevos tipos para estados del reporte
+export interface ReportGenerationState {
+  status: 'idle' | 'generating' | 'retrying' | 'fallback' | 'success' | 'error';
+  message: string;
+  attempt?: number;
+  maxRetries?: number;
+  source?: 'ai' | 'fallback';
+  error?: string;
+}

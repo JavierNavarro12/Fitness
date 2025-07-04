@@ -59,7 +59,7 @@ function parseReportContent(content: string): {
     // Si no hay nombre, saltar esta sección
     if (!supplement.name) continue;
 
-    // Excluir secciones que no son suplementos
+    // Excluir secciones que no son suplementos - lista expandida
     const excludedSections = [
       'notas adicionales',
       'additional notes',
@@ -73,6 +73,21 @@ function parseReportContent(content: string): {
       'considerations',
       'recomendaciones generales',
       'general recommendations',
+      'introducción personalizada',
+      'introduction',
+      'suplementos para ganancia de masa muscular',
+      'suplementos para pérdida de peso',
+      'suplementos para rendimiento',
+      'suplementos para crossfit',
+      'suplementos para resistencia',
+      'suplementos específicos para resistencia',
+      'suplementos para tu deporte',
+      'notas para principiantes',
+      'notas para nivel intermedio',
+      'notas para nivel avanzado',
+      'productos recomendados',
+      'enlaces a productos',
+      'product links',
     ];
 
     if (
@@ -83,14 +98,16 @@ function parseReportContent(content: string): {
       continue;
     }
 
-    // Parsing mejorado: buscar patrones más flexibles
+    // Parsing optimizado para el formato específico de nuestro AIService
     const originalLines = section
       .split('\n')
       .map(line => line.trim())
       .filter(line => line);
 
-    // Buscar dosis con múltiples patrones
+    // Buscar dosis - formato específico "Dosis recomendada: X"
     const dosagePatterns = [
+      /^Dosis\s+recomendada:\s*(.+)$/i,
+      /^Recommended\s+dose:\s*(.+)$/i,
       /(?:dosis\s*recomendada|recommended\s*dose|dosificación|dosis)[\s:]+([^\n\r]+)/i,
       /[-•]\s*(?:dosis|dosificación)[\s:]+([^\n\r]+)/i,
     ];
@@ -103,8 +120,10 @@ function parseReportContent(content: string): {
       }
     }
 
-    // Buscar momento con múltiples patrones
+    // Buscar momento - formato específico "Momento de toma: X"
     const timingPatterns = [
+      /^Momento\s+de\s+toma:\s*(.+)$/i,
+      /^Timing:\s*(.+)$/i,
       /(?:momento\s*de\s*toma|timing|momento)[\s:]+([^\n\r]+)/i,
       /[-•]\s*(?:timing|momento)[\s:]+([^\n\r]+)/i,
     ];
@@ -117,8 +136,10 @@ function parseReportContent(content: string): {
       }
     }
 
-    // Buscar notas/observaciones/interacciones con MUCHOS más patrones
+    // Buscar observaciones - formato específico "Observaciones: X"
     const notesPatterns = [
+      /^Observaciones:\s*(.+)$/i,
+      /^Notes:\s*(.+)$/i,
       /(?:notas|notes|observaciones|interacciones|precauciones|consideraciones|advertencias|efectos|contraindicaciones|importante|recomendaciones)[\s:]+([^\n\r]+)/i,
       /[-•]\s*(?:notas|notes|observaciones|interacciones|precauciones|consideraciones)[\s:]+([^\n\r]+)/i,
       // Buscar cualquier línea que contenga palabras clave comunes en notas
@@ -164,18 +185,37 @@ function parseReportContent(content: string): {
       }
     }
 
-    // Detectar categoría por el nombre del suplemento
+    // Detectar categoría por el nombre del suplemento y momento de toma
     const name = supplement.name.toLowerCase();
+    const timing = supplement.timing?.toLowerCase() || '';
+
     if (
       name.includes('proteína') ||
       name.includes('whey') ||
-      name.includes('protein')
+      name.includes('protein') ||
+      timing.includes('post-entrenamiento') ||
+      timing.includes('después del entrenamiento') ||
+      timing.includes('after workout')
     ) {
       supplement.category = 'Post-entrenamiento';
-    } else if (name.includes('creatina') || name.includes('creatine')) {
-      supplement.category = 'Diario';
-    } else if (name.includes('omega')) {
-      supplement.category = 'Diario';
+    } else if (
+      name.includes('cafeína') ||
+      name.includes('caffeine') ||
+      name.includes('beta-alanina') ||
+      name.includes('citrulina') ||
+      timing.includes('antes del entrenamiento') ||
+      timing.includes('pre-entrenamiento') ||
+      timing.includes('before workout')
+    ) {
+      supplement.category = 'Pre-entrenamiento';
+    } else if (
+      timing.includes('durante') ||
+      timing.includes('during') ||
+      name.includes('bcaa') ||
+      name.includes('electrolitos') ||
+      name.includes('maltodextrina')
+    ) {
+      supplement.category = 'Durante entrenamiento';
     } else {
       supplement.category = 'Diario';
     }

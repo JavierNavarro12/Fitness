@@ -19,7 +19,7 @@ import {
 } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
-import { UserProfile, Report } from './types';
+import { UserProfile, Report, ReportGenerationState } from './types';
 import SplashScreen from './components/layout/SplashScreen';
 import Footer from './components/layout/Footer';
 import SearchPanel from './components/shared/SearchPanel';
@@ -41,7 +41,9 @@ import ScrollToTop from './components/layout/ScrollToTop';
 import LoginRequired from './components/shared/LoginRequired';
 import ReportAccordionList from './components/features/reports/ReportAccordionList';
 import Loader from './components/shared/Loader';
+import ReportGenerationStatus from './components/shared/ReportGenerationStatus';
 import { removeFromFavorites } from './services/favoritesService';
+import { AIService } from './services/aiService';
 
 interface SearchResult {
   id: string;
@@ -196,7 +198,10 @@ function App() {
   const location = useLocation();
   const [customProfile, setCustomProfile] = useState<UserProfile | null>(null);
   const [showSummary, setShowSummary] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [reportState, setReportState] = useState<ReportGenerationState>({
+    status: 'idle',
+    message: '',
+  });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -472,11 +477,16 @@ function App() {
     }
   };
 
-  // Restaurar función para generar informes
+  // Nueva función robusta para generar informes
   const handleGenerateReport = async () => {
     if (!user || !customProfile) return;
 
-    setGenerating(true);
+    // Resetear estado
+    setReportState({
+      status: 'generating',
+      message: 'Iniciando generación de reporte...',
+      maxRetries: 3,
+    });
 
     const prompt =
       i18n.language === 'en'
@@ -580,38 +590,43 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
 `;
 
     try {
-      const response = await fetch('/.netlify/functions/openai-chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: prompt }],
-        }),
-      });
+      // Usar el nuevo servicio de IA robusto
+      const result = await AIService.generateReport(
+        prompt,
+        customProfile,
+        (message, attempt) => {
+          if (attempt && attempt > 1) {
+            setReportState({
+              status: 'retrying',
+              message,
+              attempt,
+              maxRetries: 3,
+            });
+          } else {
+            setReportState({
+              status: 'generating',
+              message,
+              attempt: attempt || 1,
+              maxRetries: 3,
+            });
+          }
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Procesar resultado exitoso
+      let finalReportContent = result.content;
 
-      const data = await response.json();
-      const reportContent =
-        data.reply || 'Error: No se pudo generar el contenido del reporte.';
-
-      // --- Lógica para parsear enlaces ---
-      let finalReportContent = reportContent;
+      // Lógica para parsear enlaces (mantener funcionalidad existente)
       const productSectionRegex =
         /###\s*(Productos Recomendados|Recommended Products)[\s\S]*/;
-      const productSectionMatch = reportContent.match(productSectionRegex);
+      const productSectionMatch = result.content.match(productSectionRegex);
 
       if (productSectionMatch) {
-        // Extrae solo el contenido de la sección de productos
         const productsBlock = productSectionMatch[0];
-        const productLines = productsBlock.split('\n').slice(1); // Omitir el título de la sección
+        const productLines = productsBlock.split('\n').slice(1);
 
         const productLinks = productLines
           .map((line: string) => {
-            // Limpiar la línea para obtener solo el nombre del producto
             const productName = line.replace(/[-\s*]/g, '').trim();
             if (productName) {
               const searchUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(productName)}`;
@@ -630,35 +645,56 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
           finalReportContent += `\n\n${linkTitle}\n${productLinks}`;
         }
       }
-      // --- Fin de la lógica ---
 
+      // Guardar reporte en Firebase
       const newReport = {
         userId: user.uid,
         profile: customProfile,
-        content: finalReportContent, // Guardamos el contenido con los enlaces añadidos
+        content: finalReportContent,
         createdAt: new Date().toISOString(),
       };
 
       const docRef = await addDoc(collection(db, 'reports'), newReport);
       setUserReports(prev => [{ id: docRef.id, ...newReport }, ...prev]);
-      setGenerating(false);
-      startTransition(() =>
-        navigate('/reports', { state: { expandId: docRef.id } })
-      );
+
+      // Actualizar estado final
+      setReportState({
+        status: 'success',
+        message:
+          result.source === 'ai'
+            ? '¡Reporte personalizado generado con IA!'
+            : 'Reporte generado con recomendaciones estándar',
+        source: result.source,
+      });
+
+      // Navegar a reportes después de un breve delay
+      setTimeout(() => {
+        startTransition(() =>
+          navigate('/reports', { state: { expandId: docRef.id } })
+        );
+      }, 2000);
     } catch (error) {
       console.error('Error generating report:', error);
-      // Opcional: guardar un reporte de error en Firebase
-      const errorReport = {
-        userId: user.uid,
-        profile: customProfile,
-        content: `Error al generar el reporte: ${error instanceof Error ? error.message : String(error)}`,
-        createdAt: new Date().toISOString(),
-      };
-      const docRef = await addDoc(collection(db, 'reports'), errorReport);
-      setUserReports(prev => [{ id: docRef.id, ...errorReport }, ...prev]);
-    }
 
-    setGenerating(false);
+      setReportState({
+        status: 'error',
+        message: 'Error inesperado al generar el reporte',
+        error: error instanceof Error ? error.message : 'Error desconocido',
+      });
+    }
+  };
+
+  // Función para reintentar generación de reporte
+  const handleRetryReport = () => {
+    handleGenerateReport();
+  };
+
+  // Función para cancelar generación
+  const handleCancelReport = () => {
+    setReportState({
+      status: 'idle',
+      message: '',
+    });
   };
 
   useEffect(() => {
@@ -1302,17 +1338,19 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
                                   : t('profileSummary.none')}
                               </li>
                             </ul>
-                            {generating && (
-                              <div className='flex justify-center items-center py-8'>
-                                <Loader />
-                              </div>
+                            {reportState.status !== 'idle' && (
+                              <ReportGenerationStatus
+                                state={reportState}
+                                onRetry={handleRetryReport}
+                                onCancel={handleCancelReport}
+                              />
                             )}
                             <button
                               onClick={handleGenerateReport}
                               className='w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 text-lg mt-2 disabled:bg-red-400 disabled:cursor-not-allowed'
-                              disabled={generating}
+                              disabled={reportState.status !== 'idle'}
                             >
-                              {generating
+                              {reportState.status !== 'idle'
                                 ? t('profileSummary.generatingButton')
                                 : t('profileSummary.generateButton')}
                             </button>
