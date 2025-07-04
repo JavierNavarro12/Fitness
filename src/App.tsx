@@ -47,7 +47,6 @@ import { AIService } from './services/aiService';
 import PWAInstallPrompt from './components/shared/PWAInstallPrompt';
 import OfflineIndicator from './components/shared/OfflineIndicator';
 import UpdateNotification from './components/shared/UpdateNotification';
-import NotificationManager from './components/shared/NotificationManager';
 import { notificationService } from './services/notificationService';
 
 interface SearchResult {
