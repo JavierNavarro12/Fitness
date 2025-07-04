@@ -44,6 +44,9 @@ import Loader from './components/shared/Loader';
 import ReportGenerationStatus from './components/shared/ReportGenerationStatus';
 import { removeFromFavorites } from './services/favoritesService';
 import { AIService } from './services/aiService';
+import PWAInstallPrompt from './components/shared/PWAInstallPrompt';
+import OfflineIndicator from './components/shared/OfflineIndicator';
+import UpdateNotification from './components/shared/UpdateNotification';
 
 interface SearchResult {
   id: string;
@@ -1435,6 +1438,29 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
               user={user}
             />
           )}
+
+        {/* PWA Install Prompt */}
+        <PWAInstallPrompt
+          onInstall={() => {
+            console.log('✅ PWA instalada exitosamente');
+            // Opcional: tracking de analytics
+          }}
+          onDismiss={() => {
+            console.log('📱 PWA install prompt descartado');
+            // Opcional: tracking de analytics
+          }}
+        />
+
+        {/* Offline Indicator */}
+        <OfflineIndicator />
+
+        {/* Update Notification */}
+        <UpdateNotification
+          onUpdate={() => {
+            console.log('🔄 Aplicación actualizada');
+            // Opcional: tracking de analytics
+          }}
+        />
       </div>
     </>
   );

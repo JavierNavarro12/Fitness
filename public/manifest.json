@@ -1,7 +1,17 @@
 {
-  "short_name": "EGN",
-  "name": "EGN",
-  "description": "Tu compañero personal de fitness y nutrición",
+  "short_name": "EGN Fitness",
+  "name": "EGN - Tu compañero personal de fitness y nutrición",
+  "description": "Obtén informes personalizados de suplementación deportiva con IA, consejos de nutrición y planes de entrenamiento adaptados a tu perfil.",
+  "categories": ["health", "fitness", "lifestyle", "sports"],
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#dc2626",
+  "background_color": "#ffffff",
+  "lang": "es",
+  "dir": "ltr",
   "icons": [
     {
       "src": "logo-192.png",
@@ -14,13 +24,104 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "logo-app.png",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#dc2626",
-  "background_color": "#ffffff",
-  "orientation": "portrait",
-  "scope": "/",
-  "lang": "es"
+  "shortcuts": [
+    {
+      "name": "Generar Informe",
+      "short_name": "Informe",
+      "description": "Crear un informe personalizado de suplementación",
+      "url": "/?action=generate-report",
+      "icons": [
+        {
+          "src": "logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Chat IA",
+      "short_name": "Chat",
+      "description": "Consultar con la IA sobre nutrición y fitness",
+      "url": "/?action=chat-ai",
+      "icons": [
+        {
+          "src": "logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mis Reportes",
+      "short_name": "Reportes",
+      "description": "Ver historial de informes generados",
+      "url": "/?action=view-reports",
+      "icons": [
+        {
+          "src": "history.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Blog Fitness",
+      "short_name": "Blog",
+      "description": "Artículos sobre nutrición y entrenamiento",
+      "url": "/?action=blog",
+      "icons": [
+        {
+          "src": "logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "fitness-1.webp",
+      "sizes": "1080x1920",
+      "type": "image/webp",
+      "platform": "mobile",
+      "label": "Pantalla principal de EGN Fitness"
+    },
+    {
+      "src": "fitness-2.webp",
+      "sizes": "1080x1920",
+      "type": "image/webp",
+      "platform": "mobile",
+      "label": "Generador de informes personalizados"
+    },
+    {
+      "src": "fitness-3.webp",
+      "sizes": "1080x1920",
+      "type": "image/webp",
+      "platform": "mobile",
+      "label": "Chat con IA especializada en fitness"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+egn",
+      "url": "/?protocol=%s"
+    }
+  ]
 }
