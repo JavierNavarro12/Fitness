@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ContentfulService } from '../../services/contentful';
 import Loader from '../shared/Loader';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { BLOCKS, MARKS } from '@contentful/rich-text-types';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -11,6 +12,55 @@ const BlogPost: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { t, i18n } = useTranslation();
+
+  // Opciones personalizadas para el renderizado del rich text
+  const richTextOptions = {
+    renderNode: {
+      [BLOCKS.PARAGRAPH]: (node: any, children: any) => (
+        <p className='mb-4 leading-relaxed'>{children}</p>
+      ),
+      [BLOCKS.HEADING_1]: (node: any, children: any) => (
+        <h1 className='text-3xl font-bold mb-6 mt-8 text-gray-900 dark:text-gray-100'>
+          {children}
+        </h1>
+      ),
+      [BLOCKS.HEADING_2]: (node: any, children: any) => (
+        <h2 className='text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-gray-100'>
+          {children}
+        </h2>
+      ),
+      [BLOCKS.HEADING_3]: (node: any, children: any) => (
+        <h3 className='text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-gray-100'>
+          {children}
+        </h3>
+      ),
+      [BLOCKS.UL_LIST]: (node: any, children: any) => (
+        <ul className='list-disc list-inside mb-4 space-y-2'>{children}</ul>
+      ),
+      [BLOCKS.OL_LIST]: (node: any, children: any) => (
+        <ol className='list-decimal list-inside mb-4 space-y-2'>{children}</ol>
+      ),
+      [BLOCKS.LIST_ITEM]: (node: any, children: any) => (
+        <li className='ml-4'>{children}</li>
+      ),
+      [BLOCKS.QUOTE]: (node: any, children: any) => (
+        <blockquote className='border-l-4 border-red-500 pl-6 py-2 mb-4 italic text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-r-lg'>
+          {children}
+        </blockquote>
+      ),
+    },
+    renderMark: {
+      [MARKS.BOLD]: (text: any) => (
+        <strong className='font-bold'>{text}</strong>
+      ),
+      [MARKS.ITALIC]: (text: any) => <em className='italic'>{text}</em>,
+      [MARKS.CODE]: (text: any) => (
+        <code className='bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-sm font-mono'>
+          {text}
+        </code>
+      ),
+    },
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -100,16 +150,14 @@ const BlogPost: React.FC = () => {
         </div>
       </header>
 
-      <div className='prose prose-lg max-w-none dark:prose-invert'>
-        <div className='text-gray-700 dark:text-gray-300 leading-relaxed'>
-          {post.content && post.content.nodeType ? (
-            documentToReactComponents(post.content)
-          ) : post.content && typeof post.content === 'string' ? (
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-          ) : (
-            <p>{post.summary}</p>
-          )}
-        </div>
+      <div className='text-gray-700 dark:text-gray-300'>
+        {post.content && post.content.nodeType ? (
+          documentToReactComponents(post.content, richTextOptions)
+        ) : post.content && typeof post.content === 'string' ? (
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        ) : (
+          <p>{post.summary}</p>
+        )}
       </div>
     </article>
   );
