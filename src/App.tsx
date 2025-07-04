@@ -781,8 +781,7 @@ Finalmente, añade una sección separada con el título '### Productos Recomenda
         message: '',
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showSummary]);
+  }, [showSummary, reportState.status]);
 
   // Manejar la navegación y el estado del chat
   const handleChatClick = () => {
