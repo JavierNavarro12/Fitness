@@ -201,6 +201,20 @@ Observaciones: Mejora el flujo sanguíneo y reduce la fatiga`,
   }
 
   private static getSportRecommendations(sport: string): string {
+    if (!sport) {
+      return `## Suplementos Generales
+
+## Proteína Completa
+Dosis recomendada: 1.6-2.2g por kg de peso corporal
+Momento de toma: Distribuida a lo largo del día
+Observaciones: Ajustar según intensidad del entrenamiento
+
+## Multivitamínico
+Dosis recomendada: 1 cápsula
+Momento de toma: Con el desayuno
+Observaciones: Cubre posibles deficiencias nutricionales`;
+    }
+
     const sportLower = sport.toLowerCase();
 
     if (sportLower.includes('running') || sportLower.includes('cardio')) {
