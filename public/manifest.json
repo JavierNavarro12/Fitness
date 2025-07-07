@@ -123,5 +123,6 @@
       "protocol": "web+egn",
       "url": "/?protocol=%s"
     }
-  ]
+  ],
+  "gcm_sender_id": "103953800507"
 }

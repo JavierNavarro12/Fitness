@@ -1,20 +1,20 @@
 {
 	"geolocation": {
 		"data": {
-			"city": "Vitoria-Gasteiz",
+			"city": "Armilla",
 			"country": {
 				"code": "ES",
 				"name": "Spain"
 			},
 			"subdivision": {
-				"code": "PV",
-				"name": "Basque Country"
+				"code": "AN",
+				"name": "Andalusia"
 			},
 			"timezone": "Europe/Madrid",
-			"latitude": 42.8571,
-			"longitude": -2.7036,
-			"postalCode": "01010"
+			"latitude": 37.1379,
+			"longitude": -3.6179,
+			"postalCode": "18100"
 		},
-		"timestamp": 1751638759406
+		"timestamp": 1751872332251
 	}
 }

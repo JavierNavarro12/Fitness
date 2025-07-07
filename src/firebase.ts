@@ -28,13 +28,76 @@ export const db = getFirestore(app);
 // Configurar Firebase Cloud Messaging
 let messaging: any = null;
 
+// Registrar service worker de Firebase Messaging
+const registerFirebaseMessagingSW =
+  async (): Promise<ServiceWorkerRegistration | null> => {
+    try {
+      if ('serviceWorker' in navigator) {
+        // Registrar el service worker de Firebase Messaging
+        const registration = await navigator.serviceWorker.register(
+          '/firebase-messaging-sw.js'
+        );
+        console.log(
+          '✅ Firebase Messaging Service Worker registrado:',
+          registration
+        );
+        return registration;
+      } else {
+        console.log('⚠️ Service Worker no soportado');
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error registrando Firebase Messaging SW:', error);
+      return null;
+    }
+  };
+
 // Inicializar messaging solo si es soportado
-const initializeMessaging = async () => {
+type TokenCallback = (token: string | null) => void;
+
+const initializeMessaging = async (onToken?: TokenCallback) => {
   try {
     const supported = await isSupported();
     if (supported) {
-      messaging = getMessaging(app);
-      console.log('✅ Firebase Cloud Messaging inicializado');
+      // Registrar el service worker de Firebase Messaging primero
+      const swRegistration = await registerFirebaseMessagingSW();
+
+      if (swRegistration) {
+        messaging = getMessaging(app);
+        console.log('✅ Firebase Cloud Messaging inicializado');
+
+        // Obtener el token de notificaciones push
+        if (onToken) {
+          const vapidKey = process.env.REACT_APP_FIREBASE_VAPID_KEY;
+          if (!vapidKey) {
+            console.error('❌ VAPID key no configurada');
+            onToken(null);
+            return;
+          }
+
+          getToken(messaging, {
+            vapidKey: vapidKey,
+            serviceWorkerRegistration: swRegistration,
+          })
+            .then(currentToken => {
+              if (currentToken) {
+                console.log('✅ Token FCM obtenido:', currentToken);
+                onToken(currentToken);
+              } else {
+                console.log('⚠️ No se pudo obtener el token FCM');
+                onToken(null);
+              }
+            })
+            .catch(err => {
+              console.error('❌ Error obteniendo token FCM:', err);
+              onToken(null);
+            });
+        }
+      } else {
+        console.error(
+          '❌ No se pudo registrar el Service Worker de Firebase Messaging'
+        );
+      }
     } else {
       console.log('⚠️ Firebase Cloud Messaging no soportado en este navegador');
     }

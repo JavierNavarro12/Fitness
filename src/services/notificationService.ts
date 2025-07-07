@@ -69,6 +69,9 @@ export class NotificationService {
         return false;
       }
 
+      // Enviar variables de entorno al service worker
+      await this.sendEnvVarsToServiceWorker();
+
       // Inicializar Firebase Messaging
       await initializeMessaging();
       this.messaging = getMessagingInstance();
@@ -81,6 +84,9 @@ export class NotificationService {
       // Configurar listener para mensajes en primer plano
       this.setupForegroundListener();
 
+      // Configurar listener para mensajes del service worker
+      this.setupServiceWorkerListener();
+
       console.log('✅ Servicio de notificaciones inicializado');
       return true;
     } catch (error) {
@@ -89,6 +95,50 @@ export class NotificationService {
         error
       );
       return false;
+    }
+  }
+
+  /**
+   * Enviar variables de entorno al service worker
+   */
+  private async sendEnvVarsToServiceWorker(): Promise<void> {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+
+      const envVars = {
+        REACT_APP_FIREBASE_API_KEY: process.env.REACT_APP_FIREBASE_API_KEY,
+        REACT_APP_FIREBASE_AUTH_DOMAIN:
+          process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+        REACT_APP_FIREBASE_PROJECT_ID:
+          process.env.REACT_APP_FIREBASE_PROJECT_ID,
+        REACT_APP_FIREBASE_STORAGE_BUCKET:
+          process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+        REACT_APP_FIREBASE_MESSAGING_SENDER_ID:
+          process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+        REACT_APP_FIREBASE_APP_ID: process.env.REACT_APP_FIREBASE_APP_ID,
+        REACT_APP_FIREBASE_VAPID_KEY: process.env.REACT_APP_FIREBASE_VAPID_KEY,
+      };
+
+      // Filtrar valores undefined/null
+      const validEnvVars = Object.entries(envVars).reduce(
+        (acc, [key, value]) => {
+          if (value) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, string>
+      );
+
+      // Enviar al service worker
+      registration.active?.postMessage({
+        type: 'SET_ENV_VARS',
+        envVars: validEnvVars,
+      });
+
+      console.log('✅ Variables de entorno enviadas al service worker');
+    } catch (error) {
+      console.error('❌ Error enviando variables de entorno al SW:', error);
     }
   }
 
@@ -348,6 +398,54 @@ export class NotificationService {
       requireInteraction: true,
       vibrate: [200, 100, 200, 100, 200, 100, 200],
     });
+  }
+
+  /**
+   * Configurar listener para mensajes del service worker
+   */
+  private setupServiceWorkerListener(): void {
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.addEventListener('message', event => {
+      console.log('💬 Mensaje recibido del SW:', event.data);
+
+      const { type, supplement, notificationTag, notificationType, timestamp } =
+        event.data || {};
+
+      switch (type) {
+        case 'SUPPLEMENT_TAKEN':
+          console.log(`💊 Suplemento marcado como tomado: ${supplement}`);
+          // Aquí podrías actualizar el estado de la aplicación
+          // o disparar un evento personalizado
+          window.dispatchEvent(
+            new CustomEvent('supplementTaken', {
+              detail: { supplement, timestamp },
+            })
+          );
+          break;
+
+        case 'NOTIFICATION_CLOSED':
+          console.log(
+            `❌ Notificación cerrada: ${notificationTag} (${notificationType})`
+          );
+          // Registrar analytics o actualizar estado
+          window.dispatchEvent(
+            new CustomEvent('notificationClosed', {
+              detail: {
+                tag: notificationTag,
+                type: notificationType,
+                timestamp,
+              },
+            })
+          );
+          break;
+
+        default:
+          console.log('🔄 Mensaje del SW no reconocido:', type);
+      }
+    });
+
+    console.log('✅ Listener del service worker configurado');
   }
 
   /**
