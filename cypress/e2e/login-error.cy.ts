@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('Login - flujo de error', () => {
   it('muestra un mensaje de error si la contraseña es incorrecta', () => {
     cy.visit('/login');
