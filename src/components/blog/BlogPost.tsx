@@ -48,6 +48,49 @@ const BlogPost: React.FC = () => {
           {children}
         </blockquote>
       ),
+      [BLOCKS.EMBEDDED_ASSET]: (node: any) => {
+        const { file, title, description } = node.data.target.fields;
+        return (
+          <img
+            src={file.url}
+            alt={title || description || 'Imagen del blog'}
+            className='my-6 rounded-lg shadow-lg mx-auto w-full max-w-xs'
+            style={{ maxWidth: '400px' }}
+          />
+        );
+      },
+      [BLOCKS.EMBEDDED_ENTRY]: (node: any) => {
+        console.log('EMBEDDED_ENTRY node:', node);
+        const fields = node.data.target.fields;
+        // Si tiene un campo image
+        if (fields.image && fields.image.fields && fields.image.fields.file) {
+          return (
+            <img
+              src={fields.image.fields.file.url}
+              alt={fields.title || 'Imagen embebida'}
+              className='my-6 rounded-lg shadow-lg mx-auto w-full max-w-xs'
+              style={{ maxWidth: '400px' }}
+            />
+          );
+        }
+        // Si tiene un campo file directamente
+        if (fields.file && fields.file.url) {
+          return (
+            <img
+              src={fields.file.url}
+              alt={fields.title || 'Imagen embebida'}
+              className='my-6 rounded-lg shadow-lg mx-auto w-full max-w-xs'
+              style={{ maxWidth: '400px' }}
+            />
+          );
+        }
+        // Si no, muestra un aviso
+        return (
+          <div style={{ color: 'red' }}>
+            No se pudo renderizar la imagen embebida
+          </div>
+        );
+      },
     },
     renderMark: {
       [MARKS.BOLD]: (text: any) => (
