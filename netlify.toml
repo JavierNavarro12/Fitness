@@ -73,6 +73,9 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://api.openai.com https://cdn.contentful.com; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+    X-XSS-Protection = "1; mode=block"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     # Preload de recursos críticos
     Link = "</logo-header-96.webp>; rel=preload; as=image; type=image/webp, </imagen-inicio.webp>; rel=preload; as=image; type=image/webp"
 

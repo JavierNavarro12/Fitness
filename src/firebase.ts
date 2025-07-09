@@ -81,7 +81,9 @@ const initializeMessaging = async (onToken?: TokenCallback) => {
           })
             .then(currentToken => {
               if (currentToken) {
-                console.log('✅ Token FCM obtenido:', currentToken);
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('✅ Token FCM obtenido correctamente');
+                }
                 onToken(currentToken);
               } else {
                 console.log('⚠️ No se pudo obtener el token FCM');

@@ -184,7 +184,9 @@ export class NotificationService {
       });
 
       if (token) {
-        console.log('✅ Token de dispositivo obtenido:', token);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Token de dispositivo obtenido correctamente');
+        }
         return token;
       } else {
         console.log('❌ No se pudo obtener token de dispositivo');

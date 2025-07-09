@@ -91,21 +91,37 @@ npm run build
 Crea un archivo `.env.local` con las siguientes variables:
 
 ```env
+# Firebase Configuration
 REACT_APP_FIREBASE_API_KEY=tu_api_key
 REACT_APP_FIREBASE_AUTH_DOMAIN=tu_auth_domain
 REACT_APP_FIREBASE_PROJECT_ID=tu_project_id
 REACT_APP_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
 REACT_APP_FIREBASE_APP_ID=tu_app_id
+REACT_APP_FIREBASE_VAPID_KEY=tu_vapid_key
+
+# OpenAI Configuration
 OPENAI_API_KEY=tu_openai_key
+
+# Contentful Configuration
 REACT_APP_CONTENTFUL_SPACE_ID=tu_contentful_space_id
 REACT_APP_CONTENTFUL_ACCESS_TOKEN=tu_contentful_access_token
 REACT_APP_CONTENTFUL_ENVIRONMENT=master
+
+# Google OAuth
+REACT_APP_GOOGLE_CLIENT_ID=tu_google_client_id
+
+# Cypress Test Credentials (solo para desarrollo)
+CYPRESS_testUserEmail=test@example.com
+CYPRESS_testUserPassword=test_password
 ```
 
-**Nota:**  
-Por motivos de seguridad, las credenciales **no están incluidas** en el repositorio.  
-Debes crear tu propio proyecto en [Firebase](https://firebase.google.com/), obtener una API key de [OpenAI](https://platform.openai.com/) y configurar un espacio en [Contentful](https://www.contentful.com/) para la gestión de blogs.
+**⚠️ IMPORTANTE - Seguridad:**
+
+- **NUNCA** subas credenciales al repositorio
+- Usa variables de entorno para todas las claves
+- Las credenciales de test solo deben usarse en desarrollo
+- Revisa regularmente `npm audit` para vulnerabilidades
 
 ## 🔧 Scripts Disponibles
 

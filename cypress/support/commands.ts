@@ -22,19 +22,19 @@ declare global {
        * @example cy.fillProfileForm()
        */
       fillProfileForm(): Chainable;
-      
+
       /**
        * Custom command to generate a report
        * @example cy.generateReport()
        */
       generateReport(): Chainable;
-      
+
       /**
        * Custom command to login with test user
        * @example cy.login()
        */
       login(): Chainable;
-      
+
       /**
        * Custom command to wait for loading to complete
        * @example cy.waitForLoading()
@@ -51,13 +51,13 @@ Cypress.Commands.add('fillProfileForm', () => {
   cy.get('[data-testid="gender-select"]').select('male');
   cy.get('[data-testid="weight-input"]').type('75');
   cy.get('[data-testid="height-input"]').type('180');
-  
+
   // Objetivos y experiencia
   cy.get('[data-testid="objective-select"]').select('muscle_gain');
   cy.get('[data-testid="experience-select"]').select('intermediate');
   cy.get('[data-testid="frequency-select"]').select('4-5_times');
   cy.get('[data-testid="sport-select"]').select('weightlifting');
-  
+
   // Condiciones médicas (ninguna)
   cy.get('[data-testid="medical-conditions"]').should('exist');
 });
@@ -71,8 +71,15 @@ Cypress.Commands.add('generateReport', () => {
 
 // Comando para login (mock)
 Cypress.Commands.add('login', () => {
-  const email = Cypress.env('testUserEmail') || 'navarrojavi107@gmail.com';
-  const password = Cypress.env('testUserPassword') || '135792468Javi';
+  const email = Cypress.env('testUserEmail');
+  const password = Cypress.env('testUserPassword');
+
+  if (!email || !password) {
+    throw new Error(
+      '❌ Variables de entorno testUserEmail y testUserPassword no configuradas en Cypress'
+    );
+  }
+
   cy.visit('/login');
   cy.get('[data-testid="login-email"]').should('be.visible').type(email);
   cy.get('[data-testid="login-password"]').should('be.visible').type(password);
@@ -84,4 +91,4 @@ Cypress.Commands.add('login', () => {
 Cypress.Commands.add('waitForLoading', () => {
   cy.get('[data-testid="loader"]', { timeout: 30000 }).should('not.exist');
   cy.get('[data-testid="loading"]', { timeout: 30000 }).should('not.exist');
-}); 
+});
