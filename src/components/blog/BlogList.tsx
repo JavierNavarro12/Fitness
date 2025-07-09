@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { ContentfulService } from '../../services/contentful';
 import Loader from '../shared/Loader';
 import { likesService } from '../../services/likesService';
-import { auth } from '../../firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
 
 const BlogList: React.FC = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
