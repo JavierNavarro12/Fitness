@@ -88,21 +88,15 @@ const BlogList: React.FC = () => {
                 <h2 className='text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2'>
                   {blog.title}
                 </h2>
-                <div className='flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-1'>
+                <div className='flex items-center text-sm text-gray-500 dark:text-gray-400 mb-1'>
                   <span>{new Date(blog.publishDate).toLocaleDateString()}</span>
-                  <span className='flex items-center gap-1 ml-2'>
-                    <span role='img' aria-label='likes'>
-                      👍
-                    </span>{' '}
-                    {likesMap[blog.slug] ?? 0}
-                  </span>
                 </div>
                 {blog.seoDescription && (
                   <p className='text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 min-h-[3.5em]'>
                     {blog.seoDescription}
                   </p>
                 )}
-                <div className='mt-auto pt-2'>
+                <div className='mt-auto pt-2 flex items-center justify-between'>
                   <Link
                     to={`/blog/${blog.slug}`}
                     className='inline-flex items-center text-red-600 hover:text-red-700 font-medium'
@@ -122,6 +116,14 @@ const BlogList: React.FC = () => {
                       />
                     </svg>
                   </Link>
+                  <span className='flex items-center gap-1 ml-4'>
+                    <span className='text-2xl' role='img' aria-label='likes'>
+                      👍
+                    </span>
+                    <span className='text-lg font-semibold'>
+                      {likesMap[blog.slug] ?? 0}
+                    </span>
+                  </span>
                 </div>
               </div>
             </article>
