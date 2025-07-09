@@ -39,7 +39,7 @@ jest.mock('../../services/likesService', () => ({
     getLikes: jest.fn().mockResolvedValue({ likes: 0, dislikes: 0 }),
     addLike: jest.fn().mockResolvedValue(undefined),
     addDislike: jest.fn().mockResolvedValue(undefined),
-    getUserVote: jest.fn().mockReturnValue(null),
+    getUserVote: jest.fn().mockResolvedValue(null),
   },
 }));
 
@@ -57,7 +57,7 @@ describe('BlogPost', () => {
     jest
       .mocked(likesService.getLikes)
       .mockResolvedValue({ likes: 0, dislikes: 0 });
-    jest.mocked(likesService.getUserVote).mockReturnValue(null);
+    jest.mocked(likesService.getUserVote).mockResolvedValue(null);
     jest.mocked(commentsService.getComments).mockResolvedValue([]);
   });
 

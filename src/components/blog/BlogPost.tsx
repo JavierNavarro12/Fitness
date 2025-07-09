@@ -160,11 +160,18 @@ const BlogPost: React.FC = () => {
         setDislikes(res.dislikes);
       }
     });
-    setUserVote(likesService.getUserVote(slug));
+
+    // Obtener el voto del usuario actual
+    likesService.getUserVote(slug, currentUser).then(vote => {
+      if (mounted) {
+        setUserVote(vote);
+      }
+    });
+
     return () => {
       mounted = false;
     };
-  }, [slug]);
+  }, [slug, currentUser]);
 
   // Cargar comentarios
   useEffect(() => {
@@ -179,16 +186,41 @@ const BlogPost: React.FC = () => {
   }, [slug]);
 
   const handleLike = async () => {
-    if (!slug || userVote) return;
-    await likesService.addLike(slug);
-    setLikes(likes + 1);
-    setUserVote('like');
+    if (!slug || userVote || !currentUser) return;
+
+    try {
+      await likesService.addLike(slug, currentUser);
+      setLikes(likes + 1);
+      setUserVote('like');
+    } catch (error) {
+      console.error('Error al dar like:', error);
+      // Si el error es que ya votó, actualizar el estado
+      if (
+        error instanceof Error &&
+        error.message.includes('Ya has dado like')
+      ) {
+        setUserVote('like');
+      }
+    }
   };
+
   const handleDislike = async () => {
-    if (!slug || userVote) return;
-    await likesService.addDislike(slug);
-    setDislikes(dislikes + 1);
-    setUserVote('dislike');
+    if (!slug || userVote || !currentUser) return;
+
+    try {
+      await likesService.addDislike(slug, currentUser);
+      setDislikes(dislikes + 1);
+      setUserVote('dislike');
+    } catch (error) {
+      console.error('Error al dar dislike:', error);
+      // Si el error es que ya votó, actualizar el estado
+      if (
+        error instanceof Error &&
+        error.message.includes('Ya has dado dislike')
+      ) {
+        setUserVote('dislike');
+      }
+    }
   };
 
   const handleAddComment = async () => {

@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { ContentfulService } from '../../services/contentful';
 import Loader from '../shared/Loader';
 import { likesService } from '../../services/likesService';
+import { auth } from '../../firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 const BlogList: React.FC = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -11,6 +13,7 @@ const BlogList: React.FC = () => {
   const [error, setError] = useState('');
   const { t, i18n } = useTranslation();
   const [likesMap, setLikesMap] = useState<Record<string, number>>({});
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -27,20 +30,37 @@ const BlogList: React.FC = () => {
   }, [i18n.language]);
 
   useEffect(() => {
-    // Cargar likes para todos los blogs
-    if (blogs.length > 0) {
-      const fetchLikes = async () => {
-        const map: Record<string, number> = {};
-        await Promise.all(
-          blogs.map(async blog => {
-            const res = await likesService.getLikes(blog.slug);
-            map[blog.slug] = res.likes;
-          })
-        );
-        setLikesMap(map);
-      };
-      fetchLikes();
-    }
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      setCurrentUser(user);
+    });
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  // Cargar likes para todos los blogs
+  useEffect(() => {
+    if (blogs.length === 0) return;
+
+    const loadLikes = async () => {
+      const likesData: { [key: string]: number } = {};
+
+      for (const blog of blogs) {
+        try {
+          const likes = await likesService.getLikes(blog.slug);
+          likesData[blog.slug] = likes.likes;
+        } catch (error) {
+          console.error(`Error cargando likes para ${blog.slug}:`, error);
+          likesData[blog.slug] = 0;
+        }
+      }
+
+      setLikesMap(likesData);
+    };
+
+    loadLikes();
   }, [blogs]);
 
   if (loading) {
