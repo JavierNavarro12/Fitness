@@ -3,12 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { ContentfulService } from '../../services/contentful';
 import Loader from '../shared/Loader';
+import { likesService } from '../../services/likesService';
 
 const BlogList: React.FC = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { t, i18n } = useTranslation();
+  const [likesMap, setLikesMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -23,6 +25,23 @@ const BlogList: React.FC = () => {
     };
     fetchBlogs();
   }, [i18n.language]);
+
+  useEffect(() => {
+    // Cargar likes para todos los blogs
+    if (blogs.length > 0) {
+      const fetchLikes = async () => {
+        const map: Record<string, number> = {};
+        await Promise.all(
+          blogs.map(async blog => {
+            const res = await likesService.getLikes(blog.slug);
+            map[blog.slug] = res.likes;
+          })
+        );
+        setLikesMap(map);
+      };
+      fetchLikes();
+    }
+  }, [blogs]);
 
   if (loading) {
     return (
@@ -71,6 +90,12 @@ const BlogList: React.FC = () => {
                 </h2>
                 <div className='flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-1'>
                   <span>{new Date(blog.publishDate).toLocaleDateString()}</span>
+                  <span className='flex items-center gap-1 ml-2'>
+                    <span role='img' aria-label='likes'>
+                      👍
+                    </span>{' '}
+                    {likesMap[blog.slug] ?? 0}
+                  </span>
                 </div>
                 {blog.seoDescription && (
                   <p className='text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 min-h-[3.5em]'>

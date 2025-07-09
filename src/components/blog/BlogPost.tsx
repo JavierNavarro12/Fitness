@@ -5,6 +5,10 @@ import { ContentfulService } from '../../services/contentful';
 import Loader from '../shared/Loader';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import { BLOCKS, MARKS } from '@contentful/rich-text-types';
+import { likesService } from '../../services/likesService';
+import { commentsService, BlogComment } from '../../services/commentsService';
+import { auth } from '../../firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 // Función helper para convertir URLs HTTP a HTTPS
 const ensureHttps = (url: string): string => {
@@ -18,6 +22,25 @@ const BlogPost: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { t, i18n } = useTranslation();
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+  const [userVote, setUserVote] = useState<'like' | 'dislike' | null>(null);
+  const [comments, setComments] = useState<BlogComment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      setCurrentUser(user);
+    });
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   // Opciones personalizadas para el renderizado del rich text
   const richTextOptions = {
@@ -127,6 +150,67 @@ const BlogPost: React.FC = () => {
     fetchPost();
   }, [slug, i18n.language]);
 
+  // Likes/dislikes
+  useEffect(() => {
+    if (!slug) return;
+    let mounted = true;
+    likesService.getLikes(slug).then(res => {
+      if (mounted) {
+        setLikes(res.likes);
+        setDislikes(res.dislikes);
+      }
+    });
+    setUserVote(likesService.getUserVote(slug));
+    return () => {
+      mounted = false;
+    };
+  }, [slug]);
+
+  // Cargar comentarios
+  useEffect(() => {
+    if (!slug) return;
+    let mounted = true;
+    commentsService.getComments(slug).then(res => {
+      if (mounted) setComments(res);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [slug]);
+
+  const handleLike = async () => {
+    if (!slug || userVote) return;
+    await likesService.addLike(slug);
+    setLikes(likes + 1);
+    setUserVote('like');
+  };
+  const handleDislike = async () => {
+    if (!slug || userVote) return;
+    await likesService.addDislike(slug);
+    setDislikes(dislikes + 1);
+    setUserVote('dislike');
+  };
+
+  const handleAddComment = async () => {
+    if (!slug || !newComment.trim() || !currentUser) return;
+    setCommentLoading(true);
+    setCommentError(null);
+    try {
+      await commentsService.addComment(slug, newComment.trim(), {
+        displayName: currentUser.displayName || currentUser.email || 'Usuario',
+        photoURL: currentUser.photoURL || '',
+      });
+      setNewComment('');
+      // Recargar comentarios
+      const updated = await commentsService.getComments(slug);
+      setComments(updated);
+    } catch (err) {
+      setCommentError('Error al enviar el comentario');
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className='flex justify-center items-center min-h-[50vh]'>
@@ -202,6 +286,96 @@ const BlogPost: React.FC = () => {
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
         ) : (
           <p>{post.summary}</p>
+        )}
+      </div>
+
+      {/* Sección de Likes/Dislikes */}
+      <div className='mt-10 flex flex-col items-center gap-2'>
+        <div className='flex items-center gap-4'>
+          <button
+            onClick={handleLike}
+            disabled={!!userVote}
+            className={`px-4 py-2 rounded-full border flex items-center gap-1 transition ${userVote === 'like' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-green-50'}`}
+            aria-label='Me gusta'
+          >
+            👍 <span>{likes}</span>
+          </button>
+          <button
+            onClick={handleDislike}
+            disabled={!!userVote}
+            className={`px-4 py-2 rounded-full border flex items-center gap-1 transition ${userVote === 'dislike' ? 'bg-red-100 border-red-400 text-red-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-red-50'}`}
+            aria-label='No me gusta'
+          >
+            👎 <span>{dislikes}</span>
+          </button>
+        </div>
+        {userVote && (
+          <span className='text-xs text-gray-500 mt-1'>
+            Ya has votado este blog
+          </span>
+        )}
+      </div>
+
+      {/* Sección de Comentarios */}
+      <div className='mt-12 max-w-2xl mx-auto w-full'>
+        <h2 className='text-xl font-semibold mb-4'>Comentarios</h2>
+        <div className='space-y-4 mb-6'>
+          {comments.length === 0 && (
+            <div className='text-gray-500 text-sm'>
+              Sé el primero en comentar este blog.
+            </div>
+          )}
+          {comments.map(c => (
+            <div
+              key={c.id}
+              className='bg-gray-100 dark:bg-gray-800 rounded-lg p-3 text-gray-800 dark:text-gray-100 text-sm'
+            >
+              <div className='flex items-center gap-2 mb-1'>
+                {c.userPhoto && (
+                  <img
+                    src={c.userPhoto}
+                    alt={c.userName}
+                    className='w-6 h-6 rounded-full'
+                  />
+                )}
+                <span className='font-semibold'>{c.userName}</span>
+                <span className='text-xs text-gray-400 ml-2'>
+                  {c.createdAt ? new Date(c.createdAt).toLocaleString() : ''}
+                </span>
+              </div>
+              <span>{c.comment}</span>
+            </div>
+          ))}
+        </div>
+        <div className='flex gap-2'>
+          <input
+            type='text'
+            value={newComment}
+            onChange={e => setNewComment(e.target.value)}
+            className='flex-1 border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 dark:bg-gray-900 dark:border-gray-700'
+            placeholder={
+              currentUser
+                ? 'Escribe un comentario...'
+                : 'Inicia sesión para comentar'
+            }
+            maxLength={300}
+            disabled={commentLoading || !currentUser}
+          />
+          <button
+            onClick={handleAddComment}
+            disabled={commentLoading || !newComment.trim() || !currentUser}
+            className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50 text-sm'
+          >
+            Comentar
+          </button>
+        </div>
+        {!currentUser && (
+          <div className='text-red-500 text-xs mt-2'>
+            Debes iniciar sesión para comentar.
+          </div>
+        )}
+        {commentError && (
+          <div className='text-red-500 text-xs mt-2'>{commentError}</div>
         )}
       </div>
     </article>

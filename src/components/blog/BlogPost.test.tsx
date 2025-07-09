@@ -4,6 +4,8 @@ import BlogPost from './BlogPost';
 
 // Importar el mock después de definirlo
 import { ContentfulService } from '../../services/contentful';
+import { likesService } from '../../services/likesService';
+import { commentsService } from '../../services/commentsService';
 
 // Mock de useParams para simular el slug
 jest.mock('react-router-dom', () => ({
@@ -29,9 +31,34 @@ jest.mock('../../services/contentful', () => ({
   },
 }));
 
+// Usar el mock global de firebase/auth de setupTests.ts
+
+// Mock de los servicios de likes y comentarios
+jest.mock('../../services/likesService', () => ({
+  likesService: {
+    getLikes: jest.fn().mockResolvedValue({ likes: 0, dislikes: 0 }),
+    addLike: jest.fn().mockResolvedValue(undefined),
+    addDislike: jest.fn().mockResolvedValue(undefined),
+    getUserVote: jest.fn().mockReturnValue(null),
+  },
+}));
+
+jest.mock('../../services/commentsService', () => ({
+  commentsService: {
+    getComments: jest.fn().mockResolvedValue([]),
+    addComment: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
 describe('BlogPost', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset específico de los mocks de servicios
+    jest
+      .mocked(likesService.getLikes)
+      .mockResolvedValue({ likes: 0, dislikes: 0 });
+    jest.mocked(likesService.getUserVote).mockReturnValue(null);
+    jest.mocked(commentsService.getComments).mockResolvedValue([]);
   });
 
   it('muestra el loader mientras carga', () => {

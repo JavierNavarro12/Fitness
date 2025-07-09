@@ -7,15 +7,32 @@ import '@testing-library/jest-dom';
 // Mock global de Firebase para todos los tests
 jest.mock('./firebase', () => ({
   auth: {},
-  db: {},
+  db: {}, // Mock básico de Firestore
 }));
 
 // Mock global de firebase/auth
 jest.mock('firebase/auth', () => ({
-  onAuthStateChanged: jest.fn((auth, callback) => {
-    callback(null); // Simula usuario no autenticado
-    return () => {}; // Devuelve función de unsubscribe
+  onAuthStateChanged: jest.fn(() => {
+    // Devolver siempre una función de cleanup válida
+    return jest.fn();
   }),
+}));
+
+// Mock global de firebase/firestore
+jest.mock('firebase/firestore', () => ({
+  doc: jest.fn(),
+  getDoc: jest.fn(),
+  setDoc: jest.fn(),
+  increment: jest.fn(),
+  collection: jest.fn(),
+  query: jest.fn(),
+  where: jest.fn(),
+  orderBy: jest.fn(),
+  addDoc: jest.fn(),
+  getDocs: jest.fn(),
+  Timestamp: {
+    now: jest.fn(() => ({ toDate: () => new Date() })),
+  },
 }));
 
 // Mock global de APIs PWA para todos los tests

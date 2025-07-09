@@ -5,6 +5,8 @@ import BlogList from './BlogList';
 
 // Importar el mock después de definirlo
 import { ContentfulService } from '../../services/contentful';
+import { likesService } from '../../services/likesService';
+import { commentsService } from '../../services/commentsService';
 
 // Mock de useTranslation
 const mockUseTranslation = jest.fn();
@@ -24,6 +26,23 @@ jest.mock('../shared/Loader', () => () => (
   <div data-testid='loader'>Loader</div>
 ));
 
+// Mock de los servicios de likes y comentarios para BlogList
+jest.mock('../../services/likesService', () => ({
+  likesService: {
+    getLikes: jest.fn().mockResolvedValue({ likes: 0, dislikes: 0 }),
+    addLike: jest.fn().mockResolvedValue(undefined),
+    addDislike: jest.fn().mockResolvedValue(undefined),
+    getUserVote: jest.fn().mockReturnValue(null),
+  },
+}));
+
+jest.mock('../../services/commentsService', () => ({
+  commentsService: {
+    getComments: jest.fn().mockResolvedValue([]),
+    addComment: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
 // Función helper para renderizar con Router
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<MemoryRouter>{component}</MemoryRouter>);
@@ -32,6 +51,13 @@ const renderWithRouter = (component: React.ReactElement) => {
 describe('BlogList', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset específico de los mocks de servicios
+    jest
+      .mocked(likesService.getLikes)
+      .mockResolvedValue({ likes: 0, dislikes: 0 });
+    jest.mocked(likesService.getUserVote).mockReturnValue(null);
+    jest.mocked(commentsService.getComments).mockResolvedValue([]);
+
     // Configurar el mock por defecto
     mockUseTranslation.mockReturnValue({
       t: (key: string) => {
@@ -159,9 +185,10 @@ describe('BlogList', () => {
       expect(screen.getByText('Blog sin imagen')).toBeInTheDocument();
     });
 
-    // Verificar que no hay imagen
-    const imagenes = screen.queryAllByRole('img');
-    expect(imagenes).toHaveLength(0);
+    // Verificar que no hay imagen de portada (excluir emojis)
+    const images = screen.queryAllByRole('img');
+    const realImages = images.filter(img => img.tagName === 'IMG');
+    expect(realImages).toHaveLength(0);
   });
 
   it('renderiza enlaces correctos a los blogs', async () => {
