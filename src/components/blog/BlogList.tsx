@@ -13,7 +13,6 @@ const BlogList: React.FC = () => {
   const [error, setError] = useState('');
   const { t, i18n } = useTranslation();
   const [likesMap, setLikesMap] = useState<Record<string, number>>({});
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -28,17 +27,6 @@ const BlogList: React.FC = () => {
     };
     fetchBlogs();
   }, [i18n.language]);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user);
-    });
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
-  }, []);
 
   // Cargar likes para todos los blogs
   useEffect(() => {
