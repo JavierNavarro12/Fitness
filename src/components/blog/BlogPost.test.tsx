@@ -112,7 +112,6 @@ describe('BlogPost', () => {
       expect(screen.getByText('Título de prueba')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Autor de prueba')).toBeInTheDocument();
     expect(screen.getByText('Contenido de prueba')).toBeInTheDocument();
   });
 

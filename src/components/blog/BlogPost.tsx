@@ -274,7 +274,7 @@ const BlogPost: React.FC = () => {
           {post.title}
         </h1>
         <div className='flex items-center text-gray-600 dark:text-gray-400 text-sm'>
-          <span className='mr-4'>{post.author}</span>
+          {/* <span className='mr-4'>{post.author}</span> */}
           <span>{new Date(post.publishDate).toLocaleDateString()}</span>
         </div>
       </header>
