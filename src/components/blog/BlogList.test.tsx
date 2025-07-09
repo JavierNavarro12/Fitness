@@ -108,12 +108,11 @@ describe('BlogList', () => {
       expect(screen.getByText('Segundo Blog')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Resumen del primer blog')).toBeInTheDocument();
-    expect(screen.getByText('Resumen del segundo blog')).toBeInTheDocument();
-    expect(screen.getByText('Autor 1')).toBeInTheDocument();
-    expect(screen.getByText('Autor 2')).toBeInTheDocument();
     expect(screen.getByText('7/8/2024')).toBeInTheDocument();
     expect(screen.getByText('7/9/2024')).toBeInTheDocument();
+    // Ya no se muestra resumen ni autor en la tarjeta
+    // Solo se verifica título, fecha y botón 'Leer más'
+    expect(screen.getAllByText('Leer más').length).toBe(2);
   });
 
   it('renderiza blogs con imágenes destacadas', async () => {

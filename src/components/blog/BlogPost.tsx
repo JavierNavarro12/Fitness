@@ -6,6 +6,12 @@ import Loader from '../shared/Loader';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import { BLOCKS, MARKS } from '@contentful/rich-text-types';
 
+// Función helper para convertir URLs HTTP a HTTPS
+const ensureHttps = (url: string): string => {
+  if (!url) return url;
+  return url.replace(/^http:/, 'https:');
+};
+
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<any>(null);
@@ -52,7 +58,7 @@ const BlogPost: React.FC = () => {
         const { file, title, description } = node.data.target.fields;
         return (
           <img
-            src={file.url}
+            src={ensureHttps(file.url)}
             alt={title || description || 'Imagen del blog'}
             className='my-6 rounded-lg shadow-lg mx-auto w-full max-w-xs'
             style={{ maxWidth: '400px' }}
@@ -60,13 +66,12 @@ const BlogPost: React.FC = () => {
         );
       },
       [BLOCKS.EMBEDDED_ENTRY]: (node: any) => {
-        console.log('EMBEDDED_ENTRY node:', node);
         const fields = node.data.target.fields;
         // Si tiene un campo image
         if (fields.image && fields.image.fields && fields.image.fields.file) {
           return (
             <img
-              src={fields.image.fields.file.url}
+              src={ensureHttps(fields.image.fields.file.url)}
               alt={fields.title || 'Imagen embebida'}
               className='my-6 rounded-lg shadow-lg mx-auto w-full max-w-xs'
               style={{ maxWidth: '400px' }}
@@ -77,7 +82,7 @@ const BlogPost: React.FC = () => {
         if (fields.file && fields.file.url) {
           return (
             <img
-              src={fields.file.url}
+              src={ensureHttps(fields.file.url)}
               alt={fields.title || 'Imagen embebida'}
               className='my-6 rounded-lg shadow-lg mx-auto w-full max-w-xs'
               style={{ maxWidth: '400px' }}
@@ -110,13 +115,10 @@ const BlogPost: React.FC = () => {
       if (!slug) return;
 
       try {
-        console.log('BlogPost: Fetching post with slug:', slug);
         const data = await ContentfulService.getBlog(slug, i18n.language);
-        console.log('BlogPost: Post data received:', data);
         setPost(data);
         setLoading(false);
       } catch (err) {
-        console.error('BlogPost: Error fetching post:', err);
         setError('Error al cargar el post');
         setLoading(false);
       }

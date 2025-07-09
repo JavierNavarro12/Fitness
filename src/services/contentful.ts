@@ -7,6 +7,28 @@ const client = createClient({
   environment: contentfulConfig.environment,
 });
 
+// Función helper para convertir URLs HTTP a HTTPS
+const ensureHttps = (url: string): string => {
+  if (!url) return url;
+  return url.replace(/^http:/, 'https:');
+};
+
+// Función helper para procesar imágenes y asegurar HTTPS
+const processImage = (image: any) => {
+  if (!image || !image.fields || !image.fields.file) return image;
+
+  return {
+    ...image,
+    fields: {
+      ...image.fields,
+      file: {
+        ...image.fields.file,
+        url: ensureHttps(image.fields.file.url),
+      },
+    },
+  };
+};
+
 export interface BlogPost {
   title: string;
   slug: string;
@@ -28,17 +50,8 @@ export const ContentfulService = {
     try {
       // Verificar si las credenciales están configuradas
       if (!contentfulConfig.space || !contentfulConfig.accessToken) {
-        console.log(
-          'Contentful credentials not configured, returning empty array'
-        );
         return [];
       }
-
-      console.log('Fetching blogs with params:', {
-        content_type: 'pageBlogPost',
-        order: ['-fields.publishedDate'],
-        locale: 'es',
-      });
 
       const response = await client.getEntries({
         content_type: 'pageBlogPost',
@@ -46,11 +59,7 @@ export const ContentfulService = {
         locale: 'es',
       });
 
-      console.log('Total blogs found:', response.total);
-      console.log('Blogs items:', response.items);
-
       return response.items.map((item: any) => {
-        console.log('Processing blog item:', item);
         // Asegurarse de que author sea string
         let author = item.fields.author;
         if (typeof author === 'object' && author?.fields?.name) {
@@ -63,13 +72,15 @@ export const ContentfulService = {
           slug: item.fields?.slug || 'sin-slug',
           content: item.fields?.content || null,
           summary: item.fields?.summary || 'Sin resumen disponible',
-          featuredImage: item.fields?.featuredImage || null,
+          featuredImage: item.fields?.featuredImage
+            ? processImage(item.fields.featuredImage)
+            : null,
           author,
           publishDate: item.fields?.publishedDate || new Date().toISOString(),
+          seoDescription: item.fields?.componentSeo?.fields?.description || '',
         };
       });
     } catch (error) {
-      console.error('Error fetching blogs:', error);
       // Retornar array vacío en lugar de lanzar error
       return [];
     }
@@ -77,22 +88,17 @@ export const ContentfulService = {
 
   getBlog: async (slug: string, locale: string = 'es') => {
     try {
-      console.log('Fetching single blog with slug:', slug);
-
       const response = await client.getEntries({
         content_type: 'pageBlogPost',
         'fields.slug': slug,
         locale: 'es',
       });
 
-      console.log('Single blog response:', response);
-
       if (response.items.length === 0) {
         throw new Error('Blog post not found');
       }
 
       const post = response.items[0];
-      console.log('Fetched post:', post);
 
       let author = post.fields.author;
       if (typeof author === 'object' && author?.fields?.name) {
@@ -106,12 +112,13 @@ export const ContentfulService = {
         slug: post.fields.slug,
         content: post.fields.content,
         summary: post.fields.summary,
-        featuredImage: post.fields.featuredImage || null,
+        featuredImage: post.fields.featuredImage
+          ? processImage(post.fields.featuredImage)
+          : null,
         author,
         publishDate: post.fields.publishedDate,
       };
     } catch (error) {
-      console.error('Error fetching blog:', error);
       throw error;
     }
   },
