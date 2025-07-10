@@ -737,7 +737,7 @@ export default function ReportAccordionList({
                         <StructuredReportView report={report} />
                       </div>
                     ) : (
-                      <div className='prose max-w-none bg-white p-2 rounded-xl mb-2 text-xs'>
+                      <div className='prose dark:prose-invert max-w-none bg-white dark:bg-gray-900 p-2 rounded-xl mb-2 text-xs text-gray-900 dark:text-white'>
                         {(() => {
                           let cleanMarkdown = filteredContent
                             .replace(/^```[a-z]*\n?/i, '') // elimina ``` al inicio
