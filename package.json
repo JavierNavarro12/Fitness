@@ -45,10 +45,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "postbuild": "node ./scripts/generate-sitemap.js",
-    "test": "react-scripts test",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
@@ -82,6 +82,7 @@
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
+    "@craco/craco": "^7.1.0",
     "@netlify/functions": "^4.1.6",
     "@tailwindcss/typography": "^0.5.16",
     "@types/jspdf": "^2.0.0",

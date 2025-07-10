@@ -262,17 +262,17 @@ function removeRecommendedProductsSection(content: string): string {
 
 const markdownComponents = {
   h1: ({ children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
-    <h1 className='text-3xl font-bold mt-6 mb-4 text-gray-900' {...props}>
+    <h1 className='text-3xl font-bold mt-6 mb-4' {...props}>
       {children}
     </h1>
   ),
   h2: ({ children, ...props }: ComponentPropsWithoutRef<'h2'>) => (
-    <h2 className='text-2xl font-bold mt-4 mb-3 text-gray-900' {...props}>
+    <h2 className='text-2xl font-bold mt-4 mb-3' {...props}>
       {children}
     </h2>
   ),
   h3: ({ children, ...props }: ComponentPropsWithoutRef<'h3'>) => (
-    <h3 className='text-xl font-semibold mt-3 mb-2 text-gray-800' {...props}>
+    <h3 className='text-xl font-semibold mt-3 mb-2' {...props}>
       {children}
     </h3>
   ),
@@ -286,10 +286,10 @@ const markdownComponents = {
     <li className='mb-1' {...props} />
   ),
   strong: (props: ComponentPropsWithoutRef<'strong'>) => (
-    <strong className='font-semibold text-gray-900' {...props} />
+    <strong className='font-semibold' {...props} />
   ),
   p: (props: ComponentPropsWithoutRef<'p'>) => (
-    <p className='mb-2 text-gray-800' {...props} />
+    <p className='mb-2' {...props} />
   ),
 };
 
@@ -449,7 +449,7 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onDelete }) => {
         {useStructuredView ? (
           <StructuredReportView report={report} />
         ) : (
-          <div className='prose max-w-3xl mx-auto bg-white p-6 rounded-xl'>
+          <div className='prose prose-invert max-w-3xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-xl'>
             <ReactMarkdown components={markdownComponents}>
               {cleanMarkdown}
             </ReactMarkdown>
