@@ -33,30 +33,35 @@ EGN Fitness es una plataforma web progresiva que utiliza inteligencia artificial
 
 - **React 18** con TypeScript
 - **Tailwind CSS** para estilos responsivos
+- **Styled Components** para estilos dinámicos
 - **React Router** para navegación SPA
 - **React i18next** para internacionalización
 - **AOS** para animaciones suaves
-- **React PDF** para generación de documentos
+- **React PDF** y **jsPDF** para generación de documentos
 - **React Markdown** para contenido dinámico
+- **React Select** para formularios avanzados
+- **React Icons** y **FontAwesome** para iconografía
+- **React Helmet Async** para SEO y metadatos
 
 ### Backend & Servicios
 
 - **Firebase Auth** para autenticación
-- **Firestore** para base de datos NoSQL
+- **Firestore** para base de datos NoSQL (incluye sistema de comentarios, likes y favoritos)
 - **OpenAI GPT-3.5** para inteligencia artificial
 - **Contentful** como CMS headless para gestión de blogs
-- **Netlify Functions** para API serverless
+- **Netlify Functions** para API serverless (incluye integración con OpenAI)
 - **Netlify Forms** para formularios de contacto
 - **Netlify** para hosting y CDN
+- **Sistema de notificaciones** y generación de sitemap
 
 ### Testing & Calidad
 
 - **Jest** para testing unitario con coverage
 - **React Testing Library** para testing de componentes
-- **Cypress** para tests end-to-end (E2E)
+- **Cypress 14** para tests end-to-end (E2E)
 - **ESLint** para análisis estático de código
 - **Prettier** para formateo automático
-- **Husky** para hooks de pre-commit
+- **Husky** y **lint-staged** para hooks de pre-commit
 
 ### CI/CD & DevOps
 
@@ -64,6 +69,8 @@ EGN Fitness es una plataforma web progresiva que utiliza inteligencia artificial
 - **Codecov** para reportes de cobertura
 - **Lighthouse CI** para auditoría de rendimiento
 - **TypeScript** para tipado estático
+- **CRACO** para configuración avanzada de Webpack
+- **Serve** y **Start Server and Test** para despliegue y testing automatizado
 
 ## 🚀 Instalación
 
