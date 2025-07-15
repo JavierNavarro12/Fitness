@@ -14,34 +14,48 @@ interface StepFormProps {
   user?: any; // Prop para verificar si el usuario está autenticado
 }
 
-const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditing = false, user }) => {
+const StepForm: React.FC<StepFormProps> = ({
+  onComplete,
+  initialProfile,
+  isEditing = false,
+  user,
+}) => {
   const { t } = useTranslation();
-  
+
   // Mover todos los hooks al inicio, antes de cualquier return condicional
   const [step, setStep] = useState(0);
-  const [profile, setProfile] = useState<UserProfile>(() => initialProfile || {
-    age: 0,
-    gender: '',
-    weight: 0,
-    height: 0,
-    objective: '',
-    experience: '',
-    frequency: '',
-    sport: '',
-    medicalConditions: [],
-    allergies: [],
-    currentSupplements: []
-  });
+  const [profile, setProfile] = useState<UserProfile>(
+    () =>
+      initialProfile || {
+        age: 0,
+        gender: '',
+        weight: 0,
+        height: 0,
+        objective: '',
+        experience: '',
+        frequency: '',
+        sport: '',
+        medicalConditions: [],
+        allergies: [],
+        currentSupplements: [],
+      }
+  );
   const [error, setError] = useState<string | null>(null);
 
   // Estados locales string para los campos multi-valor
-  const [medicalConditionsInput, setMedicalConditionsInput] = useState(profile.medicalConditions.join(', '));
-  const [allergiesInput, setAllergiesInput] = useState(profile.allergies.join(', '));
-  const [currentSupplementsInput, setCurrentSupplementsInput] = useState(profile.currentSupplements.join(', '));
-  
+  const [medicalConditionsInput, setMedicalConditionsInput] = useState(
+    profile.medicalConditions.join(', ')
+  );
+  const [allergiesInput, setAllergiesInput] = useState(
+    profile.allergies.join(', ')
+  );
+  const [currentSupplementsInput, setCurrentSupplementsInput] = useState(
+    profile.currentSupplements.join(', ')
+  );
+
   // Si no hay usuario autenticado, mostrar el componente de login requerido
   if (!user) {
-    return <LoginRequired sectionName="Personalización" />;
+    return <LoginRequired sectionName='Personalización' />;
   }
 
   const genderOptions = [
@@ -63,7 +77,10 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   ];
 
   const sportOptions = [
-    ...sportProfiles.map((sport: { name: string }) => ({ value: sport.name, label: t(sport.name) })),
+    ...sportProfiles.map((sport: { name: string }) => ({
+      value: sport.name,
+      label: t(sport.name),
+    })),
     { value: 'spacer1', label: ' ' },
     { value: 'spacer2', label: ' ' },
     { value: 'spacer3', label: ' ' },
@@ -72,16 +89,19 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
     { value: 'spacer6', label: ' ' },
     { value: 'spacer7', label: ' ' },
     { value: 'spacer8', label: ' ' },
-    
   ];
 
   const selectStyles = {
     control: (base: any, state: any) => ({
       ...base,
       borderRadius: '0.75rem',
-      backgroundColor: state.isFocused ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)',
+      backgroundColor: state.isFocused
+        ? 'rgba(255,255,255,0.95)'
+        : 'rgba(255,255,255,0.8)',
       borderColor: state.isFocused ? '#dc2626' : '#d1d5db',
-      boxShadow: state.isFocused ? '0 0 0 2px #dc262633' : '0 1px 2px 0 rgba(0,0,0,0.04)',
+      boxShadow: state.isFocused
+        ? '0 0 0 2px #dc262633'
+        : '0 1px 2px 0 rgba(0,0,0,0.04)',
       minHeight: '44px',
       fontSize: '1rem',
       color: '#111827',
@@ -99,7 +119,11 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
     }),
     option: (base: any, state: any) => ({
       ...base,
-      backgroundColor: state.isSelected ? '#dc2626' : state.isFocused ? '#fee2e2' : '#fff',
+      backgroundColor: state.isSelected
+        ? '#dc2626'
+        : state.isFocused
+          ? '#fee2e2'
+          : '#fff',
       color: state.isSelected ? '#fff' : '#111827',
       fontWeight: state.isSelected ? 700 : 500,
       fontSize: '1rem',
@@ -118,9 +142,18 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
     if (step === 3) {
       setProfile((prev: UserProfile) => ({
         ...prev,
-        medicalConditions: medicalConditionsInput.split(',').map((s: string) => s.trim()).filter(Boolean) as string[],
-        allergies: allergiesInput.split(',').map((s: string) => s.trim()).filter(Boolean) as string[],
-        currentSupplements: currentSupplementsInput.split(',').map((s: string) => s.trim()).filter(Boolean) as string[],
+        medicalConditions: medicalConditionsInput
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean) as string[],
+        allergies: allergiesInput
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean) as string[],
+        currentSupplements: currentSupplementsInput
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean) as string[],
       }));
     }
     // Validación por paso
@@ -129,7 +162,11 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
         const missingFields: string[] = [];
         if (!profile.age) missingFields.push(t('stepForm.age'));
         if (!profile.gender) missingFields.push(t('stepForm.gender'));
-        setError(t('stepForm.error.missingFields', { fields: missingFields.join(', ') }));
+        setError(
+          t('stepForm.error.missingFields', {
+            fields: missingFields.join(', '),
+          })
+        );
         return;
       }
       if (profile.age < 14 || profile.age > 99) {
@@ -142,7 +179,11 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
         const missingFields: string[] = [];
         if (!profile.weight) missingFields.push(t('stepForm.weight'));
         if (!profile.height) missingFields.push(t('stepForm.height'));
-        setError(t('stepForm.error.missingFields', { fields: missingFields.join(', ') }));
+        setError(
+          t('stepForm.error.missingFields', {
+            fields: missingFields.join(', '),
+          })
+        );
         return;
       }
       if (profile.weight < 30 || profile.weight > 300) {
@@ -157,10 +198,16 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
     if (step === 2) {
       if (!profile.experience || !profile.frequency || !profile.sport) {
         const missingFields: string[] = [];
-        if (!profile.experience) missingFields.push(t('stepForm.experienceLevel'));
-        if (!profile.frequency) missingFields.push(t('stepForm.trainingFrequency'));
+        if (!profile.experience)
+          missingFields.push(t('stepForm.experienceLevel'));
+        if (!profile.frequency)
+          missingFields.push(t('stepForm.trainingFrequency'));
         if (!profile.sport) missingFields.push(t('stepForm.mainSport'));
-        setError(t('stepForm.error.missingFields', { fields: missingFields.join(', ') }));
+        setError(
+          t('stepForm.error.missingFields', {
+            fields: missingFields.join(', '),
+          })
+        );
         return;
       }
     }
@@ -172,16 +219,25 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   const prevStep = () => {
     setError(null);
     setStep(s => Math.max(s - 1, 0));
-  }
+  };
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // Sincroniza los campos multi-valor antes de enviar
     const finalProfile = {
       ...profile,
-      medicalConditions: medicalConditionsInput.split(',').map((s: string) => s.trim()).filter(Boolean),
-      allergies: allergiesInput.split(',').map((s: string) => s.trim()).filter(Boolean),
-      currentSupplements: currentSupplementsInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+      medicalConditions: medicalConditionsInput
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean),
+      allergies: allergiesInput
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean),
+      currentSupplements: currentSupplementsInput
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean),
     };
 
     // Validación final solo para el campo 'objetivo' del último paso
@@ -218,27 +274,35 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   ];
 
   return (
-    <div className="mt-12 sm:mt-20">
-      <div className={`max-w-4xl w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-16 px-12 flex flex-col min-h-[550px] ${step === 2 ? 'mt-2' : step === 3 ? 'mt-0' : 'mt-4'}`}>
+    <div className='mt-12 sm:mt-20'>
+      <div
+        className={`max-w-4xl w-full mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl py-16 px-12 flex flex-col min-h-[550px] ${step === 2 ? 'mt-2' : step === 3 ? 'mt-0' : 'mt-4'}`}
+      >
         {/* Wizard Steps */}
-        <div className="flex justify-between items-center mb-8 relative w-full">
+        <div className='flex justify-between items-center mb-8 relative w-full'>
           {steps.map((s, i) => {
             const Icon = s.icon as React.FC<{ size?: number }>;
             const isCompleted = i < step;
             const isActive = i === step;
             return (
               <React.Fragment key={i}>
-                <div className="flex flex-col items-center flex-1 min-w-0">
+                <div className='flex flex-col items-center flex-1 min-w-0'>
                   <div
                     className={`step-circle transition-colors duration-300 rounded-full mb-1 border-2
-                      ${isCompleted ? 'bg-green-500 border-green-500 text-white'
-                        : isActive ? 'bg-red-600 border-red-600 text-white'
-                        : 'bg-gray-200 border-gray-300 text-gray-500'}
+                      ${
+                        isCompleted
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : isActive
+                            ? 'bg-red-600 border-red-600 text-white'
+                            : 'bg-gray-200 border-gray-300 text-gray-500'
+                      }
                       w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-lg sm:text-xl`}
                   >
                     {Icon ? <Icon size={20} /> : null}
                   </div>
-                  <span className={`text-[10px] sm:text-xs font-semibold text-center break-words ${isActive ? 'text-red-600' : isCompleted ? 'text-green-600' : 'text-gray-500'}`}>
+                  <span
+                    className={`text-[10px] sm:text-xs font-semibold text-center break-words ${isActive ? 'text-red-600' : isCompleted ? 'text-green-600' : 'text-gray-500'}`}
+                  >
                     {t(s.label)}
                   </span>
                 </div>
@@ -254,40 +318,62 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
           })}
         </div>
         {error && (
-          <div className="text-red-600 text-sm text-center mb-4">{error}</div>
+          <div className='text-red-600 text-sm text-center mb-4'>{error}</div>
         )}
-        <form onSubmit={(e) => e.preventDefault()} className="flex-grow flex flex-col justify-center">
+        <form
+          onSubmit={e => e.preventDefault()}
+          className='flex-grow flex flex-col justify-center'
+        >
           {/* Este div agrupa el contenido del paso para empujar los botones hacia abajo */}
           <div>
             {step === 0 && (
               <>
-                <h2 className="text-xl font-bold text-red-700 mb-4">{t('stepForm.personalInfo')}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h2 className='text-xl font-bold text-red-700 mb-4'>
+                  {t('stepForm.personalInfo')}
+                </h2>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <div>
-                    <label htmlFor="age" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.age')} *</label>
+                    <label
+                      htmlFor='age'
+                      className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                    >
+                      {t('stepForm.age')} *
+                    </label>
                     <input
-                      id="age-input"
-                      type="number"
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition appearance-none"
+                      id='age-input'
+                      type='number'
+                      className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition appearance-none'
                       style={{ MozAppearance: 'textfield' }}
                       value={profile.age === 0 ? '' : profile.age}
-                      placeholder="0"
-                      onChange={e => handleInputChange('age', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                      placeholder='0'
+                      onChange={e =>
+                        handleInputChange(
+                          'age',
+                          e.target.value === '' ? 0 : parseInt(e.target.value)
+                        )
+                      }
                       aria-label={t('Edad')}
-                      data-testid="age-input"
+                      data-testid='age-input'
                     />
                   </div>
                   <div>
-                    <label htmlFor="gender" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.gender')} *</label>
+                    <label
+                      htmlFor='gender'
+                      className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                    >
+                      {t('stepForm.gender')} *
+                    </label>
                     <Select
-                      classNamePrefix="react-select"
+                      classNamePrefix='react-select'
                       options={genderOptions}
-                      value={genderOptions.find(opt => opt.value === profile.gender)}
+                      value={genderOptions.find(
+                        opt => opt.value === profile.gender
+                      )}
                       onChange={o => handleInputChange('gender', o?.value)}
                       styles={selectStyles}
                       placeholder={t('stepForm.selectPlaceholder')}
-                      inputId="gender-select"
-                      data-testid="gender-select"
+                      inputId='gender-select'
+                      data-testid='gender-select'
                     />
                   </div>
                 </div>
@@ -295,30 +381,52 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             )}
             {step === 1 && (
               <>
-                <h2 className="text-xl font-bold text-red-700 mb-4">{t('stepForm.bodyMeasures')}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h2 className='text-xl font-bold text-red-700 mb-4'>
+                  {t('stepForm.bodyMeasures')}
+                </h2>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <div>
-                    <label htmlFor="weight" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.weight')} (kg) *</label>
+                    <label
+                      htmlFor='weight'
+                      className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                    >
+                      {t('stepForm.weight')} (kg) *
+                    </label>
                     <input
-                      id="weight-input"
-                      type="number"
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                      id='weight-input'
+                      type='number'
+                      className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition'
                       value={profile.weight === 0 ? '' : profile.weight}
-                      placeholder="0"
-                      onChange={e => handleInputChange('weight', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                      data-testid="weight-input"
+                      placeholder='0'
+                      onChange={e =>
+                        handleInputChange(
+                          'weight',
+                          e.target.value === '' ? 0 : parseInt(e.target.value)
+                        )
+                      }
+                      data-testid='weight-input'
                     />
                   </div>
                   <div>
-                    <label htmlFor="height" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.height')} (cm) *</label>
+                    <label
+                      htmlFor='height'
+                      className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                    >
+                      {t('stepForm.height')} (cm) *
+                    </label>
                     <input
-                      id="height-input"
-                      type="number"
-                      className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                      id='height-input'
+                      type='number'
+                      className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition'
                       value={profile.height === 0 ? '' : profile.height}
-                      placeholder="0"
-                      onChange={e => handleInputChange('height', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                      data-testid="height-input"
+                      placeholder='0'
+                      onChange={e =>
+                        handleInputChange(
+                          'height',
+                          e.target.value === '' ? 0 : parseInt(e.target.value)
+                        )
+                      }
+                      data-testid='height-input'
                     />
                   </div>
                 </div>
@@ -326,61 +434,121 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             )}
             {step === 2 && (
               <>
-                <h2 className="text-xl font-bold text-red-700 mb-4">{t('stepForm.sportExperience')}</h2>
-                <div className="space-y-4">
+                <h2 className='text-xl font-bold text-red-700 mb-4'>
+                  {t('stepForm.sportExperience')}
+                </h2>
+                <div className='space-y-4'>
                   <div>
-                    <label className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.experienceLevel')} *</label>
-                    <Select options={experienceOptions} value={experienceOptions.find(o => o.value === profile.experience)} onChange={o => handleInputChange('experience', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} inputId="experience-select" data-testid="experience-select" />
+                    <label className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'>
+                      {t('stepForm.mainSport')} *
+                    </label>
+                    <Select
+                      options={sportOptions}
+                      value={sportOptions.find(o => o.value === profile.sport)}
+                      onChange={o => handleInputChange('sport', o?.value)}
+                      styles={selectStyles}
+                      placeholder={t('stepForm.selectPlaceholder')}
+                      inputId='sport-select'
+                      data-testid='sport-select'
+                    />
                   </div>
                   <div>
-                    <label className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.trainingFrequency')} *</label>
-                    <Select options={frequencyOptions} value={frequencyOptions.find(o => o.value === profile.frequency)} onChange={o => handleInputChange('frequency', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} inputId="frequency-select" data-testid="frequency-select" />
+                    <label className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'>
+                      {t('stepForm.experienceLevel')} *
+                    </label>
+                    <Select
+                      options={experienceOptions}
+                      value={experienceOptions.find(
+                        o => o.value === profile.experience
+                      )}
+                      onChange={o => handleInputChange('experience', o?.value)}
+                      styles={selectStyles}
+                      placeholder={t('stepForm.selectPlaceholder')}
+                      inputId='experience-select'
+                      data-testid='experience-select'
+                    />
                   </div>
                   <div>
-                    <label className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.mainSport')} *</label>
-                    <Select options={sportOptions} value={sportOptions.find(o => o.value === profile.sport)} onChange={o => handleInputChange('sport', o?.value)} styles={selectStyles} placeholder={t('stepForm.selectPlaceholder')} inputId="sport-select" data-testid="sport-select" />
+                    <label className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'>
+                      {t('stepForm.trainingFrequency')} *
+                    </label>
+                    <Select
+                      options={frequencyOptions}
+                      value={frequencyOptions.find(
+                        o => o.value === profile.frequency
+                      )}
+                      onChange={o => handleInputChange('frequency', o?.value)}
+                      styles={selectStyles}
+                      placeholder={t('stepForm.selectPlaceholder')}
+                      inputId='frequency-select'
+                      data-testid='frequency-select'
+                    />
                   </div>
                 </div>
               </>
             )}
             {step === 3 && (
               <>
-                <h2 className="text-xl font-bold text-red-700 mb-4">{t('stepForm.healthGoals')}</h2>
+                <h2 className='text-xl font-bold text-red-700 mb-4'>
+                  {t('stepForm.healthGoals')}
+                </h2>
                 <div>
-                  <label htmlFor="objective" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.objective')} *</label>
+                  <label
+                    htmlFor='objective'
+                    className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                  >
+                    {t('stepForm.objective')} *
+                  </label>
                   <input
-                    type="text"
-                    className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                    type='text'
+                    className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition'
                     value={profile.objective}
-                    onChange={e => handleInputChange('objective', e.target.value)}
+                    onChange={e =>
+                      handleInputChange('objective', e.target.value)
+                    }
                     placeholder={t('stepForm.objectivePlaceholder')}
                   />
                 </div>
-                <div className="mt-4">
-                  <label htmlFor="medical" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.medicalConditions')}</label>
+                <div className='mt-4'>
+                  <label
+                    htmlFor='medical'
+                    className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                  >
+                    {t('stepForm.medicalConditions')}
+                  </label>
                   <input
-                    type="text"
-                    className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                    type='text'
+                    className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition'
                     value={medicalConditionsInput}
                     onChange={e => setMedicalConditionsInput(e.target.value)}
                     placeholder={t('stepForm.medicalConditionsPlaceholder')}
                   />
                 </div>
-                <div className="mt-4">
-                  <label htmlFor="allergies" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.allergies')}</label>
+                <div className='mt-4'>
+                  <label
+                    htmlFor='allergies'
+                    className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                  >
+                    {t('stepForm.allergies')}
+                  </label>
                   <input
-                    type="text"
-                    className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                    type='text'
+                    className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition'
                     value={allergiesInput}
                     onChange={e => setAllergiesInput(e.target.value)}
                     placeholder={t('stepForm.allergiesPlaceholder')}
                   />
                 </div>
-                <div className="mt-4">
-                  <label htmlFor="supplements" className="block text-gray-800 dark:text-gray-200 font-semibold mb-2">{t('stepForm.currentSupplements')}</label>
+                <div className='mt-4'>
+                  <label
+                    htmlFor='supplements'
+                    className='block text-gray-800 dark:text-gray-200 font-semibold mb-2'
+                  >
+                    {t('stepForm.currentSupplements')}
+                  </label>
                   <input
-                    type="text"
-                    className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                    type='text'
+                    className='w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 px-4 py-2 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition'
                     value={currentSupplementsInput}
                     onChange={e => setCurrentSupplementsInput(e.target.value)}
                     placeholder={t('stepForm.currentSupplementsPlaceholder')}
@@ -389,13 +557,13 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
               </>
             )}
           </div>
-          <div className="mt-16 flex justify-between items-center">
+          <div className='mt-16 flex justify-between items-center'>
             <div>
               {step > 0 && (
                 <button
-                  type="button"
+                  type='button'
                   onClick={prevStep}
-                  className="px-6 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  className='px-6 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition'
                 >
                   {t('stepForm.backButton')}
                 </button>
@@ -405,20 +573,22 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
             <div>
               {step < steps.length - 1 ? (
                 <button
-                  type="button"
+                  type='button'
                   onClick={nextStep}
-                  className="px-6 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition"
-                  data-testid="next-step"
+                  className='px-6 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition'
+                  data-testid='next-step'
                 >
                   {t('stepForm.nextButton')}
                 </button>
               ) : (
                 <button
-                  type="button"
+                  type='button'
                   onClick={handleSubmit}
-                  className="px-6 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition"
+                  className='px-6 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition'
                 >
-                  {isEditing ? t('stepForm.updateButton') : t('stepForm.completeButton')}
+                  {isEditing
+                    ? t('stepForm.updateButton')
+                    : t('stepForm.completeButton')}
                 </button>
               )}
             </div>
@@ -429,4 +599,4 @@ const StepForm: React.FC<StepFormProps> = ({ onComplete, initialProfile, isEditi
   );
 };
 
-export default StepForm; 
+export default StepForm;
