@@ -382,7 +382,7 @@ INSTRUCCIONES:
                   ? isMobile
                     ? 'fixed top-16 left-0 right-0 bottom-20 flex flex-col bg-white dark:bg-gray-800 rounded-t-lg rounded-b-2xl'
                     : 'h-full flex-1 flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-red-200 dark:border-red-700'
-                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45] w-auto max-w-lg sm:w-[32rem] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-red-200 dark:border-red-700`
+                  : `fixed ${isMobile ? 'left-4 right-4 top-[4.5rem] bottom-24' : 'left-1/2 bottom-40 sm:right-16 sm:left-auto sm:bottom-28'} z-[45] w-auto max-w-2xl sm:w-[38rem] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-red-200 dark:border-red-700`
               }
               flex flex-col animate-fade-in overflow-hidden 
               ${!isMobile && !isPageContent && '-translate-x-1/2 sm:translate-x-0'}
@@ -565,8 +565,16 @@ INSTRUCCIONES:
                 <div
                   className='flex-1 p-2 overflow-y-auto bg-gray-50 dark:bg-gray-900'
                   style={{
-                    minHeight: isPageContent ? 'auto' : '150px',
-                    maxHeight: isPageContent ? 'none' : '60vh',
+                    minHeight: isPageContent
+                      ? 'auto'
+                      : !isMobile && !isPageContent
+                        ? '350px'
+                        : '250px',
+                    maxHeight: isPageContent
+                      ? 'none'
+                      : !isMobile && !isPageContent
+                        ? '80vh'
+                        : '60vh',
                   }}
                 >
                   {/* Mensaje de bienvenida siempre visible */}

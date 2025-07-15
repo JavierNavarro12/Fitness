@@ -11,8 +11,8 @@
 3. [Funciones Principales](#funciones-principales)
 4. [Estructura de Archivos](#estructura-de-archivos)
 5. [Requisitos del Sistema](#requisitos-del-sistema)
-6. [Guía de Instalación](#guía-de-instalación)
-7. [Configuración y Despliegue](#configuración-y-despliegue)
+6. [Guia de Instalacion](#guia-de-instalacion)
+7. [Configuracion y Despliegue](#configuracion-y-despliegue)
 
 ---
 
